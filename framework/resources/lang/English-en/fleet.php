@@ -1,5 +1,6 @@
 <?php
 return [
+    'contractService'=> 'Contract Service',
     'driverPaymentAdded' => 'Driver Payment added successfully!',
     'datetime' => 'Date & Time',
     'remaining_amount' => 'Remaining Amount',

@@ -17,13 +17,13 @@ final class Json
     private const DECODE_DEFAULT = JSON_BIGINT_AS_STRING;
 
     /**
-     * param non-empty-string $json
-     *
      * @throws UnexpectedValueException
+     *
+     * @return ($forceArray is true ? array<mixed> : mixed)
      */
     public static function decode(string $json, ?bool $forceArray = null): mixed
     {
-        $forceArray = $forceArray ?? false;
+        $forceArray ??= false;
         $flags = $forceArray ? JSON_OBJECT_AS_ARRAY : 0;
 
         try {
@@ -37,8 +37,10 @@ final class Json
      * @param non-empty-string $path
      *
      * @throws UnexpectedValueException
+     *
+     * @return ($forceArray is true ? array<mixed> : mixed)
      */
-    public static function decodeFile(string $path, bool $forceArray = null): mixed
+    public static function decodeFile(string $path, ?bool $forceArray = null): mixed
     {
         if (!is_readable($path)) {
             throw new UnexpectedValueException("The file at '$path' is not readable");
@@ -66,7 +68,7 @@ final class Json
      */
     public static function encode(mixed $data, ?int $options = null): string
     {
-        $options = $options ?? 0;
+        $options ??= 0;
 
         try {
             return json_encode($data, $options | self::ENCODE_DEFAULT | JSON_THROW_ON_ERROR);
@@ -80,7 +82,7 @@ final class Json
      */
     public static function pretty(mixed $value, ?int $options = null): string
     {
-        $options = $options ?? 0;
+        $options ??= 0;
 
         return self::encode($value, $options | self::ENCODE_PRETTY);
     }
