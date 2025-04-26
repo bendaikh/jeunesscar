@@ -1,4 +1,7 @@
 <?php
+
+use App\Http\Controllers\Admin\ContractController;
+
 Auth::routes();
 Route::namespace('Admin')->group(function () {
         // Route::get('export-events', 'HomeController@export_calendar');
@@ -62,7 +65,9 @@ Route::namespace('Admin')->group(function () {
 
                 Route::post('/users-fetch', 'UsersController@fetch_data');
                 Route::get('/contract', 'ContractController@index')->name('contract');
+                Route::post('/contract/store', [ContractController::class, 'store'])->name('contract.store');
                 Route::get('/contract/view', 'ContractController@view')->name('contract.view');
+                Route::get('/contract/generate-pdf', [ContractController::class, 'generatePDF'])->name('contract.generatePDF');
                 Route::resource('/users', 'UsersController');
 
                 Route::get('twilio-settings', 'TwilioController@index');
