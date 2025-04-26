@@ -54,13 +54,16 @@ class ContractController extends Controller
         // $contract = new Contract();
         // $contract->fill($data);
         // $contract->save();
+
+        session()->put("contracts", $data);
         
         return redirect()->route('contract.view')->with('contract_data', $data);
     }
 
     public function view(Request $request)
     {
-        $data = session('contract_data') ?: $request->all();
+         $data = session("contracts", []);
+
         
         // Extract data for view
         $client = isset($data['client']) ? (object)$data['client'] : null;
@@ -74,6 +77,15 @@ class ContractController extends Controller
         $contract = new \stdClass();
         $contract->number = 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
         $contract->dossier_number = 'D' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+        // Use absolute paths for assets
+    $logoPath = public_path('images/jeunesse-car-logo.png');
+    if (!file_exists($logoPath)) {
+        $logoPath = 'https://via.placeholder.com/150x50?text=Logo+Missing';
+    }
+
+        $hideButton = false;
+
         
         return view('contract.view', compact(
             'client', 
@@ -82,64 +94,105 @@ class ContractController extends Controller
             'additional_driver', 
             'vehicle_change', 
             'payment_method',
-            'contract'
+            'contract',
+            'logoPath',
+            'hideButton' 
         ));
     }
 
 
-    public function generatePDF()
+  public function generatePDF()
 {
-    // ✅ تأكد أن مسار public مضبوط
-    app()->instance('path.public', base_path('public'));
+    $data = session("contracts");
 
-    $data = session('contract_data'); // نحصل على البيانات من السيشن
 
-    // if (!$data) {
-    //     return redirect()->route('contract')->with('error', 'لا توجد بيانات لتوليد العقد.');
-    // }
+    // Ensure objects exist even with empty data
+     $client = (object)array_merge([
+        'last_name' => '',
+        'first_name' => '',
+        'address' => '',
+        'id_number' => '',
+        'id_expiry_date' => '',
+        'license_number' => '',
+        'license_issue_date' => '',
+        'passport_number' => '',
+        'passport_issue_date' => '',
+        'phone' => '',
+        'mobile' => ''
+    ], $data['client'] ?? []);
 
-    // تجهيز البيانات
-    $client = isset($data['client']) ? (object)$data['client'] : null;
-    $vehicle = isset($data['vehicle']) ? (object)$data['vehicle'] : null;
-    $rental = isset($data['rental']) ? (object)$data['rental'] : null;
-    $additional_driver = isset($data['additional_driver']) ? (object)$data['additional_driver'] : null;
-    $vehicle_change = isset($data['vehicle_change']) ? (object)$data['vehicle_change'] : null;
-    $payment_method = isset($data['payment_method']) ? $data['payment_method'] : 'cash';
+    dd($client);
 
-    $contract = new \stdClass();
-    $contract->number = 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
-    $contract->dossier_number = 'D' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+    $vehicle = (object)array_merge([
+        'brand' => '',
+        'start_km' => '',
+        'plate_number' => '',
+        'fuel_type' => ''
+    ], $data['vehicle'] ?? []);
+
+    $rental = (object)array_merge([
+        'start_date' => '',
+        'end_date' => '',
+        'start_time' => '',
+        'end_time' => '',
+        'start_location' => '',
+        'end_location' => '',
+        'duration' => '',
+        'daily_rate' => '',
+        'total_amount' => '',
+        'remaining_amount' => '',
+        'advance_payment' => '',
+        'remarks' => '',
+        'franchise' => ''
+    ], $data['rental'] ?? []);
+
+    $additional_driver = (object)($data['additional_driver'] ?? []);
+    $vehicle_change = (object)($data['vehicle_change'] ?? []);
+    $payment_method = $data['payment_method'] ?? 'cash';
+
+
+    // Generate contract numbers
+    $contract = (object)[
+        'number' => 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT),
+        'dossier_number' => 'D' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT)
+    ];
 
     $pdf = app('dompdf.wrapper');
+    
+    // Configure PDF settings
+    $pdf->setPaper('A4', 'portrait');
+    $pdf->setOptions([
+        'defaultFont' => 'Arial',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => true,
+        'isPhpEnabled' => true,
+        'dpi' => 96
+    ]);
 
-  //  dd($client, $vehicle, $rental, $additional_driver, $vehicle_change, $payment_method, $contract);
+    // Use absolute paths for assets
+    $logoPath = public_path('images/jeunesse-car-logo.png');
+    if (!file_exists($logoPath)) {
+        $logoPath = 'https://via.placeholder.com/150x50?text=Logo+Missing';
+    }
 
+    $hideButton = true;
 
-  $pdf = app('dompdf.wrapper');
-  $pdf->setPaper('A4', 'portrait'); // لتحديد حجم الورقة (A4 أو غيره)
-  //$pdf->loadHTML($htmlContent);
-  $pdf->set_option('isHtml5ParserEnabled', true);  // لتفعيل HTML5 parser
-  $pdf->set_option('isPhpEnabled', true);  // لتفعيل PHP في الـ PDF (مثل if statements داخل HTML)
-  
-
-
-    $pdf->loadView('contract.view', compact(
+    $html = view('contract.view', compact(
         'client', 
         'vehicle', 
         'rental', 
         'additional_driver', 
         'vehicle_change', 
         'payment_method',
-        'contract'
-    ));
+        'contract',
+        'logoPath',
+        'hideButton'         
+    ))->render();
 
-    return response($pdf->output(), 200, [
-        'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'attachment; filename="contract-' . $contract->number . '.pdf"',
-    ]);
+    $pdf->loadHtml($html);
     
-
-    //return $pdf->download('contract-' . $contract->number . '.pdf');
+    return $pdf->stream('contract-' . $contract->number . '.pdf');
 }
 
     
