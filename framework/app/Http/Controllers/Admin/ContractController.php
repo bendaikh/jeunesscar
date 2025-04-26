@@ -85,44 +85,62 @@ class ContractController extends Controller
             'contract'
         ));
     }
-    public function generatePDF(Request $request)
-    {
-        $data = session('contract_data') ?: $request->all();
-        
-        // Extract data for PDF
-        $client = isset($data['client']) ? (object)$data['client'] : null;
-        $vehicle = isset($data['vehicle']) ? (object)$data['vehicle'] : null;
-        $rental = isset($data['rental']) ? (object)$data['rental'] : null;
-        $additional_driver = isset($data['additional_driver']) ? (object)$data['additional_driver'] : null;
-        $vehicle_change = isset($data['vehicle_change']) ? (object)$data['vehicle_change'] : null;
-        $payment_method = isset($data['payment_method']) ? $data['payment_method'] : 'cash';
+
+
+    public function generatePDF()
+{
+    // ✅ تأكد أن مسار public مضبوط
+    app()->instance('path.public', base_path('public'));
+
+    $data = session('contract_data'); // نحصل على البيانات من السيشن
+
+    // if (!$data) {
+    //     return redirect()->route('contract')->with('error', 'لا توجد بيانات لتوليد العقد.');
+    // }
+
+    // تجهيز البيانات
+    $client = isset($data['client']) ? (object)$data['client'] : null;
+    $vehicle = isset($data['vehicle']) ? (object)$data['vehicle'] : null;
+    $rental = isset($data['rental']) ? (object)$data['rental'] : null;
+    $additional_driver = isset($data['additional_driver']) ? (object)$data['additional_driver'] : null;
+    $vehicle_change = isset($data['vehicle_change']) ? (object)$data['vehicle_change'] : null;
+    $payment_method = isset($data['payment_method']) ? $data['payment_method'] : 'cash';
+
+    $contract = new \stdClass();
+    $contract->number = 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+    $contract->dossier_number = 'D' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+    $pdf = app('dompdf.wrapper');
+
+  //  dd($client, $vehicle, $rental, $additional_driver, $vehicle_change, $payment_method, $contract);
+
+
+  $pdf = app('dompdf.wrapper');
+  $pdf->setPaper('A4', 'portrait'); // لتحديد حجم الورقة (A4 أو غيره)
+  //$pdf->loadHTML($htmlContent);
+  $pdf->set_option('isHtml5ParserEnabled', true);  // لتفعيل HTML5 parser
+  $pdf->set_option('isPhpEnabled', true);  // لتفعيل PHP في الـ PDF (مثل if statements داخل HTML)
+  
+
+
+    $pdf->loadView('contract.view', compact(
+        'client', 
+        'vehicle', 
+        'rental', 
+        'additional_driver', 
+        'vehicle_change', 
+        'payment_method',
+        'contract'
+    ));
+
+    return response($pdf->output(), 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'attachment; filename="contract-' . $contract->number . '.pdf"',
+    ]);
     
-        // Create a contract number
-        $contract = new \stdClass();
-        $contract->number = 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
-        $contract->dossier_number = 'D' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
-    
-        // 📝 توليد الـ HTML من View Laravel
-        $html = view('contract.view', compact(
-            'client', 
-            'vehicle', 
-            'rental', 
-            'additional_driver', 
-            'vehicle_change', 
-            'payment_method',
-            'contract'
-        ))->render();
-    
-        // 🖨️ توليد PDF باستخدام Dompdf مباشرة
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-    
-        // 📦 إرجاع الملف كـ response
-        return response($dompdf->output(), 200)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="contract-' . $contract->number . '.pdf"');
-    }
+
+    //return $pdf->download('contract-' . $contract->number . '.pdf');
+}
+
     
 }

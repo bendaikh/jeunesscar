@@ -3,7 +3,7 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'fb432d9a71bda0828d7e669ca27b9b9e00638691',
+        'reference' => '2948285a3028acc280fa2d45a0d2716fa6573e90',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -625,7 +625,7 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'fb432d9a71bda0828d7e669ca27b9b9e00638691',
+            'reference' => '2948285a3028acc280fa2d45a0d2716fa6573e90',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -1244,8 +1244,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0|2.0|3.0',
-                1 => '3.0.0',
+                0 => '3.0.0',
+                1 => '1.0|2.0|3.0',
             ),
         ),
         'psr/simple-cache' => array(
@@ -1603,9 +1603,9 @@
             'dev_requirement' => false,
         ),
         'spomky-labs/pki-framework' => array(
-            'pretty_version' => '1.2.2',
-            'version' => '1.2.2.0',
-            'reference' => '5ac374c3e295c8b917208ff41b4d30f76668478c',
+            'pretty_version' => '1.2.3',
+            'version' => '1.2.3.0',
+            'reference' => '5ff1dcc21e961b60149a80e77f744fc047800b31',
             'type' => 'library',
             'install_path' => __DIR__ . '/../spomky-labs/pki-framework',
             'aliases' => array(),

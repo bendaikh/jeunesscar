@@ -529,13 +529,13 @@ class ComposerStaticInit4dc487e6e6d645aa55363354b83fe0af
         ),
         'Spatie\\LaravelIgnition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
-            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
+            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
+            1 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
         ),
         'Spatie\\Ignition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/ignition/src',
-            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
+            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
+            1 => __DIR__ . '/..' . '/spatie/ignition/src',
         ),
         'Spatie\\FlareClient\\' => 
         array (
@@ -1081,6 +1081,7 @@ class ComposerStaticInit4dc487e6e6d645aa55363354b83fe0af
         'App\\Http\\Controllers\\Admin\\BookingsController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/BookingsController.php',
         'App\\Http\\Controllers\\Admin\\CompanyServicesController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/CompanyServicesController.php',
         'App\\Http\\Controllers\\Admin\\ContactUs' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/ContactUs.php',
+        'App\\Http\\Controllers\\Admin\\ContractController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/ContractController.php',
         'App\\Http\\Controllers\\Admin\\CustomersController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/CustomersController.php',
         'App\\Http\\Controllers\\Admin\\DriversController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/DriversController.php',
         'App\\Http\\Controllers\\Admin\\ExpenseCategories' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/ExpenseCategories.php',

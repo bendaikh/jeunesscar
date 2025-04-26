@@ -24,6 +24,7 @@ return array(
     'App\\Http\\Controllers\\Admin\\BookingsController' => $baseDir . '/app/Http/Controllers/Admin/BookingsController.php',
     'App\\Http\\Controllers\\Admin\\CompanyServicesController' => $baseDir . '/app/Http/Controllers/Admin/CompanyServicesController.php',
     'App\\Http\\Controllers\\Admin\\ContactUs' => $baseDir . '/app/Http/Controllers/Admin/ContactUs.php',
+    'App\\Http\\Controllers\\Admin\\ContractController' => $baseDir . '/app/Http/Controllers/Admin/ContractController.php',
     'App\\Http\\Controllers\\Admin\\CustomersController' => $baseDir . '/app/Http/Controllers/Admin/CustomersController.php',
     'App\\Http\\Controllers\\Admin\\DriversController' => $baseDir . '/app/Http/Controllers/Admin/DriversController.php',
     'App\\Http\\Controllers\\Admin\\ExpenseCategories' => $baseDir . '/app/Http/Controllers/Admin/ExpenseCategories.php',
