@@ -64,6 +64,10 @@ class ContractController extends Controller
     {
          $data = session("contracts", []);
 
+         if (!$data) {
+            return redirect()->route('contract')->with('error', 'Aucune donnée de contrat disponible.');
+        }
+
         
         // Extract data for view
         $client = isset($data['client']) ? (object)$data['client'] : null;
@@ -87,7 +91,7 @@ class ContractController extends Controller
         $hideButton = false;
 
         
-        return view('contract.view', compact(
+        return view('contract.test', compact(
             'client', 
             'vehicle', 
             'rental', 
@@ -101,99 +105,175 @@ class ContractController extends Controller
     }
 
 
-  public function generatePDF()
-{
-    $data = session("contracts");
+//   public function generatePDF()
+// {
+//     $data = session("contracts");
 
 
-    // Ensure objects exist even with empty data
-     $client = (object)array_merge([
-        'last_name' => '',
-        'first_name' => '',
-        'address' => '',
-        'id_number' => '',
-        'id_expiry_date' => '',
-        'license_number' => '',
-        'license_issue_date' => '',
-        'passport_number' => '',
-        'passport_issue_date' => '',
-        'phone' => '',
-        'mobile' => ''
-    ], $data['client'] ?? []);
+//     // Ensure objects exist even with empty data
+//      $client = (object)array_merge([
+//         'last_name' => '',
+//         'first_name' => '',
+//         'address' => '',
+//         'id_number' => '',
+//         'id_expiry_date' => '',
+//         'license_number' => '',
+//         'license_issue_date' => '',
+//         'passport_number' => '',
+//         'passport_issue_date' => '',
+//         'phone' => '',
+//         'mobile' => ''
+//     ], $data['client'] ?? []);
 
-    dd($client);
-
-
-    $vehicle = (object)array_merge([
-        'brand' => '',
-        'start_km' => '',
-        'plate_number' => '',
-        'fuel_type' => ''
-    ], $data['vehicle'] ?? []);
-
-    $rental = (object)array_merge([
-        'start_date' => '',
-        'end_date' => '',
-        'start_time' => '',
-        'end_time' => '',
-        'start_location' => '',
-        'end_location' => '',
-        'duration' => '',
-        'daily_rate' => '',
-        'total_amount' => '',
-        'remaining_amount' => '',
-        'advance_payment' => '',
-        'remarks' => '',
-        'franchise' => ''
-    ], $data['rental'] ?? []);
-
-    $additional_driver = (object)($data['additional_driver'] ?? []);
-    $vehicle_change = (object)($data['vehicle_change'] ?? []);
-    $payment_method = $data['payment_method'] ?? 'cash';
+//     //dd($client);
 
 
-    // Generate contract numbers
-    $contract = (object)[
-        'number' => 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT),
-        'dossier_number' => 'D' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT)
-    ];
+//     $vehicle = (object)array_merge([
+//         'brand' => '',
+//         'start_km' => '',
+//         'plate_number' => '',
+//         'fuel_type' => ''
+//     ], $data['vehicle'] ?? []);
 
-    $pdf = app('dompdf.wrapper');
+//     $rental = (object)array_merge([
+//         'start_date' => '',
+//         'end_date' => '',
+//         'start_time' => '',
+//         'end_time' => '',
+//         'start_location' => '',
+//         'end_location' => '',
+//         'duration' => '',
+//         'daily_rate' => '',
+//         'total_amount' => '',
+//         'remaining_amount' => '',
+//         'advance_payment' => '',
+//         'remarks' => '',
+//         'franchise' => ''
+//     ], $data['rental'] ?? []);
+
+//     $additional_driver = (object)($data['additional_driver'] ?? []);
+//     $vehicle_change = (object)($data['vehicle_change'] ?? []);
+//     $payment_method = $data['payment_method'] ?? 'cash';
+
+
+//     // Generate contract numbers
+//     $contract = (object)[
+//         'number' => 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT),
+//         'dossier_number' => 'D' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT)
+//     ];
+
+//     $pdf = app('dompdf.wrapper');
     
-    // Configure PDF settings
+//     // Configure PDF settings
+//     $pdf->setPaper('A4', 'portrait');
+//     $pdf->setOptions([
+//         'defaultFont' => 'Arial',
+//         'isHtml5ParserEnabled' => true,
+//         'isRemoteEnabled' => true,
+//         'isPhpEnabled' => true,
+//         'dpi' => 96
+//     ]);
+
+//     // Use absolute paths for assets
+//     $logoPath = public_path('images/jeunesse-car-logo.png');
+//     if (!file_exists($logoPath)) {
+//         $logoPath = 'https://via.placeholder.com/150x50?text=Logo+Missing';
+//     }
+
+//     $hideButton = true;
+
+//     $html = view('contract.view', compact(
+//         'client', 
+//         'vehicle', 
+//         'rental', 
+//         'additional_driver', 
+//         'vehicle_change', 
+//         'payment_method',
+//         'contract',
+//         'logoPath',
+//         'hideButton'         
+//     ))->render();
+
+//     $pdf->loadHtml($html);
+    
+//     return $pdf->stream('contract-' . $contract->number . '.pdf');
+// }
+
+    
+
+
+
+public function generatePDF()
+{
+    // Récupérer les données du contrat depuis la session
+    $data = session('contract_data');
+    
+    // if (!$data) {
+    //     return redirect()->route('contract')->with('error', 'Aucune donnée de contrat disponible.');
+    // }
+    
+    // Préparer les données pour le PDF avec des valeurs par défaut pour éviter les erreurs
+    $client = (object)array_merge([
+        'last_name' => '', 'first_name' => '', 'address' => '', 'id_number' => '',
+        'id_expiry_date' => '', 'license_number' => '', 'license_issue_date' => '',
+        'passport_number' => '', 'passport_issue_date' => '', 'phone' => '', 'mobile' => ''
+    ], isset($data['client']) ? $data['client'] : []);
+    
+    $vehicle = (object)array_merge([
+        'brand' => '', 'start_km' => '', 'plate_number' => '', 'fuel_type' => ''
+    ], isset($data['vehicle']) ? $data['vehicle'] : []);
+    
+    $rental = (object)array_merge([
+        'start_date' => '', 'end_date' => '', 'start_time' => '', 'end_time' => '',
+        'start_location' => '', 'end_location' => '', 'duration' => '', 'daily_rate' => '',
+        'total_amount' => '', 'remaining_amount' => '', 'advance_payment' => '',
+        'remarks' => '', 'franchise' => ''
+    ], isset($data['rental']) ? $data['rental'] : []);
+    
+    $additional_driver = isset($data['additional_driver']) ? (object)$data['additional_driver'] : (object)[];
+    $vehicle_change = isset($data['vehicle_change']) ? (object)$data['vehicle_change'] : (object)[];
+    $payment_method = isset($data['payment_method']) ? $data['payment_method'] : 'cash';
+    
+    // Générer un numéro de contrat unique
+    $contract = new \stdClass();
+    $contract->number = 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+    $contract->dossier_number = 'D' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+    
+    // Configurer DomPDF avec des options avancées
+    $pdf = app('dompdf.wrapper');
     $pdf->setPaper('A4', 'portrait');
     $pdf->setOptions([
-        'defaultFont' => 'Arial',
+        'defaultFont' => 'sans-serif',
         'isHtml5ParserEnabled' => true,
         'isRemoteEnabled' => true,
         'isPhpEnabled' => true,
-        'dpi' => 96
+        'debugCss' => false,
+        'dpi' => 96,
+        'defaultMediaType' => 'screen',
+        'isFontSubsettingEnabled' => true
     ]);
-
-    // Use absolute paths for assets
-    $logoPath = public_path('images/jeunesse-car-logo.png');
-    if (!file_exists($logoPath)) {
-        $logoPath = 'https://via.placeholder.com/150x50?text=Logo+Missing';
-    }
-
+    
+    // Indiquer à la vue que nous sommes en mode PDF
+    $isPdfMode = true;
     $hideButton = true;
-
-    $html = view('contract.view', compact(
-        'client', 
-        'vehicle', 
-        'rental', 
-        'additional_driver', 
-        'vehicle_change', 
-        'payment_method',
-        'contract',
-        'logoPath',
-        'hideButton'         
+    
+    // Charger la vue avec les données
+    $html = view('contract.test', compact(
+        'client', 'vehicle', 'rental', 'additional_driver',
+        'vehicle_change', 'payment_method', 'contract',
+        'isPdfMode', 'hideButton'
     ))->render();
-
-    $pdf->loadHtml($html);
     
+    // Charger le HTML dans DomPDF
+    $pdf->loadHTML($html);
+    
+    // Générer et retourner le PDF
     return $pdf->stream('contract-' . $contract->number . '.pdf');
-}
+  // return $pdf->download('contract-' . $contract->number . '.pdf');
 
-    
+
+
+    }
+   
+
 }

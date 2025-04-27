@@ -147,8 +147,8 @@
         }
         .field-label {
             font-weight: bold;
-            margin-right: 5px;
-            min-width: 100px;
+            margin-right: 0px;
+            min-width: 10px;
         }
         .field-value {
             flex: 1;
@@ -301,7 +301,7 @@
         <!-- Header with Logo -->
         <div class="header">
             <div class="logo-container">
-                <img src="{{ asset('images/jeunesse-car-logo.png') }}" alt="Jeunesse Car" class="logo">
+                <img src="{{ asset('/assets/images/logo.png') }}" alt="Jeunesse Car" class="logo">
                 <div class="logo-text">Location de voitures</div>
             </div>
             
@@ -445,9 +445,9 @@
                         <div class="field-row">
                             <div class="field-label">à :</div>
                             <div class="field-value">{{ $rental->daily_rate ?? '' }}</div>
-                            <div class="field-label" style="margin-left: 10px;">x</div>
+                            <div class="field-label" style="margin-left: 10px;">x :</div>
                             <div class="field-value">{{ $rental->duration ?? '' }}</div>
-                            <div class="field-label" style="margin-left: 10px;">jours =</div>
+                            <div class="field-label" style="margin-left: 10px;">jours :=</div>
                             <div class="field-value">{{ $rental->total_amount ?? '' }} DH</div>
                         </div>
                         <div class="field-row">
@@ -457,9 +457,9 @@
                             <div class="field-value">{{ $rental->advance_payment ?? '' }}</div>
                         </div>
 
-                        <div style="margin-top: 10px;">
+                        <div style="margin-top: 1px;">
                             <div class="field-label">REMARQUES :</div>
-                            <div class="field-value" style="height: 20px;">{{ $rental->remarks ?? '' }}</div>
+                            <div class="field-value" style="height: 10px;">{{ $rental->remarks ?? '' }}</div>
                         </div>
 
                         <div style="margin-top: 10px; font-weight: bold; text-align: center;">
