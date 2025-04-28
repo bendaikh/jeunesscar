@@ -107,6 +107,8 @@ class ContractController extends Controller
     public function generatePDF()
     {
         $data = session("contracts");
+        $signature = $data['signature'] ?? null;
+
     
         // Prepare data with default values
         $client = (object)array_merge([
@@ -199,7 +201,7 @@ class ContractController extends Controller
         
     
         // Handle logo path
-        $logoPath = public_path('/assets/images/jeunesse-car-logo.png');
+        $logoPath = public_path('/assets/images/logo.png');
         if (!file_exists($logoPath)) {
             $logoPath = null;
         }
@@ -213,7 +215,9 @@ class ContractController extends Controller
             'payment_method' => $payment_method,
             'contract' => $contract,
             'logoPath' => $logoPath,
-            'hideButton' => true
+            'hideButton' => true,
+            'signature' => $signature,
+
         ])->render();
     
         // Load HTML with precise settings
@@ -231,6 +235,22 @@ class ContractController extends Controller
     
         return $pdf->stream('contract-' . $contract->number . '.pdf');
     }
+
+
+
+    public function saveSignature(Request $request)
+    {
+        $request->validate([
+            'signature' => 'required|string',
+        ]);
+        
+        echo $request;
+        session()->put('contracts.signature', $request->input('signature'));
+    
+        return response()->json(['message' => 'Signature saved successfully.']);
+    }
+    
+
 
 // public function generatePDF()
 // {

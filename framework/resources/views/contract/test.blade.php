@@ -8,115 +8,126 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-
-          
+            font-family: 'DejaVu Sans', Arial, sans-serif;
         }
 
         @page {
-    margin: 10mm 15mm;
-}
+            margin: 10mm 15mm;
+        }
         
         body {
-            font-family: DejaVu Sans, sans-serif;
             font-size: 10px;
             line-height: 1.4;
-            color: #000;
+            color: #333;
             width: 100%;
             max-width: 100%;
             margin: 5mm auto;
-            /* padding: 10mm; */
-       
-         
-          padding-right:5mm ;
-          padding-left: 5mm;
-
-        
+            padding-right:5mm ;
+            padding-left: 5mm;
+            background-color: #fff;
         }
         
         table {
             width: 100%;
-           
-           padding-right: 10mm;
             border-collapse: collapse;
             margin-bottom: 10px;
+            padding-right: 10mm;
         }
         
         .header-table {
             margin-bottom: 15px;
+            border-bottom: 2px solid #4a7ebb;
         }
         
         .main-table {
             border: 2px solid #4a7ebb;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .main-table td {
             border: 1px solid #4a7ebb;
-            padding: 5px;
+            padding: 8px;
             vertical-align: top;
         }
         
         .section-title {
-            background-color: #e6eef7;
+            background-color: #4a7ebb;
+            color: white;
             font-weight: bold;
             text-align: center;
-            padding: 5px;
+            padding: 8px;
+            font-size: 11px;
+            letter-spacing: 0.5px;
         }
         
         .field-row {
             margin-bottom: 8px;
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
         }
         
         .field-label {
             font-weight: bold;
-            display: inline-block;
             min-width: 80px;
+            color: #2a5885;
         }
         
         .field-value {
-            border-bottom: 1px dotted #000;
-            display: inline-block;
+            border-bottom: 1px dotted #666;
             min-width: 120px;
+            flex-grow: 1;
+            padding: 0 5px 2px;
+            margin-left: 5px;
         }
         
         .footer {
-            background-color: #0000CC;
+            background-color: #2a5885;
             color: white;
             text-align: center;
-            padding: 10px;
-            margin-top: 15px;
+            padding: 0px;
+            margin-top: 0px;
             font-size: 9px;
+            border-radius: 0px;
         }
         
         .page-break {
-            page-break-before: always;
-            padding-top: 20mm;
+             page-break-before: always;
+             padding-right: -10px;
+           /* padding-top: 5mm; */
+           padding-right: 10px;
         }
         
         .damage-box {
-            border: 1px solid #000;
-            padding: 5px;
+            border: 1px solid #4a7ebb;
+            padding: 4px;
             width: 180px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
         }
         
         .inner-table {
             width: 100%;
-            margin: 10px 0;
+            margin: 12px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .inner-table th, .inner-table td {
             border: 1px solid #4a7ebb;
-            padding: 5px;
+            padding: 6px;
             text-align: center;
         }
         
         .inner-table th {
             background-color: #e6eef7;
+            font-weight: bold;
         }
         
         .checkbox-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 5px;
+            display: flex !important;
+            align-content: flex-end;
+            gap: 15px;
+            margin-top: 8px;
         }
         
         .checkbox-item {
@@ -125,16 +136,17 @@
         }
         
         .checkbox {
-            width: 12px;
-            height: 12px;
-            border: 1px solid #000;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #4a7ebb;
             margin-right: 5px;
+            border-radius: 2px;
         }
         
         .signature-section {
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
+            margin-top: 40px;
         }
         
         .signature-box {
@@ -143,17 +155,23 @@
         }
         
         .signature-line {
-            border-top: 1px solid #000;
-            padding-top: 5px;
+            border-top: 1px solid #4a7ebb;
+            padding-top: 8px;
+            margin-top: 10px;
+            font-weight: bold;
         }
         
         .terms-title {
             text-align: center;
-            font-size: 10pt;
-            margin: 15px 0;
+            font-size: 11pt;
+            /* margin: 20px 0; */
+            color: #2a5885;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .terms-content {
+            padding-right: 25px;
             text-align: justify;
             font-size: 7pt;
             line-height: 1.4;
@@ -161,43 +179,76 @@
         
         .article-title {
             font-weight: bold;
-            margin: 15px 0 5px 0;
+            margin: 5px 0 4px 0;
+            color: #2a5885;
+            border-bottom: 1px solid #e6eef7;
+            padding-bottom: 2px;
         }
         
         .terms-signature {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 30px;
+            margin-top: 10px;
         }
         
         .terms-signature td {
-            border: 1px solid #000;
-            padding: 10px;
-            height: 60px;
+            border: 1px solid #4a7ebb;
+            padding: 5px;
+            height: 70px;
             vertical-align: bottom;
             text-align: center;
+            background-color: #f8f9fa;
+        }
+        
+        h1 {
+            color: #2a5885;
+            letter-spacing: 0.5px;
+        }
+        
+        .highlight-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4a7ebb;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        
+        .logo-container {
+            padding: 5px;
+            border: 1px solid #e6eef7;
+            border-radius: 4px;
+            background-color: white;
+        }
+        
+        .note-box {
+            font-style: italic;
+            background-color: #fff8e1;
+            padding: 8px;
+            border-left: 3px solid #ffc107;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
     <table class="header-table">
         <tr>
-            <td style="width: 30%; text-align: center;">
-                <img src="{{ $logoPath }}" style="max-height: 50px; margin-bottom: 5px;">
-                <div>Location de voitures</div>
+            <td style="width: 30%; text-align: center; vertical-align: middle;">
+                <div class="logo-container">
+                    <img src="{{ asset('assets/images/logo.png') }}" style="max-height: 50px; margin-bottom: 5px;">
+                    <div style="font-weight: bold; color: #2a5885;">Location de voitures</div>
+                </div>
             </td>
-            <td style="text-align: center;">
-                <h1 style="font-size: 15px; margin-bottom: 5px;">CONTRAT DE LOCATION</h1>
-                <div>Contrat N°: <strong>{{ $contract->number }}</strong></div>
-                <div>N° Dossier: <strong>{{ $contract->dossier_number }}</strong></div>
+            <td style="text-align: center; vertical-align: middle;">
+                <h1 style="font-size: 16px; margin-bottom: 8px; text-transform: uppercase;">CONTRAT DE LOCATION</h1>
+                <div style="margin-bottom: 3px;">Contrat N°: <strong style="color: #2a5885;">{{ $contract->number }}</strong></div>
+                <div>N° Dossier: <strong style="color: #2a5885;">{{ $contract->dossier_number }}</strong></div>
             </td>
-            <td style="width: 30%;">
+            <td style="width: 30%; vertical-align: top;">
                 <div class="damage-box">
-                    <div style="text-align: center; font-weight: bold;">DOMMAGES IDENTIFIÉS ET ACCEPTÉS</div>
+                    <div style="text-align: center; font-weight: bold; margin-bottom: 5px; color: #d32f2f;">DOMMAGES IDENTIFIÉS ET ACCEPTÉS</div>
                     <div>/// Éraflure</div>
                     <div>X Bosse</div>
                     <div>O Marque</div>
-                    <table style="width: 100%; margin-top: 5px;">
+                    <table style="width: 100%; margin-top: 8px;">
                         <tr>
                             <td>Nombre</td>
                             <td style="text-align: right;">Paraphe Client</td>
@@ -212,7 +263,7 @@
         <tr>
             <td style="width: 50%;">
                 <div class="section-title">CLIENT</div>
-                <div style="padding: 10px;">
+                <div style="padding: 12px;">
                     <div class="field-row">
                         <span class="field-label">Nom :</span>
                         <span class="field-value">{{ $client->last_name }}</span>
@@ -261,17 +312,17 @@
             </td>
             <td style="width: 50%;">
                 <div class="section-title">VOITURE</div>
-                <div style="padding: 10px;">
+                <div style="padding: 12px;">
                     <div class="field-row">
                         <span class="field-label">Marque :</span>
                         <span class="field-value">{{ $vehicle->brand }}</span>
-                        <span class="field-label" style="margin-left: 10px;">Km Départ:</span>
+                        <span class="field-label" style="margin-left: 15px;">Km Départ:</span>
                         <span class="field-value">{{ $vehicle->start_km }}</span>
                     </div>
                     <div class="field-row">
                         <span class="field-label">Matricule :</span>
                         <span class="field-value">{{ $vehicle->plate_number }}</span>
-                        <span class="field-label" style="margin-left: 10px;">Carburant :</span>
+                        <span class="field-label" style="margin-left: 15px;">Carburant :</span>
                         <span class="field-value">{{ $vehicle->fuel_type }}</span>
                     </div>
 
@@ -309,24 +360,24 @@
                     <div class="field-row">
                         <span class="field-label">à :</span>
                         <span class="field-value">{{ $rental->daily_rate }}</span>
-                        <span class="field-label" style="margin-left: 10px;">x :</span>
+                        <span class="field-label" style="margin-left: 15px;">x :</span>
                         <span class="field-value">{{ $rental->duration }}</span>
-                        <span class="field-label" style="margin-left: 10px;">jours :=</span>
+                        <span class="field-label" style="margin-left: 15px;">jours :=</span>
                         <span class="field-value">{{ $rental->total_amount }} DH</span>
                     </div>
                     <div class="field-row">
                         <span class="field-label">Reste :</span>
                         <span class="field-value">{{ $rental->remaining_amount }}</span>
-                        <span class="field-label" style="margin-left: 10px;">Avance :</span>
+                        <span class="field-label" style="margin-left: 15px;">Avance :</span>
                         <span class="field-value">{{ $rental->advance_payment }}</span>
                     </div>
 
-                    <div style="margin-top: 10px;">
+                    <div style="margin-top: 12px;">
                         <div class="field-label">REMARQUES :</div>
-                        <div style="border-bottom: 1px dotted #000; min-height: 20px;">{{ $rental->remarks }}</div>
+                        <div style="border: 1px solid #e6eef7; min-height: 40px; padding: 5px; background-color: #f8f9fa;">{{ $rental->remarks }}</div>
                     </div>
 
-                    <div style="margin-top: 15px; font-weight: bold; text-align: center;">
+                    <div style="margin-top: 15px; font-weight: bold; text-align: center; background-color: #e6eef7; padding: 8px; border-radius: 4px;">
                         FRANCHISE {{ $rental->franchise }} DH
                     </div>
                 </div>
@@ -335,7 +386,7 @@
         <tr>
             <td style="width: 50%;">
                 <div class="section-title">AUTRES CONDUCTEURS</div>
-                <div style="padding: 10px;">
+                <div style="padding: 12px;">
                     <div class="field-row">
                         <span class="field-label">Nom :</span>
                         <span class="field-value">{{ $additional_driver->last_name ?? '' }}</span>
@@ -369,38 +420,38 @@
                         <span class="field-value">{{ $additional_driver->mobile ?? '' }}</span>
                     </div>
 
-                    <div style="margin-top: 15px; font-style: italic; font-weight: bold; text-align: center; border-top: 1px solid #4a7ebb; padding-top: 5px;">
+                    <div class="note-box">
                         NB : Ce contrat n'est pas considéré comme facture
                     </div>
 
-                    <div style="margin-top: 10px; font-size: 11px;">
+                    <div class="highlight-box">
                         <p>J'ai lu et accepté les conditions stipulées ci-contre au verso de ce contrat.</p>
                         <p>Le client est seul responsable des violations de la loi sur la circulation routière.</p>
                     </div>
 
-                    <div class="signature-section">
+                    {{-- <div class="signature-section">
                         <div class="signature-box">
                             <div class="signature-line">Signature client</div>
                         </div>
                         <div class="signature-box">
                             <div class="signature-line">Signature 2ème Conducteur</div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </td>
             <td style="width: 50%;">
                 <div class="section-title">CHANGEMENT DE VÉHICULE</div>
-                <div style="padding: 10px;">
+                <div style="padding: 12px;">
                     <div class="field-row">
                         <span class="field-label">Marque :</span>
                         <span class="field-value">{{ $vehicle_change->brand ?? '' }}</span>
-                        <span class="field-label" style="margin-left: 10px;">Type :</span>
+                        <span class="field-label" style="margin-left: 15px;">Type :</span>
                         <span class="field-value">{{ $vehicle_change->type ?? '' }}</span>
                     </div>
                     <div class="field-row">
                         <span class="field-label">Matricule :</span>
                         <span class="field-value">{{ $vehicle_change->plate_number ?? '' }}</span>
-                        <span class="field-label" style="margin-left: 10px;">Carburant :</span>
+                        <span class="field-label" style="margin-left: 15px;">Carburant :</span>
                         <span class="field-value">{{ $vehicle_change->fuel_type ?? '' }}</span>
                     </div>
 
@@ -431,34 +482,38 @@
                         </tbody>
                     </table>
 
-                    <div style="margin-top: 15px;">
+                    <div style="margin-top: 5px;">
                         <div class="field-label">Mode de règlement :</div>
-                        <div class="checkbox-group">
-                            <div class="checkbox-item">
-                                <div class="checkbox" style="{{ $payment_method == 'cash' ? 'background-color: #000;' : '' }}"></div>
-                                <span>Espèces</span>
-                            </div>
-                            <div class="checkbox-item">
-                                <div class="checkbox" style="{{ $payment_method == 'check' ? 'background-color: #000;' : '' }}"></div>
-                                <span>Chèque</span>
-                            </div>
-                            <div class="checkbox-item">
-                                <div class="checkbox" style="{{ $payment_method == 'other' ? 'background-color: #000;' : '' }}"></div>
-                                <span>Autres</span>
-                            </div>
-                        </div>
+                        <table style="margin-top: 8px;">
+                            <tr>
+                                <td style="padding-right: 20px; display: flex; align-items: center;">
+                                    <div style="width: 14px; height: 14px; border: 2px solid #4a7ebb; border-radius: 2px; margin-right: 5px; {{ $payment_method == 'cash' ? 'background-color: #4a7ebb;' : '' }}"></div>
+                                    <span>Espèces</span>
+                                </td>
+                                <td style="padding-right: 20px; display: flex; align-items: center;">
+                                    <div style="width: 14px; height: 14px; border: 2px solid #4a7ebb; border-radius: 2px; margin-right: 5px; {{ $payment_method == 'check' ? 'background-color: #4a7ebb;' : '' }}"></div>
+                                    <span>Chèque</span>
+                                </td>
+                                <td style="padding-right: 20px; display: flex; align-items: center;">
+                                    <div style="width: 14px; height: 14px; border: 2px solid #4a7ebb; border-radius: 2px; margin-right: 5px; {{ $payment_method == 'other' ? 'background-color: #4a7ebb;' : '' }}"></div>
+                                    <span>Autres</span>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
+                    
+                    
 
-                    <div style="margin-top: 30px;">
+                    {{-- <div style="margin-top: 30px;">
                         <div class="field-label">Visa de la direction :</div>
-                        <div style="height: 50px;"></div>
-                    </div>
+                        <div style="height: 60px; border: 1px dashed #4a7ebb; background-color: #f8f9fa;"></div>
+                    </div> --}}
                 </div>
             </td>
         </tr>
     </table>
 
-    <div style="text-align: center; font-weight: bold; margin: 15px 0;">
+    <div style="text-align: center; font-weight: bold; margin: 15px 0; padding: 8px; background-color: #fff8e1; border-left: 4px solid #ffc107;">
         En cas de dépassement du kilométrage mentionné, vous allez payer 1.5 dhs pour chaque kilomètre additionnel.
     </div>
 
@@ -562,18 +617,82 @@
                 nombre des personnes transportées dans la voiture ne devra excéder celui indiqué sur la police d'assurance du véhicule sous
                 peine de voir la seule responsabilité du client engagé.
             </p>
-            
             <table class="terms-signature">
                 <tr>
                     <td>Signature et cachet</td>
-                    <td>Signature du client</td>
+                    <td>
+                        @if (!empty($signature))
+                        <div style="margin-top: 20px; text-align: center;">
+                            <img src="{{ $signature }}" style="width: 300px; height: auto; border: 1px solid #000;" alt="Signature du client">
+                        </div>
+                        @else
+                        <div style="margin-top: 20px; text-align: center;">
+                            <canvas id="signature-pad" style="border: 1px solid #000; width: 300px; height: 150px;"></canvas>
+                            <br>
+                            <button type="button" id="clear-signature">Effacer</button>
+                            <button type="button" id="save-signature">Enregistrer la signature</button>
+                        </div>
+                        @endif
+                        Signature du client
+                    </td>
                 </tr>
             </table>
-            
-            <div style="text-align: center; font-weight: bold; margin: 30px 0;">
+            <div style="text-align: center; font-weight: bold; margin: 30px 0; color: #4a7ebb;">
                 Nous vous remercions d'avance pour votre compréhension
-            </div>
+            </div> 
         </div>
     </div>
 </body>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    let canvas = document.getElementById('signature-pad');
+    let ctx = canvas.getContext('2d');
+    let drawing = false;
+
+    canvas.addEventListener('mousedown', () => drawing = true);
+    canvas.addEventListener('mouseup', () => {
+        drawing = false;
+        ctx.beginPath();
+    });
+    canvas.addEventListener('mousemove', draw);
+
+    function draw(e) {
+        if (!drawing) return;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000';
+
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+    }
+
+    document.getElementById('clear-signature').addEventListener('click', function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    document.getElementById('save-signature').addEventListener('click', function() {
+        let dataURL = canvas.toDataURL('image/png');
+        $.ajax({
+            url: '{{ route("save.signature") }}', // راح نجهز هذا الروت الآن
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                signature: dataURL
+            },
+            success: function(response) {
+                alert('Signature enregistrée avec succès!');
+            },
+            error: function(error) {
+                alert('Erreur lors de l\'enregistrement de la signature.');
+            }
+        });
+    });
+</script>
+
+
 </html>
