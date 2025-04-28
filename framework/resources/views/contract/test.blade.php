@@ -226,6 +226,33 @@
             border-left: 3px solid #ffc107;
             margin: 10px 0;
         }
+
+
+        .floating-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #4a7ebb;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        .floating-button:hover {
+            background-color: #3a6ea5;
+            transform: scale(1.1);
+        }
+        .floating-button svg {
+            width: 24px;
+            height: 24px;
+        }
     </style>
 </head>
 <body>
@@ -642,6 +669,21 @@
             </div> 
         </div>
     </div>
+
+
+    <a 
+    href="{{ route('contract.generatePDF') }}" 
+    class="floating-button" 
+    title="تحويل إلى PDF" 
+    id="generate_pdf_button"
+    @if($hideButton) style="display: none;" @endif
+>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+    </svg>
+</a>
+
+
 </body>
 
 
