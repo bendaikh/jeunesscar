@@ -133,47 +133,90 @@
 
 
                     
-                    <!-- Vehicle Information -->
-                    <div class="card mb-3">
-                        <div class="card-header bg-info text-white">
-                            <h4>@lang('fleet.vehicle_information')</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.brand') <span class="text-danger">*</span></label>
-                                        <input type="text" name="vehicle[brand]" class="form-control" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.plate_number') <span class="text-danger">*</span></label>
-                                        <input type="text" name="vehicle[plate_number]" class="form-control" required>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.start_km') <span class="text-danger">*</span></label>
-                                        <input type="number" name="vehicle[start_km]" class="form-control" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.fuel_type') <span class="text-danger">*</span></label>
-                                        <select name="vehicle[fuel_type]" class="form-control" required>
-                                            <option value="Essence">Essence</option>
-                                            <option value="Diesel">Diesel</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                   <!-- Vehicle Information -->
+<div class="card mb-3">
+    <div class="card-header bg-info text-white">
+        <h4>@lang('fleet.vehicle_information')</h4>
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            <label>@lang('fleet.select_vehicle')</label>
+            <select class="form-control" name="vehicle_id" id="existing_vehicle">
+                <option value="">-- @lang('fleet.select_vehicle') --</option>
+                @foreach($vehicles as $vehicle)
+                    <option value="{{ $vehicle->id }}" 
+                        data-brand="{{ $vehicle->make_name }}"
+                        data-plate="{{ $vehicle->license_plate }}"
+                        data-fuel="{{ $vehicle->fuel_type }}"
+                        data-km="{{ $vehicle->start_km ?? $vehicle->int_mileage }}">
+                        {{ $vehicle->make_name }} - {{ $vehicle->license_plate }}
+                    </option>
+                @endforeach
+                <option value="new">+ @lang('fleet.add_new_vehicle')</option>
+            </select>
+        </div>
+
+        <div id="new-vehicle-form" style="display: none;">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.brand') <span class="text-danger">*</span></label>
+                        <input type="text" name="vehicle[brand]" class="form-control" required>
                     </div>
-                    
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.plate_number') <span class="text-danger">*</span></label>
+                        <input type="text" name="vehicle[plate_number]" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.start_km') <span class="text-danger">*</span></label>
+                        <input type="number" name="vehicle[start_km]" class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.fuel_type') <span class="text-danger">*</span></label>
+                        <select name="vehicle[fuel_type]" class="form-control" required>
+                            <option value="">-- Select --</option>
+                            <option value="Essence">Essence</option>
+                            <option value="Diesel">Diesel</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.color')</label>
+                        <input type="text" name="vehicle[color]" class="form-control">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.year')</label>
+                        <input type="text" name="vehicle[year]" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.engine_type')</label>
+                        <input type="text" name="vehicle[engine_type]" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
                     <!-- Rental Information -->
                     <div class="card mb-3">
                         <div class="card-header bg-info text-white">
@@ -427,6 +470,33 @@
         $('.calculation').change(function() {
             calculateTotal();
         });
+
+
+
+          // في قسم JavaScript
+$('#existing_vehicle').change(function() {
+    if($(this).val() === 'new') {
+        $('#new-vehicle-form').show();
+        $('#existing_vehicle').prop('required', false);
+        // جعل حقول السيارة الجديدة مطلوبة
+        $('#new-vehicle-form input[required], #new-vehicle-form select[required]').prop('required', true);
+    } else {
+        $('#new-vehicle-form').hide();
+        $('#existing_vehicle').prop('required', true);
+        // إزالة الإلزام من حقول السيارة الجديدة
+        $('#new-vehicle-form input[required], #new-vehicle-form select[required]').prop('required', false);
+        
+        // تعبئة البيانات تلقائياً
+        var selected = $(this).find('option:selected');
+        if (selected.data('brand')) {
+            $('input[name="vehicle[brand]"]').val(selected.data('brand'));
+            $('input[name="vehicle[plate_number]"]').val(selected.data('plate'));
+            $('select[name="vehicle[fuel_type]"]').val(selected.data('fuel')).trigger('change');
+            $('input[name="vehicle[start_km]"]').val(selected.data('km'));
+        }
+    }
+});
+       
         
         function calculateDuration() {
             var startDate = new Date($('#startDate').val());

@@ -396,54 +396,51 @@ class VehiclesController extends Controller {
 
 	}
 
-	public function store(VehicleRequest $request) {
-		// dd($request->all());
-		$user_id = $request->get('user_id');
-		$vehicle = VehicleModel::create([
-			'make_name' => $request->get("make_name"),
-			'model_name' => $request->get("model_name"),
-			// 'type' => $request->get("type"),
-			'year' => $request->get("year"),
-			'engine_type' => $request->get("engine_type"),
-			'horse_power' => $request->get("horse_power"),
-			'color_name' => $request->get("color_name"),
-			'vin' => $request->get("vin"),
-			'license_plate' => $request->get("license_plate"),
-			'int_mileage' => $request->get("int_mileage"),
-			'group_id' => $request->get('group_id'),
-			'user_id' => $request->get('user_id'),
-			'lic_exp_date' => $request->get('lic_exp_date'),
-			'reg_exp_date' => $request->get('reg_exp_date'),
-			'in_service' => $request->get("in_service"),
-			'type_id' => $request->get('type_id'),
-			// 'vehicle_image' => $request->get('vehicle_image'),
-			'height' => $request->height,
-			'length' => $request->length,
-			'breadth' => $request->breadth,
-			'weight' => $request->weight,
+	public function store(VehicleRequest $request)
+{
+    $user_id = $request->get('user_id');
+    $vehicle = VehicleModel::create([
+        'make_name' => $request->get("make_name"),
+        'model_name' => $request->get("model_name"),
+        'year' => $request->get("year"),
+        'engine_type' => $request->get("engine_type"),
+        'horse_power' => $request->get("horse_power"),
+        'color_name' => $request->get("color_name"),
+        'vin' => $request->get("vin"),
+        'license_plate' => $request->get("license_plate"),
+        'int_mileage' => $request->get("int_mileage"),
+        'start_km' => $request->get("start_km", $request->get("int_mileage")), // استخدام start_km أو int_mileage كقيمة افتراضية
+        'fuel_type' => $request->get("fuel_type"),
+        'group_id' => $request->get('group_id'),
+        'user_id' => $request->get('user_id'),
+        'lic_exp_date' => $request->get('lic_exp_date'),
+        'reg_exp_date' => $request->get('reg_exp_date'),
+        'in_service' => $request->get("in_service"),
+        'type_id' => $request->get('type_id'),
+        'height' => $request->height,
+        'length' => $request->length,
+        'breadth' => $request->breadth,
+        'weight' => $request->weight,
+    ])->id;
 
-		])->id;
+    if ($request->file('vehicle_image') && $request->file('vehicle_image')->isValid()) {
+        $this->upload_file($request->file('vehicle_image'), "vehicle_image", $vehicle);
+    }
 
-		if ($request->file('vehicle_image') && $request->file('vehicle_image')->isValid()) {
-			$this->upload_file($request->file('vehicle_image'), "vehicle_image", $vehicle);
-		}
+    $meta = VehicleModel::find($vehicle);
+    $meta->setMeta([
+        'ins_number' => "",
+        'ins_exp_date' => "",
+        'documents' => "",
+        'traccar_device_id' => $request->traccar_device_id,
+        'traccar_vehicle_id' => $request->traccar_vehicle_id,
+    ]);
+    $meta->udf = serialize($request->get('udf'));
+    $meta->average = $request->average;
+    $meta->save();
 
-		$meta = VehicleModel::find($vehicle);
-		$meta->setMeta([
-			'ins_number' => "",
-			'ins_exp_date' => "",
-			'documents' => "",
-			'traccar_device_id' => $request->traccar_device_id,
-			'traccar_vehicle_id' => $request->traccar_vehicle_id,
-		]);
-		$meta->udf = serialize($request->get('udf'));
-		$meta->average = $request->average;
-		$meta->save();
-
-		$vehicle_id = $vehicle;
-
-		return redirect("admin/vehicles/" . $vehicle_id . "/edit?tab=vehicle");
-	}
+    return redirect("admin/vehicles/" . $vehicle . "/edit?tab=vehicle");
+}
 
 	public function store_insurance(InsuranceRequest $request) {
 		$vehicle = VehicleModel::find($request->get('vehicle_id'));

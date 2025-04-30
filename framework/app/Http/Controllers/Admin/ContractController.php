@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Model\Contract;
 use App\Model\User;
 use App\Model\UserClinet;
+use App\Model\VehicleModel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Dompdf;
 
@@ -32,8 +33,14 @@ class ContractController extends Controller
         ->get();
 
        // return $clientSelect;
+       $vehicles = VehicleModel::where('in_service', 1)
+       ->select('id', 'make_name', 'license_plate', 'fuel_type', 'start_km', 'int_mileage')
+       ->get();
+   
+   return view("contract.index", compact('clientSelect', 'vehicles'));
+   
 
-    return view("contract.index", compact('clientSelect'));
+    //return view("contract.index", compact('clientSelect'));
     }
     public function store(Request $request)
     {
@@ -115,7 +122,44 @@ class ContractController extends Controller
                     ->with('contract_data', $request->except('_token'));
             }
         }
-    
+        
+       // معالجة بيانات السيارة
+    if ($request->vehicle_id == 'new') {
+        // إنشاء سيارة جديدة مع كافة البيانات الضرورية
+        $vehicle = VehicleModel::create([
+            'make_name' => $request->vehicle['brand'],
+            'license_plate' => $request->vehicle['plate_number'],
+            'fuel_type' => $request->vehicle['fuel_type'],
+            'start_km' => $request->vehicle['start_km'],
+            'int_mileage' => $request->vehicle['start_km'],
+            'in_service' => 1,
+            // بيانات افتراضية إضافية
+            'model_name' => $request->vehicle['brand'], // يمكن تغييرها إذا كان لديك حقل model منفصل
+            'color_name' => 'Unknown',
+            'year' => date('Y'),
+            'engine_type' => 'Unknown',
+            'horse_power' => '0',
+            'vin' => 'TBD',
+            'group_id' => 1, // يمكن تغييرها حسب احتياجاتك
+            'type_id' => 1, // يمكن تغييرها حسب احتياجاتك
+            'lic_exp_date' => now()->addYear(),
+            'reg_exp_date' => now()->addYear()
+        ]);
+        
+        $vehicleId = $vehicle->id;
+    } else {
+        $vehicleId = $request->vehicle_id;
+        $vehicle = VehicleModel::findOrFail($vehicleId);
+        
+        // تحديث عدد الكيلومترات إذا تم تقديمه
+        if (isset($request->vehicle['start_km'])) {
+            $vehicle->update([
+                'start_km' => $request->vehicle['start_km'],
+                'int_mileage' => $request->vehicle['start_km']
+            ]);
+        }
+    }
+
         // إعداد بيانات العميل للعقد
         $data = $request->all();
         $data['client'] = [
@@ -131,6 +175,14 @@ class ContractController extends Controller
             'passport_number' => $client->userclient->passport_number,
             'passport_issue_date' => $client->userclient->passport_issue_date,
         ];
+
+         // إضافة بيانات السيارة إلى بيانات العقد
+    $data['vehicle'] = [
+        'brand' => $vehicle->make_name,
+        'plate_number' => $vehicle->license_plate,
+        'fuel_type' => $vehicle->fuel_type,
+        'start_km' => $vehicle->start_km ?? $vehicle->int_mileage
+    ];
         
         // حساب مدة الإيجار إذا لم يتم تقديمها
         if (empty($data['rental']['duration']) && !empty($data['rental']['start_date']) && !empty($data['rental']['end_date'])) {

@@ -109,6 +109,37 @@
             {!! Form::hidden('user_id',Auth::user()->id) !!}
             <div class="row card-body">
               <div class="col-md-6">
+
+
+
+
+
+                <div class="form-group">
+                  {!! Form::label('fuel_type', __('fleet.fuel_type'), ['class' => 'col-xs-5 control-label']) !!}
+                  <div class="col-xs-6">
+                      {!! Form::select('fuel_type', ['Essence' => __('fleet.essence'), 'Diesel' => __('fleet.diesel')], null, ['class' => 'form-control', 'required']) !!}
+                  </div>
+              </div>
+          
+              <div class="form-group">
+                  @if(Hyvikk::get('dis_format') == "km")
+                      {!! Form::label('start_km', __('fleet.start_km')."(".__('fleet.km').")", ['class' => 'col-xs-5 control-label']) !!}
+                  @else
+                      {!! Form::label('start_km', __('fleet.start_km')."(".__('fleet.miles').")", ['class' => 'col-xs-5 control-label']) !!}
+                  @endif
+                  <div class="col-xs-6">
+                      {!! Form::number('start_km', null, ['class' => 'form-control', 'required']) !!}
+                  </div>
+              </div>
+
+
+
+
+
+
+
+
+
                 <div class="form-group">
                   {!! Form::label('make_name', __('fleet.SelectVehicleMake'), ['class' => 'col-xs-5 control-label']) !!}
                   <a data-toggle="modal" data-target="#myModal"><i class="fa fa-info-circle fa-lg" aria-hidden="true"  style="color: #8639dd"></i></a>
