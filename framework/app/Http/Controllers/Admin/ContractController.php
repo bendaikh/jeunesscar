@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Contract;
@@ -27,10 +28,10 @@ class ContractController extends Controller
     {
         $clientSelect = User::with('userclient')
         ->where("user_type", "C")
-       // ->has('userclient')
+        ->has('userclient')
         ->get();
 
-        //return $clientSelect;
+       // return $clientSelect;
 
     return view("contract.index", compact('clientSelect'));
     }
@@ -55,7 +56,16 @@ class ContractController extends Controller
                 "api_token" => str_random(60),
             ]);
 
-          
+            
+            $user_data = User::find($user->id);
+            $user_data->user_id = Auth::user()->id;
+            $user_data->first_name = $request->client['first_name'];
+            $user_data->last_name = $request->client['last_name'];
+            $user_data->address = $request->client['address'];
+            $user_data->mobno = $request->client['phone'];
+            $user_data->gender = $request->get('gender');
+            $user_data->save();
+            $user_data->givePermissionTo(['Bookings add', 'Bookings edit', 'Bookings list', 'Bookings delete']);
             
             // إنشاء بيانات العميل الإضافية
             UserClinet::create([
@@ -70,6 +80,10 @@ class ContractController extends Controller
             ]);
             
             $clientId = $user->id;
+
+
+
+      
             
             // إنشاء كائن $client للعميل الجديد
             $client = (object)[
@@ -92,6 +106,8 @@ class ContractController extends Controller
             
             // التحقق من وجود بيانات العميل في user_clients
             $client = User::with('userclient')->find($clientId);
+
+            
             
             if (!$client || !$client->userclient) {
                 return redirect()->route('client.complete.form', $clientId)
@@ -339,7 +355,7 @@ class ContractController extends Controller
     public function showCompleteForm($id)
     {
         $client = User::findOrFail($id);
-        return view('client_complete', compact('client'));
+        return view('contract.client_complete', compact('client'));
     }
     
     public function completeClientInfo(Request $request, $id)

@@ -135,10 +135,10 @@ class CustomersController extends Controller {
 		$user->givePermissionTo(['Bookings add', 'Bookings edit', 'Bookings list', 'Bookings delete']);
 
 
-
+        if ($request->get('id_number')!=null&&!$request->get('id_expiry_date')!=null&&$request->get('license_issue_date')!=null&&$request->get('passport_issue_date')!=null){
         // بعد إنشاء المستخدم وحفظ بياناته:
 		UserClinet::create([
-			'user_clients_id' => $user->id,
+			'user_clients_id' => $id,
 			'id_number' => $request->get('id_number'),
 			'id_expiry_date' => $request->get('id_expiry_date'),
 			'license_number' => $request->get('license_number'),
@@ -147,6 +147,7 @@ class CustomersController extends Controller {
 			'passport_issue_date' => $request->get('passport_issue_date'),
 			'mobile' => $request->get('mobile'),
 		]);
+	}
 
 
 
