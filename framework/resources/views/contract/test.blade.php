@@ -694,6 +694,7 @@
     let ctx = canvas.getContext('2d');
     let drawing = false;
 
+    // Mouse Events
     canvas.addEventListener('mousedown', () => drawing = true);
     canvas.addEventListener('mouseup', () => {
         drawing = false;
@@ -701,16 +702,48 @@
     });
     canvas.addEventListener('mousemove', draw);
 
+    // Touch Events
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        drawing = true;
+        draw(e.touches[0]);
+    });
+
+    canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        drawing = false;
+        ctx.beginPath();
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        draw(e.touches[0]);
+    });
+
     function draw(e) {
         if (!drawing) return;
         ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         ctx.strokeStyle = '#000';
 
-        ctx.lineTo(e.offsetX, e.offsetY);
+        let rect = canvas.getBoundingClientRect();
+        let x, y;
+
+        // Differentiate between MouseEvent and TouchEvent
+        if (e.clientX && e.clientY) {
+            // For mouse
+            x = e.clientX - rect.left;
+            y = e.clientY - rect.top;
+        } else if (e.pageX && e.pageY) {
+            // For touch fallback
+            x = e.pageX - rect.left;
+            y = e.pageY - rect.top;
+        }
+
+        ctx.lineTo(x, y);
         ctx.stroke();
         ctx.beginPath();
-        ctx.moveTo(e.offsetX, e.offsetY);
+        ctx.moveTo(x, y);
     }
 
     document.getElementById('clear-signature').addEventListener('click', function() {
@@ -720,7 +753,7 @@
     document.getElementById('save-signature').addEventListener('click', function() {
         let dataURL = canvas.toDataURL('image/png');
         $.ajax({
-            url: '{{ route("save.signature") }}', // راح نجهز هذا الروت الآن
+            url: '{{ route("save.signature") }}', 
             method: 'POST',
             data: {
                 _token: '{{ csrf_token() }}',
@@ -728,6 +761,7 @@
             },
             success: function(response) {
                 alert('Signature enregistrée avec succès!');
+                location.reload(); // إذا أردت إعادة تحميل الصفحة لعرض الصورة مباشرة
             },
             error: function(error) {
                 alert('Erreur lors de l\'enregistrement de la signature.');
@@ -735,6 +769,7 @@
         });
     });
 </script>
+
 
 
 </html>
