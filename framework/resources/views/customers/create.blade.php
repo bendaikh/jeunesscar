@@ -83,6 +83,75 @@
             </div>
           </div>
         </div>
+
+
+
+
+
+         {{-- Optional user client data --}}
+<div class="col-md-12">
+  <hr>
+  <h4>@lang('fleet.optional_info')</h4>
+</div>
+
+<div class="col-md-6">
+  <div class="form-group">
+    {!! Form::label('id_number', 'ID Number') !!}
+    {!! Form::text('id_number', null, ['class' => 'form-control']) !!}
+  </div>
+</div>
+
+<div class="col-md-6">
+  <div class="form-group">
+    {!! Form::label('id_expiry_date', 'ID Expiry Date') !!}
+    {!! Form::date('id_expiry_date', null, ['class' => 'form-control']) !!}
+  </div>
+</div>
+
+<div class="col-md-6">
+  <div class="form-group">
+    {!! Form::label('license_number', 'License Number') !!}
+    {!! Form::text('license_number', null, ['class' => 'form-control']) !!}
+  </div>
+</div>
+
+<div class="col-md-6">
+  <div class="form-group">
+    {!! Form::label('license_issue_date', 'License Issue Date') !!}
+    {!! Form::date('license_issue_date', null, ['class' => 'form-control']) !!}
+  </div>
+</div>
+
+<div class="col-md-6">
+  <div class="form-group">
+    {!! Form::label('passport_number', 'Passport Number') !!}
+    {!! Form::text('passport_number', null, ['class' => 'form-control']) !!}
+  </div>
+</div>
+
+<div class="col-md-6">
+  <div class="form-group">
+    {!! Form::label('passport_issue_date', 'Passport Issue Date') !!}
+    {!! Form::date('passport_issue_date', null, ['class' => 'form-control']) !!}
+  </div>
+</div>
+
+<div class="col-md-6">
+  <div class="form-group">
+    {!! Form::label('mobile', 'Mobile') !!}
+    {!! Form::text('mobile', null, ['class' => 'form-control']) !!}
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
         <div class="col-md-12">
           {!! Form::submit(__('fleet.add_new'), ['class' => 'btn btn-success']) !!}
         </div>

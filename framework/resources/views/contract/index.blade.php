@@ -16,90 +16,122 @@
                 <form method="POST" action="{{ route('contract.store') }}" id="contractForm">
                     @csrf
                     
-                    <!-- Client Information -->
-                    <div class="card mb-3">
-                        <div class="card-header bg-info text-white">
-                            <h4>@lang('fleet.client_information')</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.last_name') <span class="text-danger">*</span></label>
-                                        <input type="text" name="client[last_name]" class="form-control" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.first_name') <span class="text-danger">*</span></label>
-                                        <input type="text" name="client[first_name]" class="form-control" required>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>@lang('fleet.address') <span class="text-danger">*</span></label>
-                                <input type="text" name="client[address]" class="form-control" required>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.id_number') <span class="text-danger">*</span></label>
-                                        <input type="text" name="client[id_number]" class="form-control" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.id_expiry_date')</label>
-                                        <input type="date" name="client[id_expiry_date]" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.phone')</label>
-                                        <input type="text" name="client[phone]" class="form-control">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.license_number')</label>
-                                        <input type="text" name="client[license_number]" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.license_issue_date')</label>
-                                        <input type="date" name="client[license_issue_date]" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.mobile')</label>
-                                        <input type="text" name="client[mobile]" class="form-control">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.passport_number')</label>
-                                        <input type="text" name="client[passport_number]" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>@lang('fleet.passport_issue_date')</label>
-                                        <input type="date" name="client[passport_issue_date]" class="form-control">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                   <!-- Client Information -->
+<div class="form-group" id="client-select-group">
+    <label for="existing_client">@lang('fleet.select_client')</label>
+    <select class="form-control" name="client_id" id="existing_client">
+        <option value="">-- @lang('fleet.select_client') --</option>
+        @foreach($clientSelect as $client)
+            @if($client->userclient)
+                <option value="{{ $client->id }}">{{ $client->first_name }} {{ $client->last_name }}</option>
+            @endif
+        @endforeach
+        <option value="new">+ @lang('fleet.add_new_client')</option>
+    </select>
+</div>
+
+<div id="new-client-form" style="display: none;">
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h4>@lang('fleet.client_information')</h4>
+            <button type="button" class="btn btn-sm btn-warning" id="cancel-new-client">
+                @lang('fleet.cancel')
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.last_name') <span class="text-danger">*</span></label>
+                        <input type="text" name="client[last_name]" class="form-control" required>
                     </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.first_name') <span class="text-danger">*</span></label>
+                        <input type="text" name="client[first_name]" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+                                
+                                <div class="form-group">
+                                    <label>@lang('fleet.address') <span class="text-danger">*</span></label>
+                                    <input type="text" name="client[address]" class="form-control" required>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.id_number') <span class="text-danger">*</span></label>
+                                            <input type="text" name="client[id_number]" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.id_expiry_date')</label>
+                                            <input type="date" name="client[id_expiry_date]" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.phone')</label>
+                                            <input type="text" name="client[phone]" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.license_number')</label>
+                                            <input type="text" name="client[license_number]" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.license_issue_date')</label>
+                                            <input type="date" name="client[license_issue_date]" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.mobile')</label>
+                                            <input type="text" name="client[mobile]" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.passport_number')</label>
+                                            <input type="text" name="client[passport_number]" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.passport_issue_date')</label>
+                                            <input type="date" name="client[passport_issue_date]" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+
+
+
+
+
+
                     
                     <!-- Vehicle Information -->
                     <div class="card mb-3">
@@ -343,6 +375,91 @@
 
 @endsection
 
+
+
+@section('script')
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Toggle additional driver section
+        $('#hasAdditionalDriver').change(function() {
+            if($(this).is(':checked')) {
+                $('#additionalDriverSection').show();
+            } else {
+                $('#additionalDriverSection').hide();
+            }
+        });
+        
+         // Handle client selection
+         $('#existing_client').change(function() {
+            if($(this).val() === 'new') {
+                $('#new-client-form').show();
+                $('#client-select-group').hide();
+                // Make select not required when adding new client
+                $('#existing_client').prop('required', false);
+                // Make new client fields required
+                $('#new-client-form input[required]').prop('required', true);
+            } else {
+                $('#new-client-form').hide();
+                $('#client-select-group').show();
+                // Make select required when selecting existing client
+                $('#existing_client').prop('required', true);
+                // Make new client fields not required
+                $('#new-client-form input[required]').prop('required', false);
+            }
+        });
+
+        // Cancel adding new client
+        $('#cancel-new-client').click(function() {
+            $('#new-client-form').hide();
+            $('#client-select-group').show();
+            $('#existing_client').val('').trigger('change');
+            $('#existing_client').prop('required', true);
+            $('#new-client-form input[required]').prop('required', false);
+        });
+
+        // Calculate duration when dates change
+        $('#startDate, #endDate').change(function() {
+            calculateDuration();
+            calculateTotal();
+        });
+        
+        // Calculate total amount and remaining amount when values change
+        $('.calculation').change(function() {
+            calculateTotal();
+        });
+        
+        function calculateDuration() {
+            var startDate = new Date($('#startDate').val());
+            var endDate = new Date($('#endDate').val());
+            
+            if(startDate && endDate) {
+                var timeDiff = endDate.getTime() - startDate.getTime();
+                var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+                
+                if(dayDiff > 0) {
+                    $('#duration').val(dayDiff);
+                } else {
+                    $('#duration').val('');
+                }
+            }
+        }
+        
+        function calculateTotal() {
+            var dailyRate = parseFloat($('#dailyRate').val()) || 0;
+            var duration = parseInt($('#duration').val()) || 0;
+            var advancePayment = parseFloat($('#advancePayment').val()) || 0;
+            
+            var totalAmount = dailyRate * duration;
+            var remainingAmount = totalAmount - advancePayment;
+            
+            $('#totalAmount').val(totalAmount.toFixed(2));
+            $('#remainingAmount').val(remainingAmount.toFixed(2));
+        }
+    });
+</script>
+@endsection
+
+{{-- 
 @section('script')
 <script type="text/javascript">
     $(document).ready(function() {
@@ -396,4 +513,4 @@
         }
     });
 </script>
-@endsection
+@endsection --}}

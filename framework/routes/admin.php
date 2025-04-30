@@ -71,6 +71,21 @@ Route::namespace('Admin')->group(function () {
                 Route::get('/contract/generate-pdf', [ContractController::class, 'generatePDF'])->name('contract.generatePDF');
                 Route::resource('/users', 'UsersController');
 
+                Route::get('client/complete/{id}', [ContractController::class, 'showCompleteForm'])->name('client.complete.form');
+                Route::post('client/complete/{id}', [ContractController::class, 'completeClientInfo'])->name('client.complete');
+
+
+
+
+
+
+
+
+
+
+
+
+
                 Route::get('twilio-settings', 'TwilioController@index');
                 Route::post('twilio-settings', 'TwilioController@update');
 

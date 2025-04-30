@@ -17,6 +17,7 @@ use App\Http\Requests\Customers as CustomerRequest;
 use App\Http\Requests\ImportRequest;
 use App\Imports\CustomerImport;
 use App\Model\User;
+use App\Model\UserClinet;
 use Auth;
 use DataTables;
 use Illuminate\Http\Request;
@@ -132,6 +133,22 @@ class CustomersController extends Controller {
 		$user->gender = $request->get('gender');
 		$user->save();
 		$user->givePermissionTo(['Bookings add', 'Bookings edit', 'Bookings list', 'Bookings delete']);
+
+
+
+        // بعد إنشاء المستخدم وحفظ بياناته:
+		UserClinet::create([
+			'user_clients_id' => $user->id,
+			'id_number' => $request->get('id_number'),
+			'id_expiry_date' => $request->get('id_expiry_date'),
+			'license_number' => $request->get('license_number'),
+			'license_issue_date' => $request->get('license_issue_date'),
+			'passport_number' => $request->get('passport_number'),
+			'passport_issue_date' => $request->get('passport_issue_date'),
+			'mobile' => $request->get('mobile'),
+		]);
+
+
 
 		return redirect()->route("customers.index");
 	}
