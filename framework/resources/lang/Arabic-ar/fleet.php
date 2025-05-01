@@ -1,5 +1,12 @@
 <?php
 return [
+    'select_vehicle' => 'اختر مركبة',
+    'select_client' => 'اختر عميل',
+    'add_new_vehicle' => 'أضف مركبة جديدة',
+    'add_new_client' => 'أضف عميلًا جديدًا',
+    'engine_type' => 'نوع المحرك',
+
+    
     'driverPaymentAdded' => 'تمت إضافة مدفوعات السائق بنجاح!',
     'datetime' => 'التاريخ والوقت',
     'remaining_amount' => 'الكمية المتبقية',

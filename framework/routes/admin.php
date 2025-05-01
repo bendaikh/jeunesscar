@@ -66,6 +66,7 @@ Route::namespace('Admin')->group(function () {
                 Route::post('/users-fetch', 'UsersController@fetch_data');
                 Route::get('/contract', 'ContractController@index')->name('contract');
                 Route::post('/save-signature', [ContractController::class, 'saveSignature'])->name('save.signature');
+                Route::post('/save-signature2', [ContractController::class, 'saveSignature2'])->name('save.signature2');
                 Route::post('/contract/store', [ContractController::class, 'store'])->name('contract.store');
                 Route::get('/contract/view', 'ContractController@view')->name('contract.view');
                 Route::get('/contract/generate-pdf', [ContractController::class, 'generatePDF'])->name('contract.generatePDF');

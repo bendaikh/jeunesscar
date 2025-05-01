@@ -11,9 +11,6 @@
             font-family: 'DejaVu Sans', Arial, sans-serif;
         }
 
-        @page {
-            margin: 10mm 15mm;
-        }
         
         body {
             font-size: 10px;
@@ -234,8 +231,8 @@
             right: 30px;
             background-color: #4a7ebb;
             color: white;
-            width: 60px;
-            height: 60px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -250,8 +247,8 @@
             transform: scale(1.1);
         }
         .floating-button svg {
-            width: 24px;
-            height: 24px;
+            width: 50px;
+            height: 50px;
         }
     </style>
 </head>
@@ -646,7 +643,26 @@
             </p>
             <table class="terms-signature">
                 <tr>
-                    <td>Signature et cachet</td>
+                    <td>
+                        
+                        
+                            @if (!empty($signature2))
+                            <div style="margin-top: 20px; text-align: center;">
+                                <img src="{{ $signature2 }}" style="width: 300px; height: auto; border: 1px solid #000;" alt="Signature du deuxième signataire">
+                            </div>
+                            @else
+                            <div style="margin-top: 20px; text-align: center;">
+                                <canvas id="signature-pad2" style="border: 1px solid #000; width: 300px; height: 150px;"></canvas>
+                               
+                                <button type="button" id="clear-signature2">Effacer</button>
+                                <button type="button" id="save-signature2">Enregistrer la signature</button>
+                            </div>
+                            @endif
+                            
+                        
+                        
+                            Signature du locataire
+                    </td>
                     <td>
                         @if (!empty($signature))
                         <div style="margin-top: 20px; text-align: center;">
@@ -655,7 +671,7 @@
                         @else
                         <div style="margin-top: 20px; text-align: center;">
                             <canvas id="signature-pad" style="border: 1px solid #000; width: 300px; height: 150px;"></canvas>
-                            <br>
+                            
                             <button type="button" id="clear-signature">Effacer</button>
                             <button type="button" id="save-signature">Enregistrer la signature</button>
                         </div>
@@ -663,6 +679,7 @@
                         Signature du client
                     </td>
                 </tr>
+               
             </table>
             <div style="text-align: center; font-weight: bold; margin: 30px 0; color: #4a7ebb;">
                 Nous vous remercions d'avance pour votre compréhension
@@ -768,6 +785,83 @@
             }
         });
     });
+
+    // لوحة التوقيع الثانية
+let canvas2 = document.getElementById('signature-pad2');
+let ctx2 = canvas2.getContext('2d');
+let drawing2 = false;
+
+// Mouse Events للوحة الثانية
+canvas2.addEventListener('mousedown', () => drawing2 = true);
+canvas2.addEventListener('mouseup', () => {
+    drawing2 = false;
+    ctx2.beginPath();
+});
+canvas2.addEventListener('mousemove', draw2);
+
+// Touch Events للوحة الثانية
+canvas2.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    drawing2 = true;
+    draw2(e.touches[0]);
+});
+
+canvas2.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    drawing2 = false;
+    ctx2.beginPath();
+});
+
+canvas2.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    draw2(e.touches[0]);
+});
+
+function draw2(e) {
+    if (!drawing2) return;
+    ctx2.lineWidth = 2;
+    ctx2.lineCap = 'round';
+    ctx2.strokeStyle = '#000';
+
+    let rect = canvas2.getBoundingClientRect();
+    let x, y;
+
+    if (e.clientX && e.clientY) {
+        x = e.clientX - rect.left;
+        y = e.clientY - rect.top;
+    } else if (e.pageX && e.pageY) {
+        x = e.pageX - rect.left;
+        y = e.pageY - rect.top;
+    }
+
+    ctx2.lineTo(x, y);
+    ctx2.stroke();
+    ctx2.beginPath();
+    ctx2.moveTo(x, y);
+}
+
+document.getElementById('clear-signature2').addEventListener('click', function() {
+    ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+});
+
+document.getElementById('save-signature2').addEventListener('click', function() {
+    let dataURL = canvas2.toDataURL('image/png');
+    $.ajax({
+        url: '{{ route("save.signature2") }}',
+        method: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+            signature: dataURL
+        },
+        success: function(response) {
+            alert('Signature 2 enregistrée avec succès!');
+            location.reload();
+        },
+        error: function(error) {
+            alert('Erreur lors de l\'enregistrement de la signature 2.');
+        }
+    });
+});
 </script>
 
 

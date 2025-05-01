@@ -1,6 +1,12 @@
 <?php
 return [
     //  Cotract section
+    'select_vehicle' => 'Select a vehicle',
+    'select_client' => 'Select a client',
+    'add_new_vehicle' => 'Add a new vehicle',
+    'add_new_client' => 'Add a new client',
+    'engine_type' => 'Engine type',
+    
     'contractService'=> 'Contract Service',
     'generate_contract' => 'Generate Contract',
     'contracts' => 'Contracts',

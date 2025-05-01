@@ -23,6 +23,10 @@ class ComposerStaticInitc8a7642b6a153c0daf69853b801f52e6
         array (
             'voku\\' => 5,
         ),
+        's' => 
+        array (
+            'setasign\\Fpdi\\' => 14,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Php83\\' => 23,
@@ -72,6 +76,10 @@ class ComposerStaticInitc8a7642b6a153c0daf69853b801f52e6
         'voku\\' => 
         array (
             0 => __DIR__ . '/..' . '/voku/portable-ascii/src/voku',
+        ),
+        'setasign\\Fpdi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/setasign/fpdi/src',
         ),
         'Symfony\\Polyfill\\Php83\\' => 
         array (
@@ -166,6 +174,7 @@ class ComposerStaticInitc8a7642b6a153c0daf69853b801f52e6
         'DateObjectError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateObjectError.php',
         'DateRangeError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateRangeError.php',
         'Dompdf\\Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
+        'FPDF' => __DIR__ . '/..' . '/setasign/fpdf/fpdf.php',
         'Override' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/Override.php',
         'SQLite3Exception' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/SQLite3Exception.php',
     );

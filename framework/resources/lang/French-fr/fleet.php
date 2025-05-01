@@ -1,5 +1,11 @@
 <?php
 return [
+    'select_vehicle' => 'Sélectionner un véhicule',
+    'select_client' => 'Sélectionner un client',
+    'add_new_vehicle' => 'Ajouter un nouveau véhicule',
+    'add_new_client' => 'Ajouter un nouveau client',
+    'engine_type' => 'Type de moteur',
+
     'contracts' => 'Contrats',
     'generate_contract' => 'Générer le contrat',
     'create_contract' => 'Créer un contrat',

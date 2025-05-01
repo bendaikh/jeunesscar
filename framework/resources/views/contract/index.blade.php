@@ -23,7 +23,13 @@
         <option value="">-- @lang('fleet.select_client') --</option>
         @foreach($clientSelect as $client)
             @if($client->userclient)
-                <option value="{{ $client->id }}">{{ $client->first_name }} {{ $client->last_name }}</option>
+                {{-- <option value="{{ $client->id }}">{{ $client->first_name }} {{ $client->last_name }}</option> --}}
+                
+
+
+                <option value="{{ $client->id }}">
+                    {{ $client->first_name ? $client->first_name . ' ' . $client->last_name : $client->name }}
+                </option>
             @endif
         @endforeach
         <option value="new">+ @lang('fleet.add_new_client')</option>

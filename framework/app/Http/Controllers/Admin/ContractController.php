@@ -11,6 +11,7 @@ use App\Model\UserClinet;
 use App\Model\VehicleModel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Dompdf;
+use setasign\Fpdi\Fpdi;
 
     
 class ContractController extends Controller
@@ -31,7 +32,7 @@ class ContractController extends Controller
         ->where("user_type", "C")
         ->has('userclient')
         ->get();
-
+       //return $clientSelect;
        // return $clientSelect;
        $vehicles = VehicleModel::where('in_service', 1)
        ->select('id', 'make_name', 'license_plate', 'fuel_type', 'start_km', 'int_mileage')
@@ -163,8 +164,8 @@ class ContractController extends Controller
         // إعداد بيانات العميل للعقد
         $data = $request->all();
         $data['client'] = [
-            'first_name' => $client->first_name,
-            'last_name' => $client->last_name,
+            'first_name' => $client->first_name?$client->first_name:$client->name,
+            'last_name' => $client->last_name?$client->first_name:"",
             'address' => $client->address,
             'phone' => $client->mobno,
             'mobile' => $client->userclient->mobile,
@@ -261,6 +262,7 @@ class ContractController extends Controller
     {
         $data = session("contracts");
         $signature = $data['signature'] ?? null;
+        $signature2 = $data['signature2'] ?? null;
 
     
         // Prepare data with default values
@@ -351,6 +353,8 @@ class ContractController extends Controller
             'margin-left'   => 10,
             'margin-right'  => 10,
         ]);
+
+ 
         
     
         // Handle logo path
@@ -370,23 +374,48 @@ class ContractController extends Controller
             'logoPath' => $logoPath,
             'hideButton' => true,
             'signature' => $signature,
+            'signature2' => $signature2,
 
         ])->render();
     
         // Load HTML with precise settings
-        $pdf->loadHtml($html, 'UTF-8');
         
-        // Force two pages exactly
-        $pdf->setCallbacks([
-            'event' => 'page_count',
-            'f' => function($infos) use ($pdf) {
-                if ($infos['page_count'] > 2) {
-                    $pdf->setPaper('A4', 'portrait', 'adjust');
-                }
-            }
-        ]);
+        $pdf->loadHTML($html);
+        
+        $tempPath = storage_path('app/temp_contract.pdf');
+        file_put_contents($tempPath, $pdf->output());
     
-        return $pdf->stream('contract-' . $contract->number . '.pdf');
+        // قص أول صفحتين فقط باستخدام FPDI
+        $fpdi = new \setasign\Fpdi\Fpdi();
+        $pageCount = $fpdi->setSourceFile($tempPath);
+    
+        $pagesToKeep = min(2, $pageCount); // نحتفظ بصفحتين فقط أو أقل لو أقل
+        for ($pageNo = 1; $pageNo <= $pagesToKeep; $pageNo++) {
+            $templateId = $fpdi->importPage($pageNo);
+            $size = $fpdi->getTemplateSize($templateId);
+    
+            $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+            $fpdi->useTemplate($templateId);
+        }
+    
+        // مسح الملف المؤقت
+        unlink($tempPath);
+
+
+
+
+
+
+
+        return response($fpdi->Output('S'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="contract-' . $contract->number . '.pdf"',
+        ]);
+
+
+
+    
+       // return $pdf->stream('contract-' . $contract->number . '.pdf');
     }
 
 
@@ -403,6 +432,17 @@ class ContractController extends Controller
         return response()->json(['message' => 'Signature saved successfully.']);
     }
     
+
+    public function saveSignature2(Request $request)
+{
+    $request->validate([
+        'signature' => 'required|string',
+    ]);
+    
+    session()->put('contracts.signature2', $request->input('signature'));
+
+    return response()->json(['message' => 'Signature 2 saved successfully.']);
+}
 
     public function showCompleteForm($id)
     {
