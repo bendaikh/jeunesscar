@@ -17,24 +17,25 @@
                     @csrf
                     
                    <!-- Client Information -->
-<div class="form-group" id="client-select-group">
-    <label for="existing_client">@lang('fleet.select_client')</label>
-    <select class="form-control" name="client_id" id="existing_client">
-        <option value="">-- @lang('fleet.select_client') --</option>
-        @foreach($clientSelect as $client)
-            @if($client->userclient)
-                {{-- <option value="{{ $client->id }}">{{ $client->first_name }} {{ $client->last_name }}</option> --}}
+                   <div class="form-group" id="client-select-group">
+                    <label for="existing_client">@lang('fleet.select_client')</label>
+                    <div class="input-group">
+                        <select class="form-control" name="client_id" id="existing_client">
+                            <option value="">-- @lang('fleet.select_client') --</option>
+                            @foreach($clientSelect as $client)
+                                @if($client->userclient)
+                                    <option value="{{ $client->id }}">
+                                        {{ $client->first_name ? $client->first_name . ' ' . $client->last_name : $client->name }}
+                                    </option>
+                                @endif
+                            @endforeach
+                        </select>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-success" id="add-new-client">@lang('fleet.add_new_client')</button>
+                        </div>
+                    </div>
+                </div>
                 
-
-
-                <option value="{{ $client->id }}">
-                    {{ $client->first_name ? $client->first_name . ' ' . $client->last_name : $client->name }}
-                </option>
-            @endif
-        @endforeach
-        <option value="new">+ @lang('fleet.add_new_client')</option>
-    </select>
-</div>
 
 <div id="new-client-form" style="display: none;">
     <div class="card mb-3">
@@ -145,24 +146,38 @@
         <h4>@lang('fleet.vehicle_information')</h4>
     </div>
     <div class="card-body">
-        <div class="form-group">
+        <div class="form-group" id="vehicle-select-group">
             <label>@lang('fleet.select_vehicle')</label>
-            <select class="form-control" name="vehicle_id" id="existing_vehicle">
-                <option value="">-- @lang('fleet.select_vehicle') --</option>
-                @foreach($vehicles as $vehicle)
-                    <option value="{{ $vehicle->id }}" 
-                        data-brand="{{ $vehicle->make_name }}"
-                        data-plate="{{ $vehicle->license_plate }}"
-                        data-fuel="{{ $vehicle->fuel_type }}"
-                        data-km="{{ $vehicle->start_km ?? $vehicle->int_mileage }}">
-                        {{ $vehicle->make_name }} - {{ $vehicle->license_plate }}
-                    </option>
-                @endforeach
-                <option value="new">+ @lang('fleet.add_new_vehicle')</option>
-            </select>
+            <div class="input-group">
+                <select class="form-control" name="vehicle_id" id="existing_vehicle">
+                    <option value="">-- @lang('fleet.select_vehicle') --</option>
+                    @foreach($vehicles as $vehicle)
+                        <option value="{{ $vehicle->id }}" 
+                            data-brand="{{ $vehicle->make_name }}"
+                            data-plate="{{ $vehicle->license_plate }}"
+                            data-fuel="{{ $vehicle->fuel_type }}"
+                            data-km="{{ $vehicle->start_km ?? $vehicle->int_mileage }}">
+                            {{ $vehicle->make_name }} - {{ $vehicle->license_plate }}
+                        </option>
+                    @endforeach
+                </select>
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-success" id="add-new-vehicle">@lang('fleet.add_new_vehicle')</button>
+                </div>
+            </div>
         </div>
+        
 
         <div id="new-vehicle-form" style="display: none;">
+
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4>@lang('fleet.vehicle_information')</h4>
+                    <button type="button" class="btn btn-sm btn-warning" id="cancel-new-vehicle">
+                        @lang('fleet.cancel')
+                    </button>
+                </div>
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -217,6 +232,16 @@
                     </div>
                 </div>
             </div>
+
+
+
+
+
+
+
+
+
+        </div>
         </div>
     </div>
 </div>
@@ -428,6 +453,37 @@
 
 @section('script')
 <script type="text/javascript">
+
+   // عند الضغط على زر إضافة عميل جديد
+$('#add-new-client').click(function() {
+    $('#new-client-form').show();
+    $('#client-select-group').hide();
+    $('#existing_client').prop('required', false);
+    $('#new-client-form input[required]').prop('required', true);
+});
+
+// عند الضغط على زر إضافة سيارة جديدة
+$('#add-new-vehicle').click(function() {
+    $('#new-vehicle-form').show();
+    $('#vehicle-select-group').hide();
+    $('#existing_vehicle').prop('required', false);
+    $('#new-vehicle-form input[required], #new-vehicle-form select[required]').prop('required', true);
+});
+
+
+$('#cancel-new-vehicle').click(function() {
+            $('#new-vehicle-form').hide();
+            $('#vehicle-select-group').show();
+            $('#existing_vehicle').val('').trigger('change');
+            $('#existing_vehicle').prop('required', true);
+            $('#new-vehicle-form input[required]').prop('required', false);
+        });
+
+
+
+
+
+
     $(document).ready(function() {
         // Toggle additional driver section
         $('#hasAdditionalDriver').change(function() {
