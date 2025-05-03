@@ -23,11 +23,11 @@
                         <select class="form-control" name="client_id" id="existing_client">
                             <option value="">-- @lang('fleet.select_client') --</option>
                             @foreach($clientSelect as $client)
-                                @if($client->userclient)
+                               
                                     <option value="{{ $client->id }}">
                                         {{ $client->first_name ? $client->first_name . ' ' . $client->last_name : $client->name }}
                                     </option>
-                                @endif
+                               
                             @endforeach
                         </select>
                         <div class="input-group-append">

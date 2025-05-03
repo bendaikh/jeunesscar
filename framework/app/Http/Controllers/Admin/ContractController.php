@@ -28,10 +28,12 @@ class ContractController extends Controller
 
     public function index()
     {
-        $clientSelect = User::with('userclient')
-        ->where("user_type", "C")
+        $clientSelect = User::with('userclient')->
+       where("user_type", "C")
        // ->has('userclient')
-        ->get();
+       -> get();
+
+       
        //return $clientSelect;
        // return $clientSelect;
        $vehicles = VehicleModel::where('in_service', 1)
