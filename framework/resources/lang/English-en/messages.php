@@ -12,6 +12,15 @@ return [
     'finish' => 'Install',
 
 
+
+
+    'current_cashez_image' => 'Current Cashez Image',
+    'current_logo_image'   => 'Current Logo Image',
+    'choose_new_image'     => 'Choose New Image',
+    'upload_cashez_image'  => 'Upload New Cashez Image',
+    'upload_logo_image'    => 'Upload New Logo Image',
+    'no_image_available'   => 'No image available currently',
+    'change_logos' => 'Change Logos',
     /**
      *
      * Home page translations.

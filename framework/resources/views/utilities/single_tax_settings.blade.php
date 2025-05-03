@@ -22,6 +22,10 @@
           </div>
         @endif
 
+
+        
+        
+
         {!! Form::open(['route' => 'settings.store','files'=>true,'method'=>'post']) !!}
         <div class="row">
           <div class="form-group col-md-4">

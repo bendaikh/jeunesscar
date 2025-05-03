@@ -73,6 +73,9 @@ use Redirect;
 use Storage;
 use Illuminate\Support\Facades\Artisan;
 
+use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
+
 
 class SettingsController extends Controller {
 	public function __construct() {
@@ -208,9 +211,22 @@ class SettingsController extends Controller {
 	public function index() {
 		$data['settings'] = Settings::all();
 		$data['languages'] = Storage::disk('views')->directories('');
-
+	
+		$cashezPath = 'assets/images/cashez.png';
+		$logoPath = 'assets/images/logo.png';
+	
+		
+		if (file_exists(public_path($cashezPath))) {
+			$data['cashezImage'] = asset($cashezPath);
+			$data['logoImage'] = asset($logoPath);
+		} else {
+			$data['cashezImage'] = null;
+			$data['logoImage'] = null;
+		}
+	
 		return view("utilities.settings", $data);
 	}
+	
 
 	private function upload_file($file, $field, $name) {
 		$destinationPath = './assets/images'; // upload path
@@ -650,5 +666,63 @@ class SettingsController extends Controller {
 		ApiSettings::where('key_name', 'api_key')->update(['key_value' => $api]);
 		return "true";
 	}
+
+
+
+
+	public function changeLogo(Request $request)
+    {
+        $request->validate([
+            'logo_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $destinationPath = 'assets/images';
+        $newFileName = 'logo.png';
+        $newFile40Name = 'logo-40.png';
+        $newFileInstallName = 'logo_install.png';
+
+        // حذف الصور القديمة إذا وجدت
+        if (File::exists($destinationPath . '/' . $newFileName)) {
+            File::delete($destinationPath . '/' . $newFileName);
+        }
+        if (File::exists($destinationPath . '/' . $newFile40Name)) {
+            File::delete($destinationPath . '/' . $newFile40Name);
+        }
+        if (File::exists($destinationPath . '/' . $newFileInstallName)) {
+            File::delete($destinationPath . '/' . $newFileInstallName);
+        }
+
+        // رفع الصورة الجديدة
+        $image = $request->file('logo_image');
+        $image->move($destinationPath, $newFileName);
+
+        // إنشاء نسخة 40x40
+        $img = Image::make($destinationPath . '/' . $newFileName);
+        $img->resize(40, 40)->save($destinationPath . '/' . $newFile40Name);
+
+        // إنشاء نسخة Install
+        $img->resize(512, 512)->save($destinationPath . '/' . $newFileInstallName);
+
+        return redirect()->route('settings.index')->with('success', __('messages.logo_updated_successfully'));
+    }
+
+    public function changeCashez(Request $request)
+    {
+        $request->validate([
+            'cashez_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $destinationPath = 'assets/images';
+        $newFileName = 'cashez.png';
+
+        if (File::exists($destinationPath . '/' . $newFileName)) {
+            File::delete($destinationPath . '/' . $newFileName);
+        }
+
+        $image = $request->file('cashez_image');
+        $image->move($destinationPath, $newFileName);
+
+        return redirect()->route('settings.index')->with('success', __('messages.cashez_updated_successfully'));
+    }
 
 }

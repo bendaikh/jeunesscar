@@ -1,6 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\ContractController;
+use App\Http\Controllers\Admin\SettingsController;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
+
 
 Auth::routes();
 Route::namespace('Admin')->group(function () {
@@ -65,10 +71,21 @@ Route::namespace('Admin')->group(function () {
 
                 Route::post('/users-fetch', 'UsersController@fetch_data');
                 Route::get('/contract', 'ContractController@index')->name('contract');
-                Route::post('/save-signature', [ContractController::class, 'saveSignature'])->name('save.signature');
-                Route::post('/save-signature2', [ContractController::class, 'saveSignature2'])->name('save.signature2');
+                Route::post('/save-all-signatures', [ContractController::class, 'saveAllSignatures'])->name('save.all.signatures');
                 Route::post('/contract/store', [ContractController::class, 'store'])->name('contract.store');
                 Route::get('/contract/view', 'ContractController@view')->name('contract.view');
+
+
+
+
+
+
+               
+                Route::post('/upload-logo', [SettingsController::class, 'changeLogo'])->name('upload.logo');
+                Route::post('/upload-cashez', [SettingsController::class, 'changeCashez'])->name('upload.cashez');
+                    
+
+
                 Route::get('/contract/generate-pdf', [ContractController::class, 'generatePDF'])->name('contract.generatePDF');
                 Route::resource('/users', 'UsersController');
 
@@ -78,7 +95,7 @@ Route::namespace('Admin')->group(function () {
 
 
 
-
+          
 
 
 

@@ -200,4 +200,9 @@ class TrackerController extends Controller
         }
         return response()->json($data['vehicle_data']);
     }
+
+
+    
+
+
 }

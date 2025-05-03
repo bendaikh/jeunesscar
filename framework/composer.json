@@ -13,6 +13,7 @@
         "doctrine/dbal": "^3.6.4",
         "edujugon/push-notification": "^5.3.0",
         "guzzlehttp/guzzle": "^7.7.0",
+        "intervention/image": "^2.7",
         "kodeine/laravel-meta": "^2.2.0",
         "kreait/laravel-firebase": "^5.2.0",
         "laravel-notification-channels/webpush": "^7.1.0",
