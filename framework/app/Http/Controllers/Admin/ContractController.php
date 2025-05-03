@@ -30,7 +30,7 @@ class ContractController extends Controller
     {
         $clientSelect = User::with('userclient')
         ->where("user_type", "C")
-        ->has('userclient')
+       // ->has('userclient')
         ->get();
        //return $clientSelect;
        // return $clientSelect;
