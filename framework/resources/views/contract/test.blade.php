@@ -144,18 +144,19 @@
         .signature-section {
             display: flex;
             justify-content: space-between;
-            margin-top: 40px;
+            margin-top: 30px;
         }
         
         .signature-box {
-            width: 45%;
+            width: 100px;
+            height: 100px;
             text-align: center;
         }
         
         .signature-line {
             border-top: 1px solid #4a7ebb;
-            padding-top: 8px;
-            margin-top: 10px;
+            padding-top: 6px;
+            margin-top: 6px;
             font-weight: bold;
         }
         
@@ -184,19 +185,76 @@
         }
         
         .terms-signature {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 30px 15px;
+        margin-top: 10px;
+    }
+    .terms-signature td {
+        vertical-align: top;
+        text-align: center;
+    }
+    .signature-container {
+        position: relative;
+        width: 320px;
+        height: 150px;
+        border: 2px dashed #4CAF50;
+        border-radius: 12px;
+        background-color: #f9f9f9;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin: auto;
+    }
+    .signature-container img.logo {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        max-height: 100px;
+        opacity: 1;
+        pointer-events: none;
+    }
+    .signature-container canvas, 
+    .signature-container img.signature {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 10px;
+    }
+    .signature-buttons {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    .signature-buttons button {
+        padding: 8px 10px;
+        border: none;
+        background-color: #4CAF50;
+        color: white;
+        font-size: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .signature-buttons button:hover {
+        background-color: #45a049;
+    }
+    .signature-title {
+        margin-top: 8px;
+        font-size: 10px;
+        font-weight: bold;
+        color: #333;
+    }
+    @media (max-width: 700px) {
+        .terms-signature {
+            display: block;
         }
-        
         .terms-signature td {
-            border: 1px solid #4a7ebb;
-            padding: 5px;
-            height: 70px;
-            vertical-align: bottom;
-            text-align: center;
-            background-color: #f8f9fa;
+            display: block;
+            margin-bottom: 30px;
         }
+    }
         
         h1 {
             color: #2a5885;
@@ -644,58 +702,58 @@
             </p>
             <table class="terms-signature">
                 <tr>
-                    <td style="text-align: center;">
-
-                        <div style="position: relative; display: inline-block; width: 300px; height: 150px; border: 1px solid #000;">
-                            
-                            <!-- الشعار فوق التوقيع -->
-                            <img src="{{ asset('assets/images/cashez.png') }}" 
-                                 style="position: absolute; top: 5px; left: 50%; transform: translateX(-50%); 
-                                        max-height: 100px; opacity: 1; pointer-events: none;" 
-                                 alt="Logo de l'entreprise">
-                    
-                            @if (!empty($signature2))
-                                <!-- صورة التوقيع -->
-                                <img src="{{ $signature2 }}" 
-                                     style="width: 100%; height: 100%; object-fit: contain;" 
-                                     alt="Signature du deuxième signataire">
-                            @else
-                                <!-- كائن الرسم -->
-                                <canvas id="signature-pad2" 
-                                        style="width: 100%; height: 100%;"></canvas>
-                            @endif
-                        </div>
-                    
-                        <div style="margin-top: 5px;">
-                            @if (empty($signature2))
-                                <button type="button" id="clear-signature2">Effacer</button>
-                                <button type="button" id="save-signature2">Enregistrer la signature</button>
-                            @endif
-                        </div>
-                    
-                        <div style="margin-top: 8px; font-size: 12px;">
-                            Signature du locataire
-                        </div>
-                    
-                    </td>
-                    
                     <td>
-                        @if (!empty($signature))
-                        <div style="margin-top: 20px; text-align: center;">
-                            <img src="{{ $signature }}" style="width: 300px; height: auto; border: 1px solid #000;" alt="Signature du client">
-                        </div>
-                        @else
-                        <div style="margin-top: 20px; text-align: center;">
-                            <canvas id="signature-pad" style="border: 1px solid #000; width: 300px; height: 150px;"></canvas>
+            
+                        <div class="signature-container">
                             
-                            <button type="button" id="clear-signature">Effacer</button>
-                            <button type="button" id="save-signature">Enregistrer la signature</button>
+                            <img src="{{ asset('assets/images/cashez.png') }}" 
+                            style="position: absolute; top: 5px; left: 50%; transform: translateX(-50%); 
+                                   max-height: 100px; opacity: 1; {{ !$hideButton ? 'display: none;' : '' }}" 
+                            alt="Logo de l'entreprise">
+            
+                            @if (!empty($signature2))
+                                <img src="{{ $signature2 }}" class="signature" alt="Signature du deuxième signataire">
+                            @else
+                                <canvas id="signature-pad2"></canvas>
+                            @endif
+                        </div>
+            
+                        @if (empty($signature2))
+                        <div class="signature-buttons">
+                            <button type="button" id="clear-signature2">Effacer</button>
+                            <button type="button" id="save-signature2">Enregistrer</button>
                         </div>
                         @endif
-                        Signature du client
+            
+                        <div class="signature-title">
+                            Signature du locataire
+                        </div>
+            
+                    </td>
+            
+                    <td>
+            
+                        <div class="signature-container">
+                            @if (!empty($signature))
+                                <img src="{{ $signature }}" class="signature" alt="Signature du client">
+                            @else
+                                <canvas id="signature-pad"></canvas>
+                            @endif
+                        </div>
+            
+                        @if (empty($signature))
+                        <div class="signature-buttons">
+                            <button type="button" id="clear-signature">Effacer</button>
+                            <button type="button" id="save-signature">Enregistrer</button>
+                        </div>
+                        @endif
+            
+                        <div class="signature-title">
+                            Signature du client
+                        </div>
+            
                     </td>
                 </tr>
-               
             </table>
             <div style="text-align: center; font-weight: bold; margin: 30px 0; color: #4a7ebb;">
                 Nous vous remercions d'avance pour votre compréhension
