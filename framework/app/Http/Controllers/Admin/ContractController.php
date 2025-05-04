@@ -47,7 +47,7 @@ class ContractController extends Controller
     }
     public function store(Request $request)
     {
-        if ($request->client_id == 'new') {
+        if ($request->client_id == '') {
             // تحقق من وجود بيانات العميل الجديد
             if (empty($request->client['first_name']) || empty($request->client['last_name'])) {
                 return redirect()->back()->with('error', __('fleet.client_required_fields'));
@@ -118,16 +118,18 @@ class ContractController extends Controller
             $client = User::with('userclient')->find($clientId);
 
             
+           
             
             if (!$client || !$client->userclient) {
-                return redirect()->route('client.complete.form', $clientId)
+                return redirect()->route('client.complete.form', $client)
                     ->with('redirect_to_contract', true)
                     ->with('contract_data', $request->except('_token'));
             }
         }
         
        // معالجة بيانات السيارة
-    if ($request->vehicle_id == 'new') {
+    if ($request->vehicle_id == '') {
+       
         // إنشاء سيارة جديدة مع كافة البيانات الضرورية
         $vehicle = VehicleModel::create([
             'make_name' => $request->vehicle['brand'],
