@@ -421,21 +421,31 @@ class ContractController extends Controller
     }
 
 
-    public function saveAllSignatures(Request $request)
+    public function saveSignature(Request $request)
     {
         $request->validate([
-            'signature1' => 'required|string',
-            'signature2' => 'required|string',
+            'signature' => 'required|string',
         ]);
         
-        // حفظ التوقيع الأول
-        session()->put('contracts.signature', $request->input('signature1'));
-        
-        // حفظ التوقيع الثاني
-        session()->put('contracts.signature2', $request->input('signature2'));
+        echo $request;
+        session()->put('contracts.signature', $request->input('signature'));
     
-        return response()->json(['message' => 'All signatures saved successfully.']);
+        return response()->json(['message' => 'Signature saved successfully.']);
     }
+    
+
+    public function saveSignature2(Request $request)
+{
+    $request->validate([
+        'signature' => 'required|string',
+    ]);
+    
+    session()->put('contracts.signature2', $request->input('signature'));
+
+    return response()->json(['message' => 'Signature 2 saved successfully.']);
+}
+
+
 
     
     public function showCompleteForm($id)
