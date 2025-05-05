@@ -111,22 +111,21 @@ class ContractController extends Controller
                     'passport_issue_date' => $request->client['passport_issue_date']
                 ]
             ];
-         }
-        // else {
-        //     $clientId = $request->client_id;
+        } else {
+            $clientId = $request->client_id;
             
-        //     // التحقق من وجود بيانات العميل في user_clients
-        //     $client = User::with('userclient')->find($clientId);
+            // التحقق من وجود بيانات العميل في user_clients
+            $client = User::with('userclient')->find($clientId);
 
             
            
             
-        //     if (!$client || !$client->userclient) {
-        //         return redirect()->route('client.complete.form', $client)
-        //             ->with('redirect_to_contract', true)
-        //             ->with('contract_data', $request->except('_token'));
-        //     }
-        // }
+            if (!$client || !$client->userclient) {
+                return redirect()->route('client.complete.form', $client)
+                    ->with('redirect_to_contract', true)
+                    ->with('contract_data', $request->except('_token'));
+            }
+        }
         
        // معالجة بيانات السيارة
     if ($request->vehicle_id == '') {
@@ -153,9 +152,7 @@ class ContractController extends Controller
         ]);
         
         $vehicleId = $vehicle->id;
-    } 
-    
-    else {
+    } else {
         $vehicleId = $request->vehicle_id;
         $vehicle = VehicleModel::findOrFail($vehicleId);
         

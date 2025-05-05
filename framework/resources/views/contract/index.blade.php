@@ -566,7 +566,7 @@ $('#existing_vehicle').change(function() {
             
             if(startDate && endDate) {
                 var timeDiff = endDate.getTime() - startDate.getTime();
-                var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+                var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) ;
                 
                 if(dayDiff > 0) {
                     $('#duration').val(dayDiff);
