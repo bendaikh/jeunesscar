@@ -165,6 +165,8 @@ This functionality is most suited for meta entries that note exceptions to rules
    ];
 ```
 
+> **Note:** Make sure to use lowercase keys.
+
 #### Gotcha
 
 When you extend a model and still want to use the same meta table you must override `getMetaKeyName` function.
@@ -226,7 +228,7 @@ Or `set multiple metas and columns` at once:
 ```php
 ...
 $post->setAttributes([
-    'name' => 'hello world'; // model attribute
+    'name' => 'hello world', // model attribute
     'content' => 'Some content here',
     'views' => 1,
 ]);
@@ -362,6 +364,10 @@ $post->content;// will not retrieve meta
 unset($post->content);// will not unset meta
 isset($post->content);// will not check if meta exists
 ```
+
+#### Using Original `getAttribute` and `setAttribute` Methods
+
+Laravel meta overrides these Laravel methods for fluent access. If you’ve already disabled fluent access using the method above, these methods' behavior won't change. Otherwise, you can use `getAttributeRaw` and `setAttributeRaw` to access the original methods.
 
 #### Retrieving All Metas
 

@@ -22,9 +22,9 @@ trait Metable
 	 * whereMeta scope for easier join
 	 * -------------------------
 	 */
-	public function scopeWhereMeta($query, $key, $value, $alias = null) {
+	public function scopeWhereMeta($query, $key, $value, $alias = null, $operator = '=') {
 		$alias = (empty( $alias )) ? $this->getMetaTable() : $alias;
-		return $query->join( $this->getMetaTable() . ' AS ' . $alias, $this->getQualifiedKeyName(), '=', $alias . '.' . $this->getMetaKeyName() )->where( $alias . '.key', '=', $key )->where( $alias . '.value', '=', $value )->select( $this->getTable() . '.*' );
+		return $query->join( $this->getMetaTable() . ' AS ' . $alias, $this->getQualifiedKeyName(), '=', $alias . '.' . $this->getMetaKeyName() )->where( $alias . '.key', '=', $key )->where( $alias . '.value', $operator, $value )->select( $this->getTable() . '.*' );
 	}
 	
 	/**
@@ -417,6 +417,27 @@ trait Metable
 			array_merge( parent::toArray(), [
 				'meta_data' => $this->getMeta()->toArray(),
 			] );
+	}
+	
+	/**
+	 * Calls to laravel's getAttribute method.
+	 *
+	 * @param $key
+	 * @return mixed
+	 */
+	public function getAttributeRaw($key) {
+		return parent::getAttribute( $key );
+	}
+	
+	/**
+	 * Calls to laravel's setAttribute method.
+	 *
+	 * @param $key
+	 * @param $value
+	 * @return mixed
+	 */
+	public function setAttributeRaw($key, $value) {
+		return parent::setAttribute( $key, $value );
 	}
 	
 	/**

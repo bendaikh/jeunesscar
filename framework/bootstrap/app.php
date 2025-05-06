@@ -4,6 +4,10 @@ $app = new Illuminate\Foundation\Application(
 	realpath(__DIR__ . '/../')
 );
 
+$app->bind('path.public', function () {
+    return __DIR__ . '/../public'; // أو __DIR__ إذا كنت تشغّل من هناك
+});
+
 $app->singleton(
 	Illuminate\Contracts\Http\Kernel::class,
 	App\Http\Kernel::class

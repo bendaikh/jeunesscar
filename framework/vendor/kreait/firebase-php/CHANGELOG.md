@@ -1,6 +1,176 @@
 # CHANGELOG
 
+## The future of the Firebase Admin PHP SDK
+
+Please read about the future of the Firebase Admin PHP SDK on the
+[SDK's GitHub Repository](https://github.com/kreait/firebase-php).
+
 ## [Unreleased]
+
+## [7.18.0] - 2025-03-08
+
+### Added
+
+* It is now possible to configure multi factor authentication for a user.
+
+## [7.17.0] - 2025-02-22
+
+### Added
+
+* FCM Error responses with status code `502` are now caught and converted to `ServerUnavailable` exceptions.
+
+## [7.16.1] - 2025-01-20
+
+### Fixed
+
+* It wasn't possible to upgrade the SDK to a newer version because it required a `lcobucci/jwt` release that doesn't
+  support PHP 8.1 anymore. This was fixed by changing the version requirement from `^5.4.2` to `^5.3`.
+
+## [7.16.0] - 2024-11-17
+
+### Added
+
+* It is now possible to override the Guzzle HTTP handler by using the `HttpClientOptions::withGuzzleHandler()` method.
+  ([#956](https://github.com/kreait/firebase-php/pull/956))
+
+### Changed
+
+* The Messaging component doesn't rely on the `CloudMessage` class for message handling anymore. If you provide a
+  message as an array and it has an error, the Firebase API will report it. You can still use the `CloudMessage`
+  class as a message builder
+* Deprecated the `CloudMessage::withTarget()` method, use the new `toToken()`, `toTopic()` or `toCondition()` methods instead
+
+### Deprecated
+
+* `Kreait\Firebase\Messaging\CloudMessage::withTarget()` 
+* `Kreait\Firebase\Messaging\CloudMessage::withChangedTarget()` 
+* `Kreait\Firebase\Messaging\CloudMessage::target()`
+* `Kreait\Firebase\Messaging\CloudMessage::hasTarget()`
+
+## [7.15.0] - 2024-09-11
+
+### Added
+
+* Added support for [rollout parameter values](https://firebase.google.com/docs/reference/remote-config/rest/v1/RemoteConfig#RolloutValue)
+  in Remote Config Templates. 
+  ([#923](https://github.com/kreait/firebase-php/pull/923)), ([#927](https://github.com/kreait/firebase-php/pull/927))
+  * Please note that it's not (yet?) possible to create rollouts programmatically via the Firebase API. This means that 
+    you have to manually create a rollout in the Firebase console to be able to reference it in the Remote Config 
+    template.  Rollout IDs are named `rollout_<number>`, and you can find the ID in the URL after clicking on a rollout in the list.
+
+## [7.14.0] - 2024-08-21
+
+### Added
+
+* Added support for PHP 8.4.
+  * Please note: While the SDK supports PHP 8.4, not all dependencies support it. If you want to use the SDK with
+    PHP 8.4, you probably will need to ignore platform requirements when working with Composer, by setting the
+    [appropriate environment variables](https://getcomposer.org/doc/03-cli.md#composer-ignore-platform-req-or-composer-ignore-platform-reqs) 
+    or [`composer` CLI options]() when running `composer install/update/require`.
+
+### Deprecated
+
+* Firebase Dynamic Links is deprecated and should not be used in new projects. The service will shut down on 
+  August 25, 2025. The component will remain in the SDK until then, but as the Firebase service is deprecated,
+  this component is also deprecated.
+  ([Dynamic Links Deprecation FAQ](https://firebase.google.com/support/dynamic-links-faq))
+
+## [7.13.1] - 2024-07-02
+
+### Fixed
+
+* Requests to the FCM APIs will not use HTTP/2 if the environment doesn't support them
+  ([#888](https://github.com/kreait/firebase-php/pull/888), [#908](https://github.com/kreait/firebase-php/pull/908))
+
+## [7.13.0] - 2024-06-23
+
+### Changed
+
+* Service Account auto-discovery was done on instantiation of the Factory, causing it to fail when credentials weren't
+  ready yet. It will now be done the first time a component is to be instantiated.
+
+## [7.12.0] - 2024-05-26
+
+### Fixed
+
+* Fix `WebPushNotification` Shape
+  ([#895](https://github.com/kreait/firebase-php/pull/895))
+* Catch `Throwable` and let the exception converter handle details
+  ([#896](https://github.com/kreait/firebase-php/pull/896))
+
+## [7.11.0] - 2024-05-16
+
+### Added
+
+* It is now possible to get a Remote Config template by its version number.
+  ([#890](https://github.com/kreait/firebase-php/pull/890))
+
+## [7.10.0] - 2024-04-25
+
+### Changed
+
+* FCM Messages are now sent asynchronously using HTTP connection pooling with HTTP/2. This should improve performance 
+  when sending messages to many devices. 
+  ([#874](https://github.com/kreait/firebase-php/pull/874))
+
+## [7.9.1] - 2023-12-04
+
+### Changed
+
+* Re-enabled the use of `psr/http-message` v1.0
+  ([#850](https://github.com/kreait/firebase-php/issues/850))
+
+## [7.9.0] - 2023-11-30
+
+### Added
+
+* Added support for PHP 8.3
+
+## [7.8.0] - 2023-11-25
+
+### Added
+
+* Added `Kreait\Firebase\Factory::withFirestoreClientConfig()` to support setting additional options when 
+  creating the Firestore component.
+  ([Documentation](https://firebase-php.readthedocs.io/en/latest/cloud-firestore.html#add-firestore-configuration-options))
+* Added `Kreait\Firebase\Factory::withFirestoreDatabase()` to specify the database used when creating the Firestore 
+  component.
+  ([Documentation](https://firebase-php.readthedocs.io/en/latest/cloud-firestore.html#use-another-firestore-database))
+
+## [7.7.0] - 2023-11-25
+
+### Changed
+
+* Required transitive dependencies directly ([#842](https://github.com/kreait/firebase-php/issues/842))
+```json5
+{
+  "require": {
+    // ...
+    "ext-filter": "*",
+    "guzzlehttp/promises": "^2.0",
+    "guzzlehttp/psr7": "^2.6",
+    "psr/clock": "^1.0",
+    "psr/http-client": "^1.0",
+    "psr/http-factory": "^1.0",
+    "psr/http-message": "^2.0",
+  }
+}
+```
+
+
+## [7.6.0] - 2023-09-07
+
+### Added
+
+* The `Kreait\Firebase\Exception\Messaging\NotFound` exception now exposes the token that hasn't been found 
+  with the `token()` method.
+  ([#825](https://github.com/kreait/firebase-php/issues/825))
+
+## [7.5.2] - 2023-06-29
+
+### Added
+
+* Added FCM error handling to the documentation
 
 ## [7.5.1] - 2023-06-29
 
@@ -139,9 +309,26 @@ See **[UPGRADE-7.0](UPGRADE-7.0.md) for more details on the changes between 6.x 
 
 ## 6.x Changelog
 
-https://github.com/kreait/firebase-php/blob/6.x/CHANGELOG.md
+https://github.com/kreait/firebase-php/blob/6.9.6/CHANGELOG.md
 
-[Unreleased]: https://github.com/kreait/firebase-php/compare/7.5.1...7.x
+[Unreleased]: https://github.com/kreait/firebase-php/compare/7.18.0...7.x
+[7.18.0]: https://github.com/kreait/firebase-php/compare/7.17.0...7.18.0
+[7.17.0]: https://github.com/kreait/firebase-php/compare/7.16.1...7.17.0
+[7.16.1]: https://github.com/kreait/firebase-php/compare/7.16.0...7.16.1
+[7.16.0]: https://github.com/kreait/firebase-php/compare/7.15.0...7.16.0
+[7.15.0]: https://github.com/kreait/firebase-php/compare/7.14.0...7.15.0
+[7.14.0]: https://github.com/kreait/firebase-php/compare/7.13.1...7.14.0
+[7.13.1]: https://github.com/kreait/firebase-php/compare/7.13.0...7.13.1
+[7.13.0]: https://github.com/kreait/firebase-php/compare/7.12.0...7.13.0
+[7.12.0]: https://github.com/kreait/firebase-php/compare/7.11.0...7.12.0
+[7.11.0]: https://github.com/kreait/firebase-php/compare/7.10.0...7.11.0
+[7.10.0]: https://github.com/kreait/firebase-php/compare/7.9.1...7.10.0
+[7.9.1]: https://github.com/kreait/firebase-php/compare/7.9.0...7.9.1
+[7.9.0]: https://github.com/kreait/firebase-php/compare/7.8.0...7.9.0
+[7.8.0]: https://github.com/kreait/firebase-php/compare/7.7.0...7.8.0
+[7.7.0]: https://github.com/kreait/firebase-php/compare/7.6.0...7.7.0
+[7.6.0]: https://github.com/kreait/firebase-php/compare/7.5.2...7.6.0
+[7.5.2]: https://github.com/kreait/firebase-php/compare/7.5.1...7.5.2
 [7.5.1]: https://github.com/kreait/firebase-php/compare/7.5.0...7.5.1
 [7.5.0]: https://github.com/kreait/firebase-php/compare/7.3.1...7.5.0
 [7.4.0]: https://github.com/kreait/firebase-php/compare/7.3.1...7.4.0

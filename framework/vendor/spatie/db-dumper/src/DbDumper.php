@@ -35,6 +35,8 @@ abstract class DbDumper
 
     protected array $extraOptionsAfterDbName = [];
 
+    protected bool $appendMode = false;
+
     protected ?object $compressor = null;
 
     public static function create(): static
@@ -115,7 +117,7 @@ abstract class DbDumper
         return $this;
     }
 
-    public function setDumpBinaryPath(string $dumpBinaryPath): self
+    public function setDumpBinaryPath(string $dumpBinaryPath = ''): self
     {
         if ($dumpBinaryPath !== '' && ! str_ends_with($dumpBinaryPath, '/')) {
             $dumpBinaryPath .= '/';
@@ -133,6 +135,10 @@ abstract class DbDumper
 
     public function useCompressor(Compressor $compressor): self
     {
+        if ($this->appendMode) {
+            throw CannotSetParameter::conflictingParameters('compressor', 'append mode');
+        }
+
         $this->compressor = $compressor;
 
         return $this;
@@ -245,6 +251,10 @@ abstract class DbDumper
 
         if ($this->compressor) {
             return $this->getCompressCommand($command, $dumpFile);
+        }
+
+        if ($this->appendMode) {
+            return $command . ' >> ' . $dumpFile;
         }
 
         return $command . ' > ' . $dumpFile;

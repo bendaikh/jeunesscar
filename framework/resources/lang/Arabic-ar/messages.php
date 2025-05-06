@@ -11,6 +11,15 @@ return [
 	'next' => 'الخطوة التالية',
 	'finish' => 'تثبيت',
 
+
+	'current_cashez_image' => 'الصورة الحالية لـ Cashez',
+    'current_logo_image'   => 'الصورة الحالية لـ Logo',
+    'choose_new_image'     => 'اختر صورة جديدة',
+    'upload_cashez_image'  => 'رفع صورة جديدة لـ Cashez',
+    'upload_logo_image'    => 'رفع صورة جديدة لـ Logo',
+    'no_image_available'   => 'لا توجد صورة متوفرة حالياً',
+	'change_logos' => 'تغيير الشعارات',
+
 	/**
 	 *
 	 * Home page translations.

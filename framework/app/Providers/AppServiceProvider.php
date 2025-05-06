@@ -38,5 +38,14 @@ class AppServiceProvider extends ServiceProvider {
 			ClientCommand::class,
 			KeysCommand::class,
 		]);
+
+
+		$this->app->bind('path.public', function () {
+			return base_path('/framework/public'); // عدّل المسار إذا كنت تستخدم اسم مختلف أو مسار مخصص
+		});
 	}
+
+
+
+
 }

@@ -1,6 +1,42 @@
 # CHANGELOG
 
-## Unreleased
+## 5.10.0 - 2024-11-22
+
+* Added support for PHP 8.4
+
+## 5.9.1 - 2024-06-23
+
+* Revert making the Service provider deferrable. The auto discovery problem is hopefully still fixed because of
+  the change in the latest version of the SDK.
+
+## 5.9.0 - 2024-06-23
+
+* Service Provider Registration is now deferred. This should fix the credentials auto discovery in Laravel's 
+  package discovery stage
+  ([#210](https://github.com/kreait/laravel-firebase/pull/210))
+
+## 5.8.0 - 2024-03-13
+
+* Added support for Laravel 11 
+  ([#214](https://github.com/kreait/laravel-firebase/pull/214))
+
+## 5.7.0 - 2024-02-19
+
+* Enabled using `symfony/cache:^7`
+
+## 5.6.0 - 2024-01-13
+
+* Added support for overriding the name of the Firestore Default Database
+  ([#209](https://github.com/kreait/laravel-firebase/pull/209))
+
+## 5.5.0 - 2023-11-30
+
+* Added support for PHP 8.3
+
+## 5.4.0 - 2023-10-05
+
+* Added support for configuration of credentials with a config array
+  ([#202](https://github.com/kreait/laravel-firebase/pull/202))
 
 ## 5.3.0 - 2023-07-26
 

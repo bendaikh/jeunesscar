@@ -748,6 +748,15 @@ input:checked + .slider:before {
                     </a>
                   </li>
                   @endcan
+
+                  @can('Users list')
+                  <li class="nav-item">
+                    <a href="{{ route('contract')}}" class="nav-link @if(Request::is('admin/users*')) active @endif">
+                      <i class="fa fa-user nav-icon"></i>
+                      <p>@lang('fleet.contractService')</p>
+                    </a>
+                  </li>
+                  @endcan
                   @can('Customer list')
                   <li class="nav-item">
                     <a href="{{ route('customers.index')}}"

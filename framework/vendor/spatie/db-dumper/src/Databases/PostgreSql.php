@@ -12,6 +12,8 @@ class PostgreSql extends DbDumper
 
     protected bool $createTables = true;
 
+    protected bool $includeData = true;
+
     /** @var false|resource */
     private $tempFileHandle;
 
@@ -60,6 +62,10 @@ class PostgreSql extends DbDumper
             $command[] = '--data-only';
         }
 
+        if (! $this->includeData) {
+            $command[] = '--schema-only';
+        }
+
         foreach ($this->extraOptions as $extraOption) {
             $command[] = $extraOption;
         }
@@ -79,7 +85,7 @@ class PostgreSql extends DbDumper
     {
         $contents = [
             $this->escapeCredentialEntry($this->host),
-            $this->escapeCredentialEntry($this->port),
+            $this->escapeCredentialEntry((string) $this->port),
             $this->escapeCredentialEntry($this->dbName),
             $this->escapeCredentialEntry($this->userName),
             $this->escapeCredentialEntry($this->password),
@@ -116,6 +122,13 @@ class PostgreSql extends DbDumper
     public function doNotCreateTables(): self
     {
         $this->createTables = false;
+
+        return $this;
+    }
+
+    public function doNotDumpData(): self
+    {
+        $this->includeData = false;
 
         return $this;
     }

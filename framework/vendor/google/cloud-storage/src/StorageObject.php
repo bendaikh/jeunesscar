@@ -57,6 +57,7 @@ class StorageObject
 
     /**
      * @var ConnectionInterface Represents a connection to Cloud Storage.
+     * @internal
      */
     protected $connection;
 
@@ -77,7 +78,8 @@ class StorageObject
 
     /**
      * @param ConnectionInterface $connection Represents a connection to Cloud
-     *        Storage.
+     *        Storage. This object is created by StorageClient,
+     *        and should not be instantiated outside of this client.
      * @param string $name The object's name.
      * @param string $bucket The name of the bucket the object is contained in.
      * @param string $generation [optional] The generation of the object.
@@ -222,6 +224,18 @@ class StorageObject
      *           Acceptable values include, `"authenticatedRead"`,
      *           `"bucketOwnerFullControl"`, `"bucketOwnerRead"`, `"private"`,
      *           `"projectPrivate"`, and `"publicRead"`.
+     *     @type array $retention The full list of available options are outlined
+     *           at the [JSON API docs](https://cloud.google.com/storage/docs/json_api/v1/objects/update#request-body).
+     *     @type string $retention.retainUntilTime The earliest time in RFC 3339
+     *           UTC "Zulu" format that the object can be deleted or replaced.
+     *           This is the retention configuration set for this object.
+     *     @type string $retention.mode The mode of the retention configuration,
+     *           which can be either `"Unlocked"` or `"Locked"`.
+     *     @type bool $overrideUnlockedRetention Applicable for objects that
+     *           have an unlocked retention configuration. Required to be set to
+     *           `true` if the operation includes a retention property that
+     *           changes the mode to `Locked`, reduces the `retainUntilTime`, or
+     *           removes the retention configuration from the object.
      *     @type string $projection Determines which properties to return. May
      *           be either 'full' or 'noAcl'.
      *     @type string $fields Selector which will cause the response to only
@@ -464,6 +478,76 @@ class StorageObject
     }
 
     /**
+     * Move an object within a bucket with HNS enabled.
+     *
+     * This method copies data using multiple requests so large objects can be
+     * copied with a normal length timeout per request rather than one very long
+     * timeout for a single request.
+     *
+     * Example:
+     * ```
+     * // Provide your destination object as a string.
+     * $moveObject = $object->move('newObject.txt');
+     * ```
+     *
+     * @see https://cloud.google.com/storage/docs/json_api/v1/objects/move Objects move API documentation.
+     *
+     * @param string $destinationObject The destination object.
+     * @param array $options [optional]
+     *     Configuration options.
+     *
+     *     @type string $ifGenerationMatch Makes the operation conditional on
+     *           whether the destination object's current generation matches the
+     *           given value.
+     *     @type string $ifGenerationNotMatch Makes the operation conditional on
+     *           whether the destination object's current generation does not
+     *           match the given value.
+     *     @type string $ifMetagenerationMatch Makes the operation conditional
+     *           on whether the destination object's current metageneration
+     *           matches the given value.
+     *     @type string $ifMetagenerationNotMatch Makes the operation
+     *           conditional on whether the destination object's current
+     *           metageneration does not match the given value.
+     *     @type string $ifSourceGenerationMatch Makes the operation conditional
+     *           on whether the source object's current generation matches the
+     *           given value.
+     *     @type string $ifSourceGenerationNotMatch Makes the operation
+     *           conditional on whether the source object's current generation
+     *           does not match the given value.
+     *     @type string $ifSourceMetagenerationMatch Makes the operation
+     *           conditional on whether the source object's current
+     *           metageneration matches the given value.
+     *     @type string $ifSourceMetagenerationNotMatch Makes the operation
+     *           conditional on whether the source object's current
+     *           metageneration does not match the given value.
+     *
+     * @return StorageObject
+     * @throws \InvalidArgumentException
+     */
+    public function move($destinationObject, array $options = [])
+    {
+        if (!is_string($destinationObject)) {
+            throw new \InvalidArgumentException(
+                '$destinationObject must be a string.'
+            );
+        }
+        $options['bucket'] = $this->identity['bucket'];
+        $options['sourceObject'] = $this->identity['object'];
+        $options['destinationObject'] = $destinationObject;
+        $options['userProject'] = $this->identity['userProject'];
+
+        $response = $this->connection->moveObject($options);
+
+        return new StorageObject(
+            $this->connection,
+            $response['name'],
+            $response['bucket'],
+            $response['generation'],
+            $response + ['requesterProjectId' => $this->identity['userProject']]
+        );
+    }
+
+    /**
      * Renames the object.
      *
      * Please note that there is no atomic rename provided by the Storage API.
@@ -546,7 +630,7 @@ class StorageObject
      * Download an object as a string.
      *
      * For an example of setting the range header to download a subrange of the
-     * object please see {@see Google\Cloud\Storage\StorageObject::downloadAsStream()}.
+     * object please see {@see StorageObject::downloadAsStream()}.
      *
      * Example:
      * ```
@@ -580,7 +664,7 @@ class StorageObject
      * Download an object to a specified location.
      *
      * For an example of setting the range header to download a subrange of the
-     * object please see {@see Google\Cloud\Storage\StorageObject::downloadAsStream()}.
+     * object please see {@see StorageObject::downloadAsStream()}.
      *
      * Example:
      * ```
@@ -684,7 +768,7 @@ class StorageObject
      * Asynchronously download an object as a stream.
      *
      * For an example of setting the range header to download a subrange of the
-     * object please see {@see Google\Cloud\Storage\StorageObject::downloadAsStream()}.
+     * object please see {@see StorageObject::downloadAsStream()}.
      *
      * Example:
      * ```
@@ -763,10 +847,10 @@ class StorageObject
      * Token Creator" IAM role.
      *
      * Additionally, signing using IAM requires different scopes. When creating
-     * an instance of {@see Google\Cloud\Storage\StorageClient}, provide the
+     * an instance of {@see StorageClient}, provide the
      * `https://www.googleapis.com/auth/cloud-platform` scopein `$options.scopes`.
      * This scope may be used entirely in place of the scopes provided in
-     * {@see Google\Cloud\Storage\StorageClient}.
+     * {@see StorageClient}.
      *
      * App Engine and Compute Engine will attempt to sign URLs using IAM.
      *
@@ -811,7 +895,7 @@ class StorageObject
      * @see https://cloud.google.com/storage/docs/access-control/signed-urls Signed URLs
      *
      * @param Timestamp|\DateTimeInterface|int $expires Specifies when the URL
-     *        will expire. May provide an instance of {@see Google\Cloud\Core\Timestamp},
+     *        will expire. May provide an instance of {@see \Google\Cloud\Core\Timestamp},
      *        [http://php.net/datetimeimmutable](`\DateTimeImmutable`), or a
      *        UNIX timestamp as an integer.
      * @param array $options {
@@ -904,7 +988,7 @@ class StorageObject
     /**
      * Create a Signed Upload URL for this object.
      *
-     * This method differs from {@see Google\Cloud\Storage\StorageObject::signedUrl()}
+     * This method differs from {@see StorageObject::signedUrl()}
      * in that it allows you to initiate a new resumable upload session. This
      * can be used to allow non-authenticated users to insert an object into a
      * bucket.
@@ -915,7 +999,7 @@ class StorageObject
      * more information.
      *
      * If you prefer to skip this initial step, you may find
-     * {@see Google\Cloud\Storage\StorageObject::beginSignedUploadSession()} to
+     * {@see StorageObject::beginSignedUploadSession()} to
      * fit your needs. Note that `beginSignedUploadSession()` cannot be used
      * with Google Cloud PHP's Signed URL Uploader, and does not support a
      * configurable expiration date.
@@ -933,7 +1017,7 @@ class StorageObject
      * ```
      *
      * @param Timestamp|\DateTimeInterface|int $expires Specifies when the URL
-     *        will expire. May provide an instance of {@see Google\Cloud\Core\Timestamp},
+     *        will expire. May provide an instance of {@see \Google\Cloud\Core\Timestamp},
      *        [http://php.net/datetimeimmutable](`\DateTimeImmutable`), or a
      *        UNIX timestamp as an integer.
      * @param array $options {
@@ -1014,7 +1098,7 @@ class StorageObject
      * Create a signed URL upload session.
      *
      * The returned URL differs from the return value of
-     * {@see Google\Cloud\Storage\StorageObject::signedUploadUrl()} in that it
+     * {@see StorageObject::signedUploadUrl()} in that it
      * is ready to accept upload data immediately via an HTTP PUT request.
      *
      * Because an upload session is created by the client, the expiration date

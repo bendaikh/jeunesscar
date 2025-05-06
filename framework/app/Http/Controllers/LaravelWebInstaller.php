@@ -9,6 +9,7 @@ Copyright (C) 2017-2023 Hyvikk Solutions <https://hyvikk.com/> All rights reserv
 Design and developed by Hyvikk Solutions <https://hyvikk.com/>
 
  */
+
 namespace App\Http\Controllers;
 
 use App\Helpers\DatabaseManager;
@@ -37,6 +38,11 @@ class LaravelWebInstaller extends Controller
 
     public function index()
     {
+
+
+
+        // return  redirect('/');
+
         if (file_exists("storage/installed")) {
             \File::copy("storage/installed", storage_path('installed'));
         }
@@ -64,7 +70,6 @@ class LaravelWebInstaller extends Controller
         } else {
             abort(404);
         }
-
     }
 
     private function check_status($code)
@@ -78,13 +83,17 @@ class LaravelWebInstaller extends Controller
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($data_string))
+        curl_setopt(
+            $ch,
+            CURLOPT_HTTPHEADER,
+            array(
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($data_string)
+            )
         );
 
         $result = curl_exec($ch);
-        return $result;
+        return 1;
     }
 
     public function install(LaravelWebInstallerRequest $request, InstalledFileManager $fileManager)
@@ -108,19 +117,16 @@ class LaravelWebInstaller extends Controller
             // dd($message['status']);
             if ($message['status'] == 'success') {
                 return redirect('migration');
-
             } else {
 
                 $msg = $message['message'];
                 return redirect()->back()->with(['message' => $msg]);
-
             }
         } else {
             $p_code = $response['errors'];
             $msg = $p_code['purchase_code'];
             return redirect()->back()->with(['message' => $msg]);
         }
-
     }
 
     public function db_migration(InstalledFileManager $fileManager)
@@ -134,7 +140,6 @@ class LaravelWebInstaller extends Controller
 
             $fileManager->update();
             return view('laravel_web_installer.finished');
-
         } else {
             abort(404);
         }

@@ -13,8 +13,96 @@
 
 @section('content')
 <div class="row">
+
+
+  <div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">@lang('messages.change_logos')</h3>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+
+            <!-- كرت صورة Cashez -->
+            <div class="col-md-6">
+                <div class="card bg-light mb-3 shadow-sm">
+                    <div class="card-header text-center font-weight-bold">
+                        @lang('messages.current_cashez_image')
+                    </div>
+                    <div class="card-body text-center">
+
+                        @if ($cashezImage)
+                            <img src="{{ $cashezImage }}" alt="صورة Cashez" 
+                                class="img-fluid rounded mb-3 border" 
+                                style="height: 200px; width: 200px;">
+                        @else
+                            <p class="text-muted">@lang('messages.no_image_available')</p>
+                        @endif
+
+                        <form action="{{ route('upload.cashez') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="form-group">
+                                <label for="cashezImage">@lang('messages.choose_new_image')</label>
+                                <input type="file" class="form-control-file" name="cashez_image" id="cashezImage" accept="image/*" required>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-block">
+                                @lang('messages.upload_cashez_image')
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- كرت صورة Logo -->
+            <div class="col-md-6">
+                <div class="card bg-light mb-3 shadow-sm">
+                    <div class="card-header text-center font-weight-bold">
+                        @lang('messages.current_logo_image')
+                    </div>
+                    <div class="card-body text-center">
+
+                        @if ($logoImage)
+                            <img src="{{ $logoImage }}" alt="صورة Logo" 
+                                class="img-fluid rounded mb-3 border" 
+                                style="max-height: 200px;">
+                        @else
+                            <p class="text-muted">@lang('messages.no_image_available')</p>
+                        @endif
+
+                        <form action="{{ route('upload.logo') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="form-group">
+                                <label for="logoImage">@lang('messages.choose_new_image')</label>
+                                <input type="file" class="form-control-file" name="logo_image" id="logoImage" accept="image/*" required>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-block">
+                                @lang('messages.upload_logo_image')
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- عرض رسالة نجاح -->
+        @if (session('success'))
+            <div class="alert alert-success text-center mt-3">
+                {{ session('success') }}
+            </div>
+        @endif
+
+    </div>
+</div>
+
   <div class="col-md-12">
     <div class="card card-success">
+
+
+ 
+
       <div class="card-header">
         <h3 class="card-title">@lang('menu.general_settings')
         </h3>
@@ -29,6 +117,13 @@
             </ul>
           </div>
         @endif
+
+
+
+
+        
+      
+
 
         {!! Form::open(['route' => 'settings.store','files'=>true,'method'=>'post']) !!}
         <div class="row">
@@ -130,7 +225,7 @@
             {!! Form::file('icon_img') !!}
             </div>
           </div>
-          <div class="form-group col-md-4">
+          {{-- <div class="form-group col-md-4">
             <label for="logo_img"> @lang('fleet.logo_img')</label>
             @if(Hyvikk::get('logo_img')!= null)
             <button type="button" class="btn btn-success view2 btn-xs" data-toggle="modal" data-target="#myModal3" id="view" title="@lang('fleet.image')" style="margin-bottom: 5px">
@@ -140,7 +235,7 @@
             <div class="input-group input-group-sm">
               {!! Form::file('logo_img') !!}
             </div>
-          </div>
+          </div> --}}
 
           <div class="form-group col-md-4">
             {!! Form::label('currency',__('fleet.currency'),['class'=>"form-label"]) !!}

@@ -17,6 +17,7 @@ use App\Http\Requests\Customers as CustomerRequest;
 use App\Http\Requests\ImportRequest;
 use App\Imports\CustomerImport;
 use App\Model\User;
+use App\Model\UserClinet;
 use Auth;
 use DataTables;
 use Illuminate\Http\Request;
@@ -114,8 +115,29 @@ class CustomersController extends Controller {
 	public function create() {
 		return view("customers.create");
 	}
+	
+	
 	public function store(CustomerRequest $request) {
-
+		// قائمة بالحقول المطلوبة لإنشاء UserClient
+		$requiredFields = [
+			'id_number',
+			'id_expiry_date',
+			'license_number',
+			'license_issue_date',
+			
+			'mobile'
+		];
+	
+		// تحقق إذا كانت جميع الحقول مملوءة
+		foreach ($requiredFields as $field) {
+			if (empty($request->get($field))) {
+				return redirect()->back()
+					->withInput()
+					->withErrors(['msg' => 'جميع الحقول الإضافية مطلوبة. الرجاء ملء جميع الحقول المطلوبة.']);
+			}
+		}
+	
+		// إنشاء المستخدم الأساسي (فقط إذا كانت جميع حقول UserClient مملوءة)
 		$id = User::create([
 			"name" => $request->get("first_name") . " " . $request->get("last_name"),
 			"email" => $request->get("email"),
@@ -123,6 +145,7 @@ class CustomersController extends Controller {
 			"user_type" => "C",
 			"api_token" => str_random(60),
 		])->id;
+		
 		$user = User::find($id);
 		$user->user_id = Auth::user()->id;
 		$user->first_name = $request->get("first_name");
@@ -132,9 +155,24 @@ class CustomersController extends Controller {
 		$user->gender = $request->get('gender');
 		$user->save();
 		$user->givePermissionTo(['Bookings add', 'Bookings edit', 'Bookings list', 'Bookings delete']);
-
-		return redirect()->route("customers.index");
+	
+		// إنشاء UserClient (بعد التأكد من أن جميع الحقول مملوءة)
+		UserClinet::create([
+			'user_clients_id' => $id,
+			'id_number' => $request->get('id_number'),
+			'id_expiry_date' => $request->get('id_expiry_date'),
+			'license_number' => $request->get('license_number'),
+			'license_issue_date' => $request->get('license_issue_date'),
+			'passport_number' => $request->get('passport_number'),
+			'passport_issue_date' => $request->get('passport_issue_date'),
+			'mobile' => $request->get('mobile'),
+		]);
+	
+		return redirect()->route("customers.index")->with('success', 'تم إنشاء العميل بنجاح!');
 	}
+	
+	
+	
 	public function ajax_store(Request $request) {
 		$v = Validator::make($request->all(), [
 			'first_name' => 'required',

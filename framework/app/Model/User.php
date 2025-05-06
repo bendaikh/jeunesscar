@@ -13,6 +13,7 @@ Design and developed by Hyvikk Solutions <https://hyvikk.com/>
 namespace App\Model;
 
 use App\Model\VehicleModel;
+use App\Model\UserClinet;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -59,6 +60,11 @@ class User extends Authenticatable {
 
 	public function vehicles() {
 		return $this->belongsToMany(VehicleModel::class, 'driver_vehicle', 'driver_id', 'vehicle_id', 'id', 'id')->using(DriverVehicleModel::class);
+	}
+
+	public function userclient()
+	{
+		return $this->hasOne(UserClinet::class,'user_clients_id', 'id');
 	}
 
 	// public function getUserMeta($key = '', $defaut = '') {
