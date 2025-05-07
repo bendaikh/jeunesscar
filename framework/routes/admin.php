@@ -71,10 +71,34 @@ Route::namespace('Admin')->group(function () {
 
                 Route::post('/users-fetch', 'UsersController@fetch_data');
                 Route::get('/contract', 'ContractController@index')->name('contract');
+
+
+                
                 Route::post('/save-signature', [ContractController::class, 'saveSignature'])->name('save.signature');
                 Route::post('/save-signature2', [ContractController::class, 'saveSignature2'])->name('save.signature2');
-                Route::post('/contract/store', [ContractController::class, 'store'])->name('contract.store');
-                Route::get('/contract/view', 'ContractController@view')->name('contract.view');
+                // Route::post('/contract/store', [ContractController::class, 'store'])->name('contract.store');
+                // Route::get('/contract/view', 'ContractController@view')->name('contract.view');
+                // Route::get('/contract/create', 'ContractController@create')->name('contract.create');
+
+
+               
+
+
+                Route::prefix('contract')->group(function () {
+                        Route::get('/', [ContractController::class, 'index'])->name('contract');
+                        Route::get('/g/{id}', [ContractController::class, 'show'])->name('contract.show');
+                        Route::get('/g/{id}/edit', [ContractController::class, 'edit'])->name('contract.edit');
+                        Route::put('/g/{id}', [ContractController::class, 'update'])->name('contract.update');
+                        
+                        // الروتس الحالية
+                        // Route::post('/save-signature', [ContractController::class, 'saveSignature'])->name('save.signature');
+                        // Route::post('/save-signature2', [ContractController::class, 'saveSignature2'])->name('save.signature2');
+                        Route::post('/store', [ContractController::class, 'store'])->name('contract.store');
+                        Route::get('/view', [ContractController::class, 'view'])->name('contract.view');
+                       // Route::get('/create', [ContractController::class, 'create'])->name('contract.create');
+                       Route::get('/create', 'ContractController@create')->name('contract.create');
+                        Route::get('/generate-pdf', [ContractController::class, 'generatePDF'])->name('contract.generatePDF');
+                    });
 
 
 
@@ -87,7 +111,7 @@ Route::namespace('Admin')->group(function () {
                     
 
 
-                Route::get('/contract/generate-pdf', [ContractController::class, 'generatePDF'])->name('contract.generatePDF');
+              //  Route::get('/contract/generate-pdf', [ContractController::class, 'generatePDF'])->name('contract.generatePDF');
                 Route::resource('/users', 'UsersController');
 
                 Route::get('client/complete/{id}', [ContractController::class, 'showCompleteForm'])->name('client.complete.form');

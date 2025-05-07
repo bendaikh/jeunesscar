@@ -316,7 +316,7 @@
         <tr>
             <td style="width: 30%; text-align: center; vertical-align: middle;">
                 <div class="logo-container">
-                    <img src="{{ asset('assets/images/logo.png') }}" style="max-height: 50px; margin-bottom: 5px;">
+                    <img src="{{ asset('assets/images/logo.png') }}" style="max-height: 100px; margin-bottom: 5px;">
                     <div style="font-weight: bold; color: #2a5885;">Location de voitures</div>
                 </div>
             </td>

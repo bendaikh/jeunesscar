@@ -1076,11 +1076,13 @@ class ComposerStaticInit4dc487e6e6d645aa55363354b83fe0af
     );
 
     public static $classMap = array (
+        'App\\AdditionalDriver' => __DIR__ . '/../..' . '/app/AdditionalDriver.php',
         'App\\Console\\Commands\\EmailNotification' => __DIR__ . '/../..' . '/app/Console/Commands/EmailNotification.php',
         'App\\Console\\Commands\\NotificationsCommand' => __DIR__ . '/../..' . '/app/Console/Commands/NotificationsCommand.php',
         'App\\Console\\Commands\\PushNotification' => __DIR__ . '/../..' . '/app/Console/Commands/PushNotification.php',
         'App\\Console\\Commands\\VersionAutoUpdate' => __DIR__ . '/../..' . '/app/Console/Commands/VersionAutoUpdate.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
+        'App\\Contract' => __DIR__ . '/../..' . '/app/Contract.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Helpers\\DatabaseManager' => __DIR__ . '/../..' . '/app/Helpers/DatabaseManager.php',
         'App\\Helpers\\EnvironmentManager' => __DIR__ . '/../..' . '/app/Helpers/EnvironmentManager.php',
