@@ -125,7 +125,7 @@ class CustomersController extends Controller {
 			'license_number',
 			'license_issue_date',
 			
-			'mobile'
+			
 		];
 	
 		// تحقق إذا كانت جميع الحقول مملوءة
