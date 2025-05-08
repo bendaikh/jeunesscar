@@ -818,9 +818,7 @@ class BookingsController extends Controller {
     $booking->journey_time = date('H:i:s', strtotime($booking->pickup));
     $booking->save();
 
-    $this->booking_notification($booking->id);
-    $this->sms_notification($booking->id);
-    $this->push_notification($booking->id);
+   
 
     if (Hyvikk::email_msg('email') == 1) {
         if (!empty($booking->customer) && !empty($booking->customer->email)) {
@@ -828,6 +826,10 @@ class BookingsController extends Controller {
         }
 
         if (!empty($booking->driver) && !empty($booking->driver->email)) {
+
+			$this->booking_notification($booking->id);
+			$this->sms_notification($booking->id);
+			$this->push_notification($booking->id);
             Mail::to($booking->driver->email)->send(new DriverBooked($booking));
         }
     }

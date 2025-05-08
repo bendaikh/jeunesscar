@@ -57,8 +57,12 @@ class ContractController extends Controller
         $vehicles = VehicleModel::where('in_service', 1)
         ->select('id', 'make_name', 'license_plate', 'fuel_type', 'start_km', 'int_mileage')
         ->get();
+
+        $models = VehicleModel::groupBy('model_name')
+        ->pluck('model_name')
+        ->toArray();
     
-       return view("contract.create", compact('clientSelect', 'vehicles'));
+       return view("contract.create", compact('clientSelect', 'vehicles' , 'models'));
     
  
      //return view("contract.index", compact('clientSelect'));

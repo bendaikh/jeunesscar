@@ -100,12 +100,12 @@
                                             <input type="date" name="client[license_issue_date]" class="form-control">
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    {{-- <div class="col-md-4">
                                         <div class="form-group">
                                             <label>@lang('fleet.mobile')</label>
                                             <input type="text" name="client[mobile]" class="form-control">
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 
                                 <div class="row">
@@ -166,6 +166,10 @@
                 </div>
             </div>
         </div>
+
+
+
+
         
 
         <div id="new-vehicle-form" style="display: none;">
@@ -192,6 +196,19 @@
                     </div>
                 </div>
             </div>
+
+            {{-- <div class="form-group">
+                {!! Form::label('model_name', __('fleet.SelectVehicleModel'), ['class' => 'col-xs-5 control-label']) !!}
+                <a data-toggle="modal" data-target="#myModal2"><i class="fa fa-info-circle fa-lg" aria-hidden="true"  style="color: #8639dd"></i></a>
+                <div class="col-xs-6">
+                  <select name="model_name" class="form-control" required id="model_name">
+                    <option></option>
+                    @foreach ($models as $model)   
+                    <option value="{{$model}}" @if(old('model_name')==$model) selected @endif>{{$model}}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div> --}}
             
             <div class="row">
                 <div class="col-md-4">
@@ -200,6 +217,12 @@
                         <input type="number" name="vehicle[start_km]" class="form-control" required>
                     </div>
                 </div>
+
+
+
+
+
+
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>@lang('fleet.fuel_type') <span class="text-danger">*</span></label>

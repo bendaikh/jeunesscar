@@ -247,7 +247,7 @@ class VehiclesController extends Controller {
 		$index['makes'] = VehicleModel::groupBy('make_name')->get()->pluck('make_name')->toArray();
 		$index['models'] = VehicleModel::groupBy('model_name')->get()->pluck('model_name')->toArray();
 		$index['colors'] = VehicleModel::groupBy('color_name')->get()->pluck('color_name')->toArray();
-		return view("vehicles.create", $index);
+		return view("vehicles.create", data: $index);
 	}
 
 	public function get_models($name) {

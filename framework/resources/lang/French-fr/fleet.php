@@ -796,7 +796,7 @@ return [
     'end_date' => 'Date de fin',
     'documents' => 'Documents',
     'lic_exp_date' => "Date d'expiration de la licence",
-    'reg_exp_date' => "Date d'expiration de l'inscription",
+    'reg_exp_date' => "autorisation de cerculation",
     'edit_vehicle' => 'Modifier le véhicule',
     'manage_bookings' => 'Gérer les réservations',
     'record' => 'Enregistrer le paiement',
