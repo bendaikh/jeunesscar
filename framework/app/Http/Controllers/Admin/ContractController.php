@@ -589,10 +589,16 @@ class ContractController extends Controller
             }
         }
     
+
         return response($fpdi->Output('S'), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="contract-' . $contract->number . '.pdf"',
+            'Content-Disposition' => 'attachment; filename="contract-' . $contract->number . '.pdf"',
         ]);
+        
+        // return response($fpdi->Output('S'), 200, [
+        //     'Content-Type' => 'application/pdf',
+        //     'Content-Disposition' => 'inline; filename="contract-' . $contract->number . '.pdf"',
+        // ]);
     }
     public function saveSignature(Request $request)
     {
