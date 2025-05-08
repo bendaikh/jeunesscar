@@ -74,12 +74,14 @@
               <div class="col-md-12">
                 <div class="input-group">
                   <div class="input-group-prepend">
-                  <span class="input-group-text">{{Hyvikk::get('dis_format')}}</span></div>
-                  <input required="required" name="mileage" type="number" id="mileage" class="form-control" min="0">
+                    <span class="input-group-text">{{ Hyvikk::get('dis_format') }}</span>
+                  </div>
+                  <input name="mileage" type="number" id="mileage" class="form-control" min="0">
                 </div>
               </div>
             </div>
           </div>
+          
           <div class="col-md-3">
             <div class="form-group">
               {!! Form::label('date', __('fleet.date'), ['class' => 'col-xs-12 control-label']) !!}

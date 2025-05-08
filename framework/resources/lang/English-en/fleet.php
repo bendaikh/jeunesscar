@@ -637,7 +637,7 @@ return [
     'start' => 'Start',
     'end' => 'End',
     'distence' => 'Distance',
-    'vin' => 'VIN',
+    
     'gal' => 'Gal.',
     'addFuel' => 'Create Fuel Entry',
     'qty' => 'Qty',
@@ -751,7 +751,7 @@ return [
     'result' => 'Search Result',
     'engine' => 'Vehicle Engine Type',
     'horsePower' => 'Vehicle Horse Power',
-    'vin' => 'VIN',
+    'vin' => 'matricule ww',
     'color' => 'Color',
     'licensePlate' => 'License Plate',
     'service' => 'In Service?',

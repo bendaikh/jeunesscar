@@ -263,7 +263,7 @@ class ContractController extends Controller
         $data = $request->all();
         $data['client'] = [
             'first_name' => $client->first_name?$client->first_name:$client->name,
-            'last_name' => $client->last_name?$client->first_name:"",
+            'last_name' => $client->last_name?$client->last_name:"",
             'address' => $client->address,
             'phone' => $client->mobno,
             'mobile' => $client->userclient->mobile,
