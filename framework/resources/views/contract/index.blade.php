@@ -5,74 +5,217 @@
 <li class="breadcrumb-item active">@lang('fleet.contracts')</li>
 @endsection
 
+@section('styles')
+<style>
+    .contract-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid #28a745;
+    }
+    .contract-card:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    .contract-pending { border-left-color: #ffc107; }
+    .contract-active { border-left-color: #28a745; }
+    .contract-completed { border-left-color: #17a2b8; }
+    .contract-cancelled { border-left-color: #dc3545; }
+    .action-buttons .btn {
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 3px;
+        transition: all 0.2s;
+    }
+    .action-buttons .btn:hover {
+        transform: scale(1.1);
+    }
+    .contract-header {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border-radius: 5px 5px 0 0;
+    }
+    .search-container {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    .search-container input {
+        border-radius: 30px;
+        padding-left: 40px;
+        border: 1px solid #ddd;
+    }
+    .search-container i {
+        position: absolute;
+        left: 15px;
+        top: 12px;
+        color: #aaa;
+    }
+    .status-badge {
+        border-radius: 30px;
+        padding: 5px 12px;
+        font-weight: 500;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .pagination .page-link {
+        border-radius: 4px;
+        margin: 0 3px;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+</style>
+@endsection
+
 @section('content')
-<div class="card">
-    <div class="card-header bg-primary text-white">
-        <h3 class="card-title">@lang('fleet.contracts_list')</h3>
-        <div class="card-tools">
-            <a href="{{ route('contract.create') }}" class="btn btn-light btn-sm">
-                <i class="fas fa-plus"></i> @lang('fleet.new_contract')
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="contractSearch" class="form-control" placeholder="@lang('fleet.search_contracts')">
+            </div>
+        </div>
+        <div class="col-md-4 text-right">
+            <a href="{{ route('contract.create') }}" class="btn btn-success btn-lg">
+                <i class="fas fa-plus mr-2"></i> @lang('fleet.new_contract')
             </a>
         </div>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>@lang('fleet.contract_number')</th>
-                        <th>@lang('fleet.client')</th>
-                        <th>@lang('fleet.vehicle')</th>
-                        <th>@lang('fleet.start_date')</th>
-                        <th>@lang('fleet.end_date')</th>
-                        <th>@lang('fleet.total_amount')</th>
-                        <th>@lang('fleet.status')</th>
-                        <th>@lang('fleet.actions')</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($contracts as $contract)
-                    <tr>
-                        <td>{{ $contract->contract_number }}</td>
-                        <td>{{ $contract->client->name }}</td>
-                        <td>{{ $contract->vehicle->make_name }} ({{ $contract->vehicle->license_plate }})</td>
-                        <td>{{ $contract->start_date->format('Y-m-d') }}</td>
-                        <td>{{ $contract->end_date->format('Y-m-d') }}</td>
-                        <td>{{ $contract->formatted_total_amount }}</td>
-                        <td>
-                            <span class="badge badge-{{ [
-                                'pending' => 'warning',
-                                'active' => 'success',
-                                'completed' => 'info',
-                                'cancelled' => 'danger'
-                            ][$contract->status] }}">
-                                {{ $contract->status_text }}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="btn-group">
-                                <a href="{{ route('contract.show', $contract->id) }}" 
-                                   class="btn btn-info btn-sm" title="@lang('fleet.view')">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('contract.edit', $contract->id) }}" 
-                                   class="btn btn-primary btn-sm" title="@lang('fleet.edit')">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{{ route('contract.generatePDF', ['id' => $contract->id]) }}" 
-                                   class="btn btn-secondary btn-sm" title="@lang('fleet.download_pdf')">
-                                    <i class="fas fa-file-pdf"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+
+    <div class="card shadow-sm">
+        <div class="card-header contract-header py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="card-title text-white mb-0">
+                    <i class="fas fa-file-contract mr-2"></i>@lang('fleet.contracts_list')
+                </h3>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-light btn-sm filter-btn" data-filter="all">@lang('fleet.all')</button>
+                    <button type="button" class="btn btn-outline-light btn-sm filter-btn" data-filter="active">@lang('fleet.active')</button>
+                    <button type="button" class="btn btn-outline-light btn-sm filter-btn" data-filter="pending">@lang('fleet.pending')</button>
+                    <button type="button" class="btn btn-outline-light btn-sm filter-btn" data-filter="completed">@lang('fleet.completed')</button>
+                </div>
+            </div>
         </div>
-        <div class="mt-3">
-            {{ $contracts->links() }}
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="contractsTable">
+                    <thead>
+                        <tr>
+                            <th>@lang('fleet.contract_number')</th>
+                            <th>@lang('fleet.client')</th>
+                            <th>@lang('fleet.vehicle')</th>
+                            <th>@lang('fleet.duration')</th>
+                            <th>@lang('fleet.total_amount')</th>
+                            <th>@lang('fleet.status')</th>
+                            <th class="text-center">@lang('fleet.actions')</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($contracts as $contract)
+                        <tr class="contract-row" data-status="{{ $contract->status }}">
+                            <td class="font-weight-bold">{{ $contract->contract_number }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-light rounded-circle mr-2 d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-user text-primary"></i>
+                                    </div>
+                                    {{ $contract->client->name }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-light rounded-circle mr-2 d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-car text-secondary"></i>
+                                    </div>
+                                    {{ $contract->vehicle->make_name }} 
+                                    <span class="text-muted ml-2">({{ $contract->vehicle->license_plate }})</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <i class="far fa-calendar-alt text-muted mr-1"></i>
+                                    {{ $contract->start_date->format('M d') }} - {{ $contract->end_date->format('M d, Y') }}
+                                </div>
+                                <small class="text-muted">{{ $contract->start_date->diffInDays($contract->end_date) + 1 }} days</small>
+                            </td>
+                            <td>
+                                <div class="font-weight-bold">{{ $contract->formatted_total_amount }}</div>
+                            </td>
+                            <td>
+                                <span class="status-badge badge-{{ [
+                                    'pending' => 'warning',
+                                    'active' => 'success',
+                                    'completed' => 'info',
+                                    'cancelled' => 'danger'
+                                ][$contract->status] }}">
+                                    {{ $contract->status_text }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons text-center">
+                                    <a href="{{ route('contract.show', $contract->id) }}" 
+                                       class="btn btn-info" title="@lang('fleet.view')">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('contract.edit', $contract->id) }}" 
+                                       class="btn btn-primary" title="@lang('fleet.edit')">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ route('contract.generatePDF', ['id' => $contract->id]) }}" 
+                                       class="btn btn-secondary" title="@lang('fleet.download_pdf')">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="text-muted mb-0">@lang('fleet.showing') {{ $contracts->firstItem() }} - {{ $contracts->lastItem() }} @lang('fleet.of') {{ $contracts->total() }} @lang('fleet.entries')</p>
+                </div>
+                <div>
+                    {{ $contracts->links() }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        // Search functionality
+        $("#contractSearch").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#contractsTable tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+        
+        // Filter buttons
+        $(".filter-btn").click(function() {
+            var filterValue = $(this).data('filter');
+            
+            $(".filter-btn").removeClass('btn-light').addClass('btn-outline-light');
+            $(this).removeClass('btn-outline-light').addClass('btn-light');
+            
+            if (filterValue === 'all') {
+                $("#contractsTable tbody tr").show();
+            } else {
+                $("#contractsTable tbody tr").hide();
+                $("#contractsTable tbody tr[data-status='" + filterValue + "']").show();
+            }
+        });
+    });
+</script>
 @endsection

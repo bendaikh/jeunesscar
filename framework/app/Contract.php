@@ -74,6 +74,6 @@ class Contract extends Model
     // دالة لتنسيق المبلغ
     public function getFormattedTotalAmountAttribute()
     {
-        return number_format($this->total_amount, 2) . ' ' . __('fleet.currency');
+        return number_format($this->total_amount, 2) . ' ' ."DHS";
     }
 }

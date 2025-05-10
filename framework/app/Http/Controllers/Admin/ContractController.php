@@ -78,7 +78,7 @@ class ContractController extends Controller
         $contracts = Contract::with(['client', 'vehicle', 'creator'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-    
+        
         return view('contract.index', compact('contracts'));
     }
     
@@ -368,21 +368,22 @@ class ContractController extends Controller
             // عرض عقد محفوظ
             $contract = Contract::with(['client', 'vehicle', 'additionalDrivers'])->findOrFail($id);
             
-          //return $contract->client;
+
             // تحضير بيانات العميل
             $clientData = [
-                'first_name' => $contract->client->meta_data->first_name ?? $contract->client->name,
-                'last_name' => $contract->client->meta_data['last_name'] ?? '',
-                'address' => $contract->client->meta_data['address'] ?? '',
-                'phone' => $contract->client->meta_data['mobno'] ?? '',
-                'mobile' => $contract->client->meta_data['mobno'] ?? '',
-                'id_number' => $contract->client->meta_data['id_number'] ?? '',
-                'id_expiry_date' => $contract->client->meta_data['id_expiry_date'] ?? '',
-                'license_number' => $contract->client->meta_data['license_number'] ?? '',
-                'license_issue_date' => $contract->client->meta_data['license_issue_date'] ?? '',
-                'passport_number' => $contract->client->meta_data['passport_number'] ?? '',
-                'passport_issue_date' => $contract->client->meta_data['passport_issue_date'] ?? '',
+                'first_name' => $contract->client->getMeta('first_name') ?? $contract->client->name,
+                'last_name' => $contract->client->getMeta('last_name') ?? '',
+                'address' => $contract->client->getMeta('address') ?? '',
+                'phone' => $contract->client->getMeta('mobno') ?? '',
+                'mobile' => $contract->client->getMeta('mobno') ?? '',
+                'id_number' => $contract->client->getMeta('id_number') ?? '',
+                'id_expiry_date' => $contract->client->getMeta('id_expiry_date') ?? '',
+                'license_number' => $contract->client->getMeta('license_number') ?? '',
+                'license_issue_date' => $contract->client->getMeta('license_issue_date') ?? '',
+                'passport_number' => $contract->client->getMeta('passport_number') ?? '',
+                'passport_issue_date' => $contract->client->getMeta('passport_issue_date') ?? '',
             ];
+            
 
             
     
