@@ -95,9 +95,12 @@ $dk=array_keys($dates);
 
             </div>
           </div>
-          <div class="col-md-2">
+          
+        </div>
+
+        <div class="d-flex flex-nowrap overflow-auto">
             @can('Bookings list')
-            <div class="info-box mb-3 bg-warning">
+            <div class="info-box mb-3 bg-warning mr-3" style="min-width: 250px;">
               <span class="info-box-icon"><i class="fa fa-address-book"></i></span>
               <div class="info-box-content">
                 <span class="info-box-text">@lang('fleet.bookings')</span>
@@ -105,39 +108,44 @@ $dk=array_keys($dates);
               </div>
             </div>
             @endcan
-            @can('Transactions list')
-            <div class="info-box mb-3 bg-success">
-              <span class="info-box-icon"><i class="fa fa-money-bill"></i></span>
 
+            @can('Transactions list')
+            <div class="info-box mb-3 bg-success mr-3" style="min-width: 250px;">
+              <span class="info-box-icon"><i class="fa fa-money-bill"></i></span>
               <div class="info-box-content">
                 <span class="info-box-text">@lang('fleet.income')</span>
-                <span class="info-box-number">{{ Hyvikk::get("currency")}}{{$income}}</span>
+                <span class="info-box-number">{{ Hyvikk::get("currency") }}{{$income}}</span>
               </div>
-              <!-- /.info-box-content -->
             </div>
-            <div class="info-box mb-3 bg-danger">
-              <span class="info-box-icon"><i class="fa fa-credit-card"></i></span>
 
+            <div class="info-box mb-3 bg-danger mr-3" style="min-width: 250px;">
+              <span class="info-box-icon"><i class="fa fa-credit-card"></i></span>
               <div class="info-box-content">
                 <span class="info-box-text">@lang('fleet.expense')</span>
-                <span class="info-box-number">{{ Hyvikk::get("currency")}}{{$expense}}</span>
+                <span class="info-box-number">{{ Hyvikk::get("currency") }}{{$expense}}</span>
               </div>
-              <!-- /.info-box-content -->
             </div>
             @endcan
-            @can('Vendors list')
-            <div class="info-box mb-3 bg-info">
-              <span class="info-box-icon"><i class="fa fa-shopping-cart"></i></span>
 
+            @can('Vendors list')
+            <div class="info-box mb-3 bg-info mr-3" style="min-width: 250px;">
+              <span class="info-box-icon"><i class="fa fa-shopping-cart"></i></span>
               <div class="info-box-content">
                 <span class="info-box-text">@lang('fleet.vendors')</span>
                 <span class="info-box-number">{{$vendors}}</span>
               </div>
             </div>
             @endcan
-          </div>
 
-        </div>
+            <!-- Cash Flow Box -->
+            <div class="info-box mb-3 bg-primary" style="min-width: 250px;">
+              <span class="info-box-icon"><i class="fa fa-wallet"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">@lang('fleet.cash_flow')</span>
+                <span class="info-box-number">{{ Hyvikk::get("currency") }}{{ $income - $expense }}</span>
+              </div>
+            </div>
+          </div>
 
       </div>
 
@@ -282,6 +290,13 @@ function random_color(i){
                     backgroundColor: '#21bc6c',
                     borderColor: '#21bc6c',
                     data: [{{$yearly_income}}],
+                }, {
+                    label: "@lang('fleet.cash_flow')",
+                    fill: false,
+                    backgroundColor: '#3c6cf0',
+                    borderColor: '#3c6cf0',
+                    data: [{{$yearly_cash_flow}}],
+                    borderDash: [5, 5]
                 }]
             },
             options: {
@@ -335,6 +350,13 @@ function random_color(i){
                     backgroundColor: '#21bc6c',
                     borderColor: '#21bc6c',
                     data: [{{$incomes}}],
+                }, {
+                    label: "@lang('fleet.cash_flow')",
+                    fill: false,
+                    backgroundColor: '#3c6cf0',
+                    borderColor: '#3c6cf0',
+                    data: [{{$cash_flow}}],
+                    borderDash: [5, 5]
                 }]
             },
             options: {
