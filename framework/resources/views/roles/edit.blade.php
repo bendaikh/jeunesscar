@@ -63,7 +63,7 @@
               </tr>
             </thead>
             <tbody>
-              @php $new_names = ['users','drivers','customers','vehicles','vehicle_type','vehicleGroup','vehicle_inspection','transactions','bookings','booking_quotes','reports','fuel','vendors','parts','parts_category','work_orders','mechanics','notes','serviceReminders','serviceItems','testimonials','team','settings','inquiries']; @endphp
+              @php $new_names = ['users','tracker','drivers','customers','vehicles','vehicle_type','vehicleGroup','vehicle_inspection','transactions','bookings','booking_quotes','reports','fuel','vendors','parts','parts_category','work_orders','mechanics','notes','serviceReminders','serviceItems','testimonials','team','settings','inquiries','contracts']; @endphp
               @php $new_modules = array_combine($modules,$new_names); @endphp
               {{-- @dd($new_modules) --}}
               @foreach($new_modules as $row=>$val)

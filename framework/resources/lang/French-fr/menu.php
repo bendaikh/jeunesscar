@@ -3,6 +3,7 @@
 return [
 
 	//Menus
+	"contracts"=>"Contracts",
 	'email_content' => 'Définir le contenu du courrier',
 	'email_notification' => 'Notification par email',
 	'api_settings' => "Paramètres de l'API",

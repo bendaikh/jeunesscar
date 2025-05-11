@@ -22,16 +22,14 @@ use setasign\Fpdi\Fpdi;
     
 class ContractController extends Controller
 {
-    public function __construct()
-    {
-        // $this->middleware(['role:Admin']);
-		$this->middleware('permission:Customer add', ['only' => ['create']]);
-		$this->middleware('permission:Customer edit', ['only' => ['edit']]);
-		$this->middleware('permission:Customer delete', ['only' => ['bulk_delete', 'destroy']]);
-		$this->middleware('permission:Customer list');
-		$this->middleware('permission:Customer import', ['only' => ['importCutomers']]);
-    }
-
+   
+public function __construct()
+{
+    $this->middleware('permission:Contracts add', ['only' => ['create', 'store']]);
+    $this->middleware('permission:Contracts edit', ['only' => ['edit', 'update']]);
+    $this->middleware('permission:Contracts delete', ['only' => ['destroy', 'bulk_delete']]);
+    $this->middleware('permission:Contracts list', ['only' => ['index', 'show']]);
+}
     // public function index()
     // {
     //   // جلب جميع العقود مع علاقاتها

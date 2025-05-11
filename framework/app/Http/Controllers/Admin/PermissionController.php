@@ -46,7 +46,10 @@ class PermissionController extends Controller {
 				'Testimonials',
 				'Team',
 				'Settings',
+				
 				'Inquiries',
+				'Contracts',
+				'Tracker',
 			);
 			foreach ($modules as $row) {
 
