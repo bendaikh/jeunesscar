@@ -182,7 +182,7 @@ public function __construct()
                 'license_issue_date' => $request->client['license_issue_date'],
                 'passport_number' => $request->client['passport_number'],
                 'passport_issue_date' => $request->client['passport_issue_date'],
-                'mobile' => $request->client['mobile'],
+                'mobile' => $request->client['phone'],
             ]);
             
             $clientId = $user->id;
@@ -198,7 +198,7 @@ public function __construct()
                 'address' => $request->client['address'],
                 'mobno' => $request->client['phone'],
                 'userclient' => (object)[
-                    'mobile' => $request->client['mobile'],
+                    'mobile' => $request->client['phone'],
                     'id_number' => $request->client['id_number'],
                     'id_expiry_date' => $request->client['id_expiry_date'],
                     'license_number' => $request->client['license_number'],
@@ -268,7 +268,7 @@ public function __construct()
             'last_name' => $client->last_name?$client->last_name:"",
             'address' => $client->address,
             'phone' => $client->mobno,
-            'mobile' => $client->userclient->mobile,
+            'mobile' => $client->mobno,
             'id_number' => $client->userclient->id_number,
             'id_expiry_date' => $client->userclient->id_expiry_date,
             'license_number' => $client->userclient->license_number,
