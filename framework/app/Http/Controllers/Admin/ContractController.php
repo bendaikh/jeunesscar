@@ -73,14 +73,38 @@ public function __construct()
 
     public function index()
     {
-        $contracts = Contract::with(['client', 'vehicle', 'creator'])
-        ->has('client')->has('vehicle')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-            
-           
+
+if(Auth::user()->user_type=="C"){
+
+    $contracts = Contract::with(['client', 'vehicle', 'creator'])
+
+    ->has('client')->has('vehicle')
+        ->orderBy('created_at', 'desc')
+
+        ->where('created_by', Auth::user()->id)
+        ->paginate(10);
         
-        return view('contract.index', compact('contracts'));
+       
+    
+    return view('contract.index', compact('contracts'));
+
+}else{
+
+    $contracts = Contract::with(['client', 'vehicle', 'creator'])
+
+    ->has('client')->has('vehicle')
+        ->orderBy('created_at', 'desc')
+
+       
+        ->paginate(10);
+        
+       
+    
+    return view('contract.index', compact('contracts'));
+
+}
+
+        
     }
     
     public function show($id)
