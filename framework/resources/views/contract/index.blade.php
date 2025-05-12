@@ -123,7 +123,7 @@
                                     <div class="avatar-sm bg-light rounded-circle mr-2 d-flex align-items-center justify-content-center">
                                         <i class="fas fa-user text-primary"></i>
                                     </div>
-                                    {{ $contract->client->name }}
+                                    {{ $contract->client->getMeta('first_name') ?$contract->client->getMeta('first_name') ." ".$contract->client->getMeta('last_name') : $contract->client->name }}
                                 </div>
                             </td>
                             <td>

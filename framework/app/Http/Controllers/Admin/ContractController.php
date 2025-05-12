@@ -74,8 +74,11 @@ public function __construct()
     public function index()
     {
         $contracts = Contract::with(['client', 'vehicle', 'creator'])
+        ->has('client')->has('vehicle')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+            
+           
         
         return view('contract.index', compact('contracts'));
     }
