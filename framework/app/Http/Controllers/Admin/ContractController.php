@@ -7,7 +7,7 @@ use App\Contract;
 use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Model\IncomeModel;
 use App\Model\User;
 use App\Model\UserClinet;
 
@@ -82,36 +82,20 @@ public function __construct()
 
 
     public function index()
-    {
-
-if(Auth::user()->user_type=="C"){
-
-    $contracts = Contract::with(['client', 'vehicle', 'creator'])
-
-    ->has('client')->has('vehicle')
-        ->orderBy('created_at', 'desc')
-
-        ->where('created_by', Auth::user()->id)
-        ->paginate(10);
-        
-       
-    
-    return view('contract.index', compact('contracts'));
-
-}else{
-
-    $contracts = Contract::with(['client', 'vehicle', 'creator'])
-
-    ->has('client')->has('vehicle')
-        ->orderBy('created_at', 'desc')
-
-       
-        ->paginate(10);
-        
-       
-    
-    return view('contract.index', compact('contracts'));
-
+    {   
+    if(Auth::user()->user_type=="S"){
+        $contracts = Contract::with(['client', 'vehicle', 'creator'])
+        ->has('client')->has('vehicle')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        return view('contract.index', compact('contracts'));
+    }else{
+        $contracts = Contract::with(['client', 'vehicle', 'creator'])
+        ->has('client')->has('vehicle')
+            ->orderBy('created_at', 'desc')
+            ->where('created_by', Auth::user()->id)
+            ->paginate(10);
+        return view('contract.index', compact('contracts'));
 }
 
         
@@ -403,7 +387,16 @@ if(Auth::user()->user_type=="C"){
             // عرض عقد محفوظ
             $contract = Contract::with(['client', 'vehicle', 'additionalDrivers'])->findOrFail($id);
             
-
+            IncomeModel::create([
+                "vehicle_id" => $contract->vehicle_id,
+                "amount" => $contract->total_amount,
+                "user_id" => Auth::id(),
+                "date" => now(),
+                "mileage" => $contract->vehicle->start_km ?? $contract->vehicle->int_mileage,
+                "income_cat" => 'Contract Revenue',
+                "tax_percent" => 0, // Ajusta según necesites
+                "tax_charge_rs" => 0, // Ajusta según necesites
+            ]);
             // تحضير بيانات العميل
             $clientData = [
                 'first_name' => $contract->client->getMeta('first_name') ?? $contract->client->name,
@@ -620,6 +613,18 @@ if(Auth::user()->user_type=="C"){
         if (!$id) {
             try {
                 $savedContract = $this->saveContractToDatabase($data, $contract->number);
+
+                IncomeModel::create([
+                    "vehicle_id" => $savedContract->vehicle_id,
+                    "amount" => $savedContract->total_amount,
+                    "user_id" => Auth::id(),
+                    "date" => now(),
+                    "mileage" => isset($data['vehicle']['start_km']) ? $data['vehicle']['start_km'] : 0,
+                    "income_cat" => 'Contract Revenue',
+                    "tax_percent" => 0, // Ajusta según necesites
+                    "tax_charge_rs" => 0, // Ajusta según necesites
+                ]);
+                
             } catch (\Exception $e) {
                 Log::error('Failed to save contract: ' . $e->getMessage());
             }

@@ -156,27 +156,28 @@
                                 </span>
                             </td>
                             <td>
-    <div class="action-buttons text-center">
-        <a href="{{ route('contract.show', $contract->id) }}" 
-           class="btn btn-info" title="@lang('fleet.view')">
-            <i class="fas fa-eye"></i>
-        </a>
-        <a href="{{ route('contract.edit', $contract->id) }}" 
-           class="btn btn-primary" title="@lang('fleet.edit')">
-            <i class="fas fa-edit"></i>
-        </a>
-        <a href="{{ route('contract.generatePDF', ['id' => $contract->id]) }}" 
-           class="btn btn-secondary" title="@lang('fleet.download_pdf')">
-            <i class="fas fa-file-pdf"></i>
-        </a>
-        <form action="{{ route('contract.destroy', $contract->id) }}" method="POST" style="display:inline-block;">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger" title="@lang('fleet.delete')" 
-                    onclick="return confirm('@lang('fleet.confirm_delete')');">
-                <i class="fas fa-trash"></i>
-            </button>
-        </form>
+    <div class="dropdown text-center">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ $contract->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-cog"></i> {{-- أيقونة الإعدادات --}}
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $contract->id }}">
+            <a class="dropdown-item" href="{{ route('contract.show', $contract->id) }}">
+                <i class="fas fa-eye text-info"></i> @lang('fleet.view')
+            </a>
+            <a class="dropdown-item" href="{{ route('contract.edit', $contract->id) }}">
+                <i class="fas fa-edit text-primary"></i> @lang('fleet.edit')
+            </a>
+            <a class="dropdown-item" href="{{ route('contract.generatePDF', ['id' => $contract->id]) }}">
+                <i class="fas fa-file-pdf text-secondary"></i> @lang('fleet.download_pdf')
+            </a>
+            <form action="{{ route('contract.destroy', $contract->id) }}" method="POST" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="dropdown-item text-danger" onclick="return confirm('@lang('fleet.confirm_delete')');">
+                    <i class="fas fa-trash"></i> @lang('fleet.delete')
+                </button>
+            </form>
+        </div>
     </div>
 </td>
                         </tr>
