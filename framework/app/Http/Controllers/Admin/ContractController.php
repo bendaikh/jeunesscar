@@ -68,7 +68,17 @@ public function __construct()
 
 
 
-
+    public function destroy($id)
+    {
+        $contract = Contract::findOrFail($id);
+    
+        try {
+            $contract->delete();
+            return redirect()->route('contract')->with('success', __('fleet.contract_deleted'));
+        } catch (\Exception $e) {
+            return redirect()->route('contract')->with('error', __('fleet.contract_delete_failed'));
+        }
+    }
 
 
     public function index()

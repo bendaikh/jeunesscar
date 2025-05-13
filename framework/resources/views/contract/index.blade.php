@@ -156,21 +156,29 @@
                                 </span>
                             </td>
                             <td>
-                                <div class="action-buttons text-center">
-                                    <a href="{{ route('contract.show', $contract->id) }}" 
-                                       class="btn btn-info" title="@lang('fleet.view')">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('contract.edit', $contract->id) }}" 
-                                       class="btn btn-primary" title="@lang('fleet.edit')">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="{{ route('contract.generatePDF', ['id' => $contract->id]) }}" 
-                                       class="btn btn-secondary" title="@lang('fleet.download_pdf')">
-                                        <i class="fas fa-file-pdf"></i>
-                                    </a>
-                                </div>
-                            </td>
+    <div class="action-buttons text-center">
+        <a href="{{ route('contract.show', $contract->id) }}" 
+           class="btn btn-info" title="@lang('fleet.view')">
+            <i class="fas fa-eye"></i>
+        </a>
+        <a href="{{ route('contract.edit', $contract->id) }}" 
+           class="btn btn-primary" title="@lang('fleet.edit')">
+            <i class="fas fa-edit"></i>
+        </a>
+        <a href="{{ route('contract.generatePDF', ['id' => $contract->id]) }}" 
+           class="btn btn-secondary" title="@lang('fleet.download_pdf')">
+            <i class="fas fa-file-pdf"></i>
+        </a>
+        <form action="{{ route('contract.destroy', $contract->id) }}" method="POST" style="display:inline-block;">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger" title="@lang('fleet.delete')" 
+                    onclick="return confirm('@lang('fleet.confirm_delete')');">
+                <i class="fas fa-trash"></i>
+            </button>
+        </form>
+    </div>
+</td>
                         </tr>
                         @endforeach
                     </tbody>
