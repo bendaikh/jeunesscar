@@ -1,7 +1,10 @@
 <?php
 return [
     //  Cotract section
-    'emailAddress' => 'Email Address',
+'cash_flow' => 'Cash Flow',
+'search_contracts'=> 'Search Contracts',
+
+'emailAddress' => 'Email Address',
 'phoneNumer' => 'Phone Number',
 'editVehicle' => 'Edit Vehicle',
 

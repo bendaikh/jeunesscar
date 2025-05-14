@@ -1,5 +1,7 @@
 <?php
 return [
+    'cash_flow' => 'Cash Flow',
+    'search_contracts'=> 'Search Contracts',
     'select_vehicle' => 'Sélectionner un véhicule',
     'select_client' => 'Sélectionner un client',
     'add_new_vehicle' => 'Ajouter un nouveau véhicule',

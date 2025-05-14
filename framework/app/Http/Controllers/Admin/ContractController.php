@@ -10,10 +10,8 @@ use App\Http\Controllers\Controller;
 use App\Model\IncomeModel;
 use App\Model\User;
 use App\Model\UserClinet;
-
 use App\Model\VehicleModel;
-
-
+use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Log;
@@ -41,29 +39,35 @@ public function __construct()
     // }
 
 
-    public function create()
+    public function create(Request $request)
     {
-
-        $clientSelect = User::with('userclient')->
-        where("user_type", "C")
-        // ->has('userclient')
-        -> get();
- 
-        
-        //return $clientSelect;
-        // return $clientSelect;
-        $vehicles = VehicleModel::where('in_service', 1)
-        ->select('id', 'make_name', 'license_plate', 'fuel_type', 'start_km', 'int_mileage')
-        ->get();
-
+        $clientSelect = User::with('userclient')
+            ->where("user_type", "C")
+            ->get();
+    
+        // Obtener fechas del request o usar predeterminadas
+        $pickup = $request->input('start_date', date('Y-m-d')); // Fecha actual por defecto
+        $dropoff = $request->input('end_date', date('Y-m-d', strtotime('+7 days'))); // Una semana después por defecto
+    
+        // Obtener todos los vehículos en servicio
+        $allVehicles = VehicleModel::where([['in_service', '1']])
+            ->select('id', 'make_name', 'license_plate', 'fuel_type', 'start_km', 'int_mileage')
+            ->get();
+    
+        // Filtrar vehículos disponibles
+        $vehicles = collect();
+        foreach ($allVehicles as $vehicle) {
+            if ($this->check_booking($pickup, $dropoff, $vehicle->id)) {
+                $vehicles->push($vehicle);
+            }
+        }
+    
         $models = VehicleModel::groupBy('model_name')
-        ->pluck('model_name')
-        ->toArray();
+            ->pluck('model_name')
+            ->toArray();
     
-       return view("contract.create", compact('clientSelect', 'vehicles' , 'models'));
-    
- 
-     //return view("contract.index", compact('clientSelect'));
+        // Pasar las fechas a la vista para mostrarlas en los filtros
+        return view("contract.create", compact('clientSelect', 'vehicles', 'models', 'pickup', 'dropoff'));
     }
 
 
@@ -270,6 +274,7 @@ public function __construct()
         
         $vehicleId = $vehicle->id;
     } else {
+
         $vehicleId = $request->vehicle_id;
         $vehicle = VehicleModel::findOrFail($vehicleId);
         
@@ -330,6 +335,91 @@ public function __construct()
         session()->put("contracts", $data);
         return redirect()->route('contract.view');
     }
+
+
+
+    protected function check_booking($pickup, $dropoff, $vehicle) {
+    // Verificar si hay reservas que se superpongan con el período solicitado
+    $chk = DB::table("bookings")
+        ->where("status", 0)
+        ->where("vehicle_id", $vehicle)
+        ->whereNull("deleted_at")
+        ->where(function($query) use ($pickup, $dropoff) {
+            $query->where(function($q) use ($pickup, $dropoff) {
+                // Reservas que comienzan antes y terminan durante el período
+                $q->where('pickup', '<=', $pickup)
+                  ->where('dropoff', '>=', $pickup);
+            })->orWhere(function($q) use ($pickup, $dropoff) {
+                // Reservas que comienzan durante y terminan después del período
+                $q->where('pickup', '<=', $dropoff)
+                  ->where('dropoff', '>=', $dropoff);
+            })->orWhere(function($q) use ($pickup, $dropoff) {
+                // Reservas que comienzan y terminan dentro del período
+                $q->where('pickup', '>=', $pickup)
+                  ->where('dropoff', '<=', $dropoff);
+            })->orWhere(function($q) use ($pickup, $dropoff) {
+                // Reservas que abarcan completamente el período
+                $q->where('pickup', '<=', $pickup)
+                  ->where('dropoff', '>=', $dropoff);
+            });
+        })
+        ->exists();
+
+    // Verificar si hay contratos que se superpongan con el período solicitado
+    $ck2 = DB::table("contracts")
+        ->where("vehicle_id", $vehicle)
+        ->where(function($query) use ($pickup, $dropoff) {
+            $query->where(function($q) use ($pickup, $dropoff) {
+                // Contratos que comienzan antes y terminan durante el período
+                $q->where('start_date', '<=', $pickup)
+                  ->where('end_date', '>=', $pickup);
+            })->orWhere(function($q) use ($pickup, $dropoff) {
+                // Contratos que comienzan durante y terminan después del período
+                $q->where('start_date', '<=', $dropoff)
+                  ->where('end_date', '>=', $dropoff);
+            })->orWhere(function($q) use ($pickup, $dropoff) {
+                // Contratos que comienzan y terminan dentro del período
+                $q->where('start_date', '>=', $pickup)
+                  ->where('end_date', '<=', $dropoff);
+            })->orWhere(function($q) use ($pickup, $dropoff) {
+                // Contratos que abarcan completamente el período
+                $q->where('start_date', '<=', $pickup)
+                  ->where('end_date', '>=', $dropoff);
+            });
+        })
+        ->exists();
+
+    // Si no hay reservas ni contratos que se superpongan, el vehículo está disponible
+    return !$chk && !$ck2;
+}
+
+    protected function get_available_vehicles($pickup, $dropoff, $vehicleIds = [])
+    {
+        // Vehículos con reservas en ese período
+        $bookedVehicleIds = DB::table("bookings")
+            ->where("status", 0)
+            ->whereNull("deleted_at")
+            ->whereIn("vehicle_id", $vehicleIds)
+            ->where("pickup", ">=", $pickup)
+            ->where("dropoff", "<=", $dropoff)
+            ->pluck('vehicle_id')
+            ->toArray();
+    
+        // Vehículos con contratos en ese período
+        $contractedVehicleIds = DB::table("contracts")
+            ->whereIn("vehicle_id", $vehicleIds)
+            ->where("start_date", ">=", $pickup)
+            ->where("end_date", "<=", $dropoff)
+            ->pluck('vehicle_id')
+            ->toArray();
+    
+        // Combinar los IDs no disponibles
+        $unavailableIds = array_unique(array_merge($bookedVehicleIds, $contractedVehicleIds));
+    
+        // Filtrar los IDs disponibles
+        return array_diff($vehicleIds, $unavailableIds);
+    }
+
     public function view(Request $request)
     {
 

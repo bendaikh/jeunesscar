@@ -74,10 +74,7 @@
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-md-8">
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" id="contractSearch" class="form-control" placeholder="@lang('fleet.search_contracts')">
-            </div>
+            
         </div>
         <div class="col-md-4 text-right">
             <a href="{{ route('contract.create') }}" class="btn btn-success btn-lg">
@@ -92,12 +89,7 @@
                 <h3 class="card-title text-white mb-0">
                     <i class="fas fa-file-contract mr-2"></i>@lang('fleet.contracts_list')
                 </h3>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-light btn-sm filter-btn" data-filter="all">@lang('fleet.all')</button>
-                    <button type="button" class="btn btn-outline-light btn-sm filter-btn" data-filter="active">@lang('fleet.active')</button>
-                    <button type="button" class="btn btn-outline-light btn-sm filter-btn" data-filter="pending">@lang('fleet.pending')</button>
-                    <button type="button" class="btn btn-outline-light btn-sm filter-btn" data-filter="completed">@lang('fleet.completed')</button>
-                </div>
+                
             </div>
         </div>
         <div class="card-body">
@@ -146,13 +138,8 @@
                                 <div class="font-weight-bold">{{ $contract->formatted_total_amount }}</div>
                             </td>
                             <td>
-                                <span class="status-badge badge-{{ [
-                                    'pending' => 'warning',
-                                    'active' => 'success',
-                                    'completed' => 'info',
-                                    'cancelled' => 'danger'
-                                ][$contract->status] }}">
-                                    {{ $contract->status_text }}
+                                <span class="status-badge">
+                                    {{ $contract->status }}
                                 </span>
                             </td>
                             <td>

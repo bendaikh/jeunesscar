@@ -241,7 +241,7 @@
               {{$row->vehicle->license_plate}}
               @endif
               </td>
-              <td>{{$row->category->name}}</td>
+              <td></td>
               <td>{{date($date_format_setting,strtotime($row->date))}}</td>
               <td>{{$currency}} {{$row->amount}}</td>
               <td>{{$row->mileage}}</td>

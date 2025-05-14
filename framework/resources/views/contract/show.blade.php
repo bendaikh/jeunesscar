@@ -9,112 +9,170 @@
 @section('styles')
 <style>
     .contract-detail-card {
-        border: none;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-        border-radius: 10px;
-        overflow: hidden;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        overflow: hidden; /* To ensure border-radius applies to header */
     }
+
     .contract-header {
-        background: linear-gradient(135deg, #28a745, #20c997);
-        padding: 20px;
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); /* Modern blue gradient */
+        color: white;
+        padding: 25px 30px;
+        border-bottom: 5px solid #004085; /* Darker shade for depth */
     }
-    .info-section {
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        padding: 20px;
-        height: 100%;
-        border-left: 4px solid #28a745;
-        transition: all 0.3s ease;
-    }
-    .info-section:hover {
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    .info-section h4 {
-        color: #28a745;
+
+    .contract-header h3 {
+        font-size: 1.75rem;
         font-weight: 600;
-        font-size: 1.2rem;
-        margin-bottom: 20px;
-        border-bottom: 1px solid #e9ecef;
-        padding-bottom: 10px;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
     }
-    .info-item {
+
+    .contract-header .fas {
+        margin-right: 12px;
+        font-size: 1.5rem;
+    }
+
+    .status-badge {
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 20px;
+        margin-left: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Status-specific badge colors */
+    .status-badge.badge-pending { background-color: #ffc107; color: #333; }
+    .status-badge.badge-active { background-color: #28a745; color: white; }
+    .status-badge.badge-completed { background-color: #17a2b8; color: white; }
+    .status-badge.badge-cancelled { background-color: #dc3545; color: white; }
+    .status-badge.badge-default { background-color: #6c757d; color: white; } /* Fallback */
+
+
+    .header-actions .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .header-actions .btn-light {
+        background-color: rgba(255, 255, 255, 0.9);
+        color: #0056b3;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .header-actions .btn-light:hover {
+        background-color: white;
+        color: #004085;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .header-actions .btn .fas {
+        margin-right: 8px;
+        font-size: 0.9rem; /* Adjusted icon size within button */
+    }
+
+    /* Styles for the rest of the page content can be added here */
+    .contract-body {
+        padding: 30px;
+    }
+
+    .info-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
+    }
+
+    .info-section h5 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #0056b3;
         margin-bottom: 15px;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+    .info-section h5 .fas {
+        margin-right: 10px;
+        color: #007bff;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+    }
+
+    .info-item {
+        font-size: 0.95rem;
     }
     .info-item strong {
-        display: block;
         color: #495057;
-        font-size: 0.85rem;
-        margin-bottom: 5px;
+        min-width: 120px; /* Adjust as needed for alignment */
+        display: inline-block;
     }
-    .info-item p {
-        margin: 0;
-        font-weight: 500;
+    .info-item span {
         color: #212529;
     }
-    .signature-box {
-        border: 1px dashed #dee2e6;
-        border-radius: 5px;
-        padding: 15px;
-        text-align: center;
-        background-color: #fff;
-    }
-    .signature-box img {
-        max-width: 100%;
-        height: auto;
-    }
-    .contract-footer {
-        padding: 15px 20px;
-        background-color: #f8f9fa;
-    }
-    .contract-footer .btn {
-        border-radius: 30px;
-        padding: 8px 20px;
-        font-weight: 500;
-    }
-    .contract-footer .btn i {
-        margin-right: 5px;
-    }
-    .status-badge {
-        font-size: 14px;
-        padding: 8px 15px;
-        border-radius: 30px;
-        margin-left: 15px;
-        font-weight: 500;
-    }
+
+    /* Driver table specific styles */
     .table-drivers {
+        margin-top: 20px;
         border-radius: 8px;
-        overflow: hidden;
+        overflow: hidden; /* For border-radius on table */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     }
     .table-drivers thead th {
-        background-color: #f1f8e9;
-        border-color: #c5e1a5;
-        color: #33691e;
+        background-color: #e9ecef; /* Light grey for header */
+        color: #495057;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
     }
+    .table-drivers tbody td {
+        vertical-align: middle;
+    }
+    .table-drivers tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
 </style>
 @endsection
 
 @section('content')
-<div class="container-fluid">
+<div class="container">
     <div class="contract-detail-card card mb-4">
         <div class="contract-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <h3 class="text-white mb-0">
-                    <i class="fas fa-file-contract mr-2"></i>
-                    {{ $contract->contract_number }}
-                    <span class="status-badge badge badge-{{ [
-                        'pending' => 'warning',
-                        'active' => 'success',
-                        'completed' => 'info',
-                        'cancelled' => 'danger'
-                    ][$contract->status] }}">
-                        {{ $contract->status_text }}
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <h3 class="text-white mb-2 mb-md-0">
+                    <i class="fas fa-file-alt"></i> {{-- Changed icon for variety --}}
+                    <span>@lang('fleet.contract') #{{ $contract->contract_number }}</span>
+                    @php
+                        $statusClass = 'default'; // Fallback class
+                        if ($contract->status == 'pending') $statusClass = 'pending';
+                        elseif ($contract->status == 'active') $statusClass = 'active';
+                        elseif ($contract->status == 'completed') $statusClass = 'completed';
+                        elseif ($contract->status == 'cancelled') $statusClass = 'cancelled';
+                    @endphp
+                    <span class="status-badge badge-{{ $statusClass }}">
+                        {{-- Assuming you have a way to get translated status text, e.g., $contract->status_text --}}
+                        {{ $contract->status_text ?? Str::ucfirst($contract->status) }}
                     </span>
                 </h3>
-                <div>
+                <div class="header-actions mt-2 mt-md-0">
+                    @can('Contracts edit') {{-- Assuming you use Spatie Permissions --}}
                     <a href="{{ route('contract.edit', $contract->id) }}" class="btn btn-light">
                         <i class="fas fa-edit"></i> @lang('fleet.edit')
                     </a>
-                    <a href="{{ route('contract.generatePDF', ['id' => $contract->id]) }}" class="btn btn-light ml-2">
+                    @endcan
+                    <a href="{{ route('contract.generatePDF', ['id' => $contract->id]) }}" class="btn btn-light ml-md-2">
                         <i class="fas fa-file-pdf"></i> @lang('fleet.download_pdf')
                     </a>
                 </div>
