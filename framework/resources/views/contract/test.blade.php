@@ -760,17 +760,68 @@
             </div>
         
             <a 
-                href="{{ route('contract.generatePDF') }}" 
-                class="floating-button" 
-                title="تحويل إلى PDF" 
-                id="generate_pdf_button"
-                @if($hideButton) style="display: none;" @endif
-            > 
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                </svg>
-            </a>
+    href="{{ route('contract.generatePDF') }}" 
+    class="floating-button" 
+    title="تحويل إلى PDF" 
+    id="generate_pdf_button"
+    onclick="generatePDF(event, this)"
+    @if($hideButton) style="display: none;" @endif
+> 
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="pdf_icon">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" id="loading_icon" style="display: none; animation: spin 1s linear infinite;">
+        <circle cx="12" cy="12" r="10" stroke-width="2" stroke-dasharray="50" stroke-dashoffset="25" />
+    </svg>
+</a>
         </body>
+
+
+
+
+
+
+
+
+        <script>
+    function generatePDF(event, button) {
+        // منع السلوك الافتراضي للزر (منع الانتقال الفوري)
+        event.preventDefault();
+        
+        // تعطيل الزر لمنع الضغط المتكرر
+        button.style.pointerEvents = 'none';
+        button.classList.add('disabled');
+        
+        // إظهار أيقونة التحميل
+        document.getElementById('pdf_icon').style.display = 'none';
+        document.getElementById('loading_icon').style.display = 'block';
+        
+        // الانتقال إلى رابط إنشاء PDF بعد فترة قصيرة
+        setTimeout(function() {
+            window.location.href = button.getAttribute('href');
+        }, 100);
+    }
+</script>
+
+<style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .disabled {
+        opacity: 0.7;
+        cursor: default !important;
+    }
+</style>
+
+
+
+
+
+
+
+
         
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
