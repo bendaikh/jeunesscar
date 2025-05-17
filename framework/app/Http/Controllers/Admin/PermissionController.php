@@ -50,6 +50,7 @@ class PermissionController extends Controller {
 				'Inquiries',
 				'Contracts',
 				'Tracker',
+				'Reception',
 			);
 			foreach ($modules as $row) {
 
@@ -63,7 +64,7 @@ class PermissionController extends Controller {
 			$role = Role::create(['name' => 'Super Admin']);
 			$role->givePermissionTo($all);
 			$role = Role::create(['name' => 'Admin']);
-			$role->givePermissionTo(['Bookings list', 'Bookings add', 'Bookings edit', 'Bookings delete', 'Drivers list', 'Drivers add', 'Drivers edit', 'Drivers delete','Contracts list','Contracts add','Contracts edit','Contracts delete','Tracker list','Tracker add','Tracker edit','Tracker delete', 'Customer list', 'Customer add', 'Customer edit', 'Customer delete']);
+			$role->givePermissionTo(['Reception list','Reception add','Reception edit','Reception delete','Bookings list', 'Bookings add', 'Bookings edit', 'Bookings delete', 'Drivers list', 'Drivers add', 'Drivers edit', 'Drivers delete','Contracts list','Contracts add','Contracts edit','Contracts delete','Tracker list','Tracker add','Tracker edit','Tracker delete', 'Customer list', 'Customer add', 'Customer edit', 'Customer delete']);
 			$users = User::where('user_type', 'S')->get();
 			foreach ($users as $user) {
 				$u = User::find($user->id);

@@ -813,6 +813,14 @@ input:checked + .slider:before {
                     </a>
                     </li>
 
+                    <li class="nav-item">
+                      <a href="{{ route('reception.index') }}"
+                        class="nav-link @if(Request::is('admin/reception*')) active @endif">
+                        <i class="nav-icon fa fa-car"></i>
+                        <p>@lang('fleet.vehicleReceptions')</p>
+                      </a>
+                    </li>
+
                   
                   {{-- <span style="display:inline !important;">
                     <a href="{{ route('vehicles.create')}}" class="nav-link" title="@lang('fleet.addNew')"><i class="fa fa-plus" style="color: green;"></i></a>

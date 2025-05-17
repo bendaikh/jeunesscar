@@ -1,6 +1,46 @@
 <?php
 return [
+
+    
     //  Cotract section
+
+
+// Add these keys to your fleet.php language file
+
+'vehicleReceptions' => 'Vehicle Receptions',
+'addReception' => 'Add Reception',
+'editReception' => 'Edit Reception',
+'receptionDetails' => 'Reception Details',
+'receptionDate' => 'Reception Date',
+'kmIn' => 'Kilometers In',
+'previousKm' => 'Previous Kilometers',
+'kmDifference' => 'Km Difference',
+'photos' => 'Photos',
+'vehicleDeleted' => 'Vehicle Deleted',
+'selectVehicle' => 'Select Vehicle',
+'currentKm' => 'Current Kilometers',
+'notes' => 'Notes',
+'uploadMedia' => 'Upload Photos/Videos',
+'optional' => 'Optional',
+'chooseFiles' => 'Choose Files',
+'maxFileSize' => 'Maximum file size: 10MB. Allowed formats: JPG, PNG, GIF, MP4, MOV, AVI',
+'saveReception' => 'Save Reception',
+'updateReception' => 'Update Reception',
+'fileSelected' => 'file selected',
+'filesSelected' => 'files selected',
+'vehicleInformation' => 'Vehicle Information',
+'receptionInformation' => 'Reception Information',
+'receivedBy' => 'Received By',
+'mediaFiles' => 'Media Files',
+'currentMedia' => 'Current Media',
+'noMediaFiles' => 'No media files available for this reception',
+'image' => 'Image',
+'video' => 'Video',
+'updateVehicleKm' => 'Update vehicle kilometer',
+'updateVehicleKmHelp' => 'Check this if you want to update the vehicle\'s current kilometers with this value',
+'confirmDeleteMedia' => 'Are you sure you want to delete this media?',
+'errorDeletingMedia' => 'An error occurred while deleting the media',
+'confirmBulkDelete' => 'Are you sure you want to delete the selected receptions?',
 'cash_flow' => 'Cash Flow',
 'search_contracts'=> 'Search Contracts',
 

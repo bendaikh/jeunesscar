@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ContractController;
+use App\Http\Controllers\Admin\ReceptionController;
 use App\Http\Controllers\Admin\SettingsController;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -358,7 +359,7 @@ Route::namespace('Admin')->group(function () {
                 Route::get('vehicle-inspection-create', 'VehiclesController@vehicle_inspection_create');
                 Route::post('store-vehicle-review', 'VehiclesController@store_vehicle_review');
                 Route::get('view-vehicle-inspection/{id}', 'VehiclesController@view_vehicle_inspection');
-                // fuel detail
+                 // fuel detail
                 Route::resource('/fuel', 'FuelController');
                 //vehicle Expense
                 Route::resource('/expense', 'ExpenseController');
@@ -377,5 +378,22 @@ Route::namespace('Admin')->group(function () {
 
                 Route::resource('/cancel-reason', 'ReasonController');
                 Route::post('delete-fuel', 'FuelController@bulk_delete')->middleware('IsInstalled');
+
+
+
+
+
+
+
+
+               //reception
+
+                Route::resource('reception', 'ReceptionController');
+                Route::get('reception/fetch-data', 'ReceptionController@fetchData')->name('reception.fetch_data');
+                Route::post('reception/bulk-delete', 'ReceptionController@bulkDelete')->name('reception.bulk_delete');
+                Route::delete('reception/media/{id}', 'ReceptionController@deleteMedia')->name('reception.delete_media');
+        
         });
-});
+
+        // Routes for vehicle receptions
+      });
