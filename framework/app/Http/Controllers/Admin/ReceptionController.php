@@ -31,10 +31,18 @@ class ReceptionController extends Controller
      */
     public function index()
     {
-        // Obtener datos para la vista principal con todas las relaciones
-        $data = ReceptionModel::with(['vehicle', 'user', 'media'])->get();
+        $user = Auth::user();
         
-      
+        $query = ReceptionModel::with(['vehicle', 'user', 'media']);
+        
+        // Apply group filter if user is not super admin
+        if ($user->group_id != null && $user->user_type != "S") {
+            $query->whereHas('vehicle', function($q) use ($user) {
+                $q->where('group_id', $user->group_id);
+            });
+        }
+        
+        $data = $query->get();
         
         return view('reception.index', compact('data'));
     }

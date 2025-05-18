@@ -151,6 +151,12 @@
 @section('script')
 <script type="text/javascript">
   $(document).ready(function() {
+    // Destruir DataTable si ya existe
+    if ($.fn.DataTable.isDataTable('#data_table')) {
+      $('#data_table').DataTable().destroy();
+    }
+    
+    // Inicializar DataTable con los datos ya cargados en la tabla
     $('#data_table').DataTable({
       "language": {
         "url": '{{ asset("assets/datatables/")."/".__("fleet.datatable_lang") }}',

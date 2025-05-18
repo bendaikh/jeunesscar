@@ -159,9 +159,6 @@ class VehiclesController extends Controller {
             ->addColumn('group', function ($vehicle) {
                 return ($vehicle->group_id && isset($vehicle->group)) ? $vehicle->group->name : '';
             })
-            ->editColumn('in_service', function ($vehicle) {
-                return ($vehicle->in_service) ? '<span class="text-success">Sí</span>' : '<span class="text-danger">No</span>';
-            })
             ->addColumn('action', function ($vehicle) {
                 $actions = '<div class="btn-group">';
                 $actions .= '<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
@@ -182,7 +179,7 @@ class VehiclesController extends Controller {
                 }
                 
                 $actions .= '<a class="dropdown-item openBtn" data-id="'.$vehicle->id.'" data-toggle="modal" data-target="#myModal2" href="javascript:void(0)">
-                                <span aria-hidden="true" class="fa fa-eye" style="color: #5cb85c;"></span> ' . __('fleet.view') . '
+                                <span aria-hidden="true" class="fa fa-eye" style="color: #5cb85c;"></span> ' . __('fleet.viewDetails') . '
                             </a>';
                 
                 $actions .= '</div>';
@@ -195,7 +192,7 @@ class VehiclesController extends Controller {
                 
                 return $actions . $form;
             })
-            ->rawColumns(['id', 'vehicle_image', 'action', 'check', 'in_service'])
+            ->rawColumns(['id', 'vehicle_image', 'action', 'check'])
             ->make(true);
     }
 }
