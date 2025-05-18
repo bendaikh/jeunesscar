@@ -857,25 +857,22 @@ class VehiclesController extends Controller {
 
 
 	protected function check_booking($currentDate, $vehicle_id) {
-    // Verificar si hay contratos activos en la fecha actual
-    $hasActiveContract = DB::table("contracts")
-        ->where("vehicle_id", $vehicle_id)
-        ->where("status", "active") // Solo contratos activos
-        ->where("start_date", "<=", $currentDate)
-        ->where("end_date", ">=", $currentDate)
-        ->exists();
-    
-    // Verificar si hay reservas activas en la fecha actual
-    $hasActiveBooking = DB::table("bookings")
-        ->where("vehicle_id", $vehicle_id)
-        ->where("status", 0) // Status 0 significa activo
-        ->whereNull("deleted_at")
-        ->where("pickup", "<=", $currentDate)
-        ->where("dropoff", ">=", $currentDate)
-        ->exists();
-    
-    // Devolver true si el vehículo está actualmente alquilado
-    return $hasActiveContract || $hasActiveBooking;
-}
+        // Simplificar para verificar solo si el vehículo está en uso en la fecha actual
+        
+        // Verificar si hay contratos activos en la fecha actual
+        $hasActiveContract = DB::table("contracts")
+            ->where("vehicle_id", $vehicle_id)
+           
+            ->where("start_date", "<=", $currentDate)
+            ->where("end_date", ">=", $currentDate)
+            ->exists();
+        
+        // Verificar si hay reservas activas en la fecha actual
+       
+        
+        // Devolver true si el vehículo está actualmente alquilado
+        return $hasActiveContract ;
+    }
+
 
 }
