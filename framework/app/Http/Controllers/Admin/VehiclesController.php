@@ -30,6 +30,7 @@ use App\Model\VehicleGroupModel;
 use App\Model\VehicleModel;
 use App\Model\VehicleReviewModel;
 use App\Model\VehicleTypeModel;
+use App\Model\Contract;
 use Auth;
 use Carbon\Carbon;
 use DataTables;
@@ -110,7 +111,6 @@ class VehiclesController extends Controller {
 
 	public function fetch_data(Request $request) {
     if ($request->ajax()) {
-
         $user = Auth::user();
         if ($user->group_id == null || $user->user_type == "S") {
             $vehicles = VehicleModel::select('vehicles.*', 'users.name as name');
@@ -125,27 +125,20 @@ class VehiclesController extends Controller {
 
         $vehicles->with(['group', 'types', 'drivers']);
         
-        $currentDate = now(); // Obtener la fecha actual
+        $currentDate = now();
 
         return DataTables::eloquent($vehicles)
             ->addColumn('check', function ($vehicle) {
                 $tag = '<input type="checkbox" name="ids[]" value="' . $vehicle->id . '" class="checkbox" id="chk' . $vehicle->id . '" onclick=\'checkcheckbox();\'>';
-
                 return $tag;
             })
             ->addColumn('id', function ($vehicle) use ($currentDate) {
-                // Verificar disponibilidad del vehículo
                 $isBooked = $this->check_booking($currentDate, $vehicle->id);
-                
-                // Aplicar clase de color según disponibilidad
                 $colorClass = $isBooked ? 'bg-danger text-white' : 'bg-success text-white';
-                
-                // Devolver ID con estilo aplicado
                 return '<span class="badge ' . $colorClass . ' w-100" style="font-size: 14px; padding: 8px;">' . $vehicle->id . '</span>';
             })
             ->editColumn('vehicle_image', function ($vehicle) {
-                $src = ($vehicle->vehicle_image != null)?asset('uploads/' . $vehicle->vehicle_image): asset('assets/images/vehicle.jpeg');
-
+                $src = ($vehicle->vehicle_image != null) ? asset('uploads/' . $vehicle->vehicle_image) : asset('assets/images/vehicle.jpeg');
                 return '<img src="' . $src . '" height="70px" width="70px">';
             })
             ->addColumn('make', function ($vehicle) {
@@ -155,37 +148,54 @@ class VehiclesController extends Controller {
                 return ($vehicle->model_name) ? $vehicle->model_name : '';
             })
             ->addColumn('displayname', function ($vehicle) {
-                return ($vehicle->type_id) ? $vehicle->types->displayname : '';
+                return ($vehicle->type_id && isset($vehicle->types)) ? $vehicle->types->displayname : '';
             })
             ->addColumn('color', function ($vehicle) {
                 return ($vehicle->color_name) ? $vehicle->color_name : '';
             })
-            ->editColumn('license_plate', function ($vehicle) use ($currentDate) {
-                // Verificar disponibilidad del vehículo
-                $isBooked = $this->check_booking($currentDate, $vehicle->id);
-                
-                // Aplicar color según disponibilidad
-                $colorClass = $isBooked ? 'text-danger' : 'text-success';
-                $statusText = $isBooked ? ' (Reservado)' : ' (Disponible)';
-                
-                return '<span class="' . $colorClass . '">' . $vehicle->license_plate . $statusText . '</span>';
-            })
-            ->addColumn('availability_status', function ($vehicle) use ($currentDate) {
-                // Verificar disponibilidad del vehículo
-                $isBooked = $this->check_booking($currentDate, $vehicle->id);
-                
-                // Crear insignia de estado
-                if ($isBooked) {
-                    return '<span class="badge badge-danger">No Disponible</span>';
-                } else {
-                    return '<span class="badge badge-success">Disponible</span>';
-                }
+            ->editColumn('license_plate', function ($vehicle) {
+                return $vehicle->license_plate;
             })
             ->addColumn('group', function ($vehicle) {
-                return ($vehicle->group_id) ? $vehicle->group->name : '';
+                return ($vehicle->group_id && isset($vehicle->group)) ? $vehicle->group->name : '';
             })
-            // Resto del código...
-            ->rawColumns(['id', 'vehicle_image', 'action', 'check', 'license_plate', 'availability_status'])
+            ->editColumn('in_service', function ($vehicle) {
+                return ($vehicle->in_service) ? '<span class="text-success">Sí</span>' : '<span class="text-danger">No</span>';
+            })
+            ->addColumn('action', function ($vehicle) {
+                $actions = '<div class="btn-group">';
+                $actions .= '<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
+                $actions .= '<i class="fa fa-gear"></i>';
+                $actions .= '</button>';
+                $actions .= '<div class="dropdown-menu">';
+                
+                if(auth()->user()->can('Vehicles edit')) {
+                    $actions .= '<a class="dropdown-item" href="'.route('vehicles.edit', $vehicle->id).'">
+                                    <span aria-hidden="true" class="fa fa-edit" style="color: #f0ad4e;"></span> ' . __('fleet.edit') . '
+                                </a>';
+                }
+                
+                if(auth()->user()->can('Vehicles delete')) {
+                    $actions .= '<a class="dropdown-item delete" data-id="'.$vehicle->id.'" data-toggle="modal" data-target="#myModal" href="javascript:void(0)">
+                                    <span aria-hidden="true" class="fa fa-trash" style="color: #d9534f;"></span> ' . __('fleet.delete') . '
+                                </a>';
+                }
+                
+                $actions .= '<a class="dropdown-item openBtn" data-id="'.$vehicle->id.'" data-toggle="modal" data-target="#myModal2" href="javascript:void(0)">
+                                <span aria-hidden="true" class="fa fa-eye" style="color: #5cb85c;"></span> ' . __('fleet.view') . '
+                            </a>';
+                
+                $actions .= '</div>';
+                $actions .= '</div>';
+                
+                $form = '<form action="'.route('vehicles.destroy', $vehicle->id).'" method="post" id="form_'.$vehicle->id.'" style="display:none">
+                        '.csrf_field().'
+                        '.method_field('DELETE').'
+                        </form>';
+                
+                return $actions . $form;
+            })
+            ->rawColumns(['id', 'vehicle_image', 'action', 'check', 'in_service'])
             ->make(true);
     }
 }
@@ -847,21 +857,25 @@ class VehiclesController extends Controller {
 
 
 	protected function check_booking($currentDate, $vehicle_id) {
-        // Simplificar para verificar solo si el vehículo está en uso en la fecha actual
-        
-        // Verificar si hay contratos activos en la fecha actual
-        $hasActiveContract = DB::table("contracts")
-            ->where("vehicle_id", $vehicle_id)
-           
-            ->where("start_date", "<=", $currentDate)
-            ->where("end_date", ">=", $currentDate)
-            ->exists();
-        
-        // Verificar si hay reservas activas en la fecha actual
-       
-        
-        // Devolver true si el vehículo está actualmente alquilado
-        return $hasActiveContract ;
-    }
+    // Verificar si hay contratos activos en la fecha actual
+    $hasActiveContract = DB::table("contracts")
+        ->where("vehicle_id", $vehicle_id)
+        ->where("status", "active") // Solo contratos activos
+        ->where("start_date", "<=", $currentDate)
+        ->where("end_date", ">=", $currentDate)
+        ->exists();
+    
+    // Verificar si hay reservas activas en la fecha actual
+    $hasActiveBooking = DB::table("bookings")
+        ->where("vehicle_id", $vehicle_id)
+        ->where("status", 0) // Status 0 significa activo
+        ->whereNull("deleted_at")
+        ->where("pickup", "<=", $currentDate)
+        ->where("dropoff", ">=", $currentDate)
+        ->exists();
+    
+    // Devolver true si el vehículo está actualmente alquilado
+    return $hasActiveContract || $hasActiveBooking;
+}
 
 }
