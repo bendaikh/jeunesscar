@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use DataTables;
 use DB;
-
+use GPBMetadata\Google\Api\Log;
+use Illuminate\Support\Facades\Log as FacadesLog;
 
 class ReceptionController extends Controller
 {
@@ -337,6 +338,92 @@ class ReceptionController extends Controller
         }
         
         return redirect()->route('reception.index')->with('message', 'Selected receptions deleted successfully');
+    }
+
+    public function bulk_delete(Request $request)
+    {
+        // Para depuración
+//FacadesLog::info('Bulk Delete Request recibida con IDs: ' . $request->ids);
+        
+        if(!empty($request->ids)) {
+            $ids = explode(',', $request->ids);
+            $receptions = ReceptionModel::whereIn('id', $ids)->get();
+            
+            foreach($receptions as $reception) {
+                // Eliminar archivos multimedia asociados
+                foreach ($reception->media as $media) {
+                    if (Storage::disk('public')->exists($media->file_path)) {
+                        Storage::disk('public')->delete($media->file_path);
+                    }
+                    $media->delete();
+                }
+                
+                // Eliminar la recepción
+                $reception->delete();
+            }
+            
+            return redirect()->route('reception.index')
+                ->with('message', count($ids) . ' recepciones eliminadas correctamente');
+        } else {
+            return redirect()->back()->with('error', 'No se seleccionaron recepciones para eliminar');
+        }
+    }
+
+    /**
+     * Elimina directamente una recepción sin confirmación
+     */
+    public function delete($id)
+    {
+        $reception = ReceptionModel::find($id);
+        
+        if (!$reception) {
+            return redirect()->route('reception.index')
+                ->with('error', 'Recepción no encontrada');
+        }
+        
+        // Eliminar archivos multimedia asociados
+        foreach ($reception->media as $media) {
+            if (Storage::disk('public')->exists($media->file_path)) {
+                Storage::disk('public')->delete($media->file_path);
+            }
+            $media->delete();
+        }
+        
+        // Eliminar la recepción
+        $reception->delete();
+        
+        return redirect()->route('reception.index')
+            ->with('message', 'Recepción eliminada correctamente');
+    }
+
+    /**
+     * Eliminación masiva directa sin confirmación
+     */
+    public function bulk_delete_direct(Request $request)
+    {
+        if(!empty($request->ids)) {
+            $ids = explode(',', $request->ids);
+            $receptions = ReceptionModel::whereIn('id', $ids)->get();
+            
+            foreach($receptions as $reception) {
+                // Eliminar archivos multimedia asociados
+                foreach ($reception->media as $media) {
+                    if (Storage::disk('public')->exists($media->file_path)) {
+                        Storage::disk('public')->delete($media->file_path);
+                    }
+                    $media->delete();
+                }
+                
+                // Eliminar la recepción
+                $reception->delete();
+            }
+            
+            return redirect()->route('reception.index')
+                ->with('message', count($ids) . ' recepciones eliminadas correctamente');
+        }
+        
+        return redirect()->route('reception.index')
+            ->with('error', 'No se seleccionó ninguna recepción para eliminar');
     }
 
     protected function check_booking($currentDate, $vehicle_id) {

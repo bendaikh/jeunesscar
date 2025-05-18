@@ -392,6 +392,9 @@ Route::namespace('Admin')->group(function () {
                 Route::get('reception/fetch-data', 'ReceptionController@fetchData')->name('reception.fetch_data');
                 Route::post('reception/bulk-delete', 'ReceptionController@bulkDelete')->name('reception.bulk_delete');
                 Route::delete('reception/media/{id}', 'ReceptionController@deleteMedia')->name('reception.delete_media');
+                Route::get('reception/{id}/delete', 'ReceptionController@delete')->name('reception.delete');
+                Route::post('reception/bulk-delete-direct', 'ReceptionController@bulk_delete_direct')->name('reception.bulk_delete_direct');
+
         
         });
 
