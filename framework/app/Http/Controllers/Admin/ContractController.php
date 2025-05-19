@@ -142,11 +142,66 @@ public function __construct()
         $remainingAmount = $totalAmount - ($request->advance_payment ?? 0);
     
         $contract->update([
+            'client_id' => $request->client_id,
+            'vehicle_id' => $request->vehicle_id,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
             'duration' => $duration,
+            'daily_rate' => $request->daily_rate,
             'total_amount' => $totalAmount,
+            'advance_payment' => $request->advance_payment ?? 0,
             'remaining_amount' => $remainingAmount,
-            ...$validated
+            'status' => $request->status,
+            'payment_method' => $request->payment_method,
+            'notes' => $request->notes
         ]);
+    
+
+
+        // dd ($request->has('hasAdditionalDriver'));
+        // dd("ok");
+        // التعامل مع السائق الإضافي
+  //      if ($request->has('hasAdditionalDriver')) {
+            $driverData = $request->input('additional_driver', []);
+            
+            // التحقق من وجود بيانات السائق الإضافي
+            if (!empty($driverData['first_name']) || !empty($driverData['last_name'])) {
+                // إذا كان هناك سائق إضافي موجود بالفعل، قم بتحديثه
+                if ($request->has('additional_driver_id') && $request->additional_driver_id) {
+                    $driver = AdditionalDriver::find($request->additional_driver_id);
+                    if ($driver) {
+                        $driver->update([
+                            'first_name' => $driverData['first_name'] ?? '',
+                            'last_name' => $driverData['last_name'] ?? '',
+                            'address' => $driverData['address'] ?? '',
+                            'id_number' => $driverData['id_number'] ?? '',
+                            'id_expiry_date' => $driverData['id_expiry_date'] ?? null,
+                            'license_number' => $driverData['license_number'] ?? '',
+                            'license_issue_date' => $driverData['license_issue_date'] ?? null,
+                            'mobile' => $driverData['mobile'] ?? ''
+                        ]);
+                    }
+                } else {
+
+                    // dd($driverData);
+                    // إنشاء سائق إضافي جديد
+                    AdditionalDriver::create([
+                        'contract_id' => $contract->id,
+                        'first_name' => $driverData['first_name'] ?? '',
+                        'last_name' => $driverData['last_name'] ?? '',
+                        'address' => $driverData['address'] ?? '',
+                        'id_number' => $driverData['id_number'] ?? '',
+                        'id_expiry_date' => $driverData['id_expiry_date'] ?? null,
+                        'license_number' => $driverData['license_number'] ?? '',
+                        'license_issue_date' => $driverData['license_issue_date'] ?? null,
+                        'mobile' => $driverData['mobile'] ?? ''
+                    ]);
+                }
+            }
+        // } else {
+        //     // إذا لم يتم تحديد وجود سائق إضافي، قم بحذف السائقين الإضافيين المرتبطين بهذا العقد
+        //     AdditionalDriver::where('contract_id', $contract->id)->delete();
+        // }
     
         return redirect()->route('contract')
             ->with('success', __('fleet.contract_updated'));
@@ -370,15 +425,15 @@ public function __construct()
         ->where("vehicle_id", $vehicle)
         ->where(function($query) use ($pickup, $dropoff) {
             $query->where(function($q) use ($pickup, $dropoff) {
-                // Contratos que comienzan antes y terminan durante el período
+                // Contratos que comienzan قبل و terminan durante el período
                 $q->where('start_date', '<=', $pickup)
                   ->where('end_date', '>=', $pickup);
             })->orWhere(function($q) use ($pickup, $dropoff) {
-                // Contratos que comienzan durante y terminan después del período
+                // Contratos que comienzan durante و terminان بعد del período
                 $q->where('start_date', '<=', $dropoff)
                   ->where('end_date', '>=', $dropoff);
             })->orWhere(function($q) use ($pickup, $dropoff) {
-                // Contratos que comienzan y terminan dentro del período
+                // Contratos que comienzan و terminان dentro del período
                 $q->where('start_date', '>=', $pickup)
                   ->where('end_date', '<=', $dropoff);
             })->orWhere(function($q) use ($pickup, $dropoff) {

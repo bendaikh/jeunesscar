@@ -274,6 +274,8 @@ class UserAccessController extends Controller {
 				$import_perm->assignRole($role);
 			}
 		}
+
+		
 		$role->syncPermissions($all_permissions);
 
 		//return back();

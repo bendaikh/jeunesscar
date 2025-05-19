@@ -802,6 +802,17 @@ input:checked + .slider:before {
                     <i class="right fa fa-angle-left"></i>
                   </p>
                 </a>
+
+                <ul class="nav nav-treeview">
+                <li class="nav-item">
+                      <a href="{{ route('reception.index') }}"
+                        class="nav-link @if(Request::is('admin/reception*')) active @endif">
+                        <i class="nav-icon fa fa-car"></i>
+                        <p>@lang('fleet.vehicleReceptions')</p>
+                      </a>
+                    </li>
+
+                </ul>
                 <ul class="nav nav-treeview">
                   @can('Vehicles list')
                 
@@ -813,13 +824,7 @@ input:checked + .slider:before {
                     </a>
                     </li>
 
-                    <li class="nav-item">
-                      <a href="{{ route('reception.index') }}"
-                        class="nav-link @if(Request::is('admin/reception*')) active @endif">
-                        <i class="nav-icon fa fa-car"></i>
-                        <p>@lang('fleet.vehicleReceptions')</p>
-                      </a>
-                    </li>
+                   
 
                   
                   {{-- <span style="display:inline !important;">

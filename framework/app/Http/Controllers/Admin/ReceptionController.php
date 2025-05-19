@@ -21,10 +21,11 @@ class ReceptionController extends Controller
 {
     public function __construct()
     {
+        // تصحيح الدالة - إزالة التكرار وإضافة جميع الطرق
         $this->middleware('permission:Reception list', ['only' => ['index', 'show']]);
         $this->middleware('permission:Reception add', ['only' => ['create', 'store']]);
         $this->middleware('permission:Reception edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:Reception delete', ['only' => ['destroy', 'bulkDelete']]);
+        $this->middleware('permission:Reception delete', ['only' => ['destroy', 'bulk_delete', 'delete', 'bulk_delete_direct', 'deleteMedia']]);
     }
 
     /**
