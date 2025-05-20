@@ -85,24 +85,13 @@ public function __construct()
     }
 
 
-    public function index()
-    {   
-    if(Auth::user()->user_type=="S"){
-        $contracts = Contract::with(['client', 'vehicle', 'creator'])
-        ->has('client')->has('vehicle')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-        return view('contract.index', compact('contracts'));
-    }else{
-        $contracts = Contract::with(['client', 'vehicle', 'creator'])
-        ->has('client')->has('vehicle')
-            ->orderBy('created_at', 'desc')
-            ->where('created_by', Auth::user()->id)
-            ->paginate(10);
-        return view('contract.index', compact('contracts'));
-}
-
+    public function index(Request $request)
+    {
+        $contracts = Contract::with('client', 'vehicle')
+                      ->orderBy('created_at', 'desc')
+                      ->paginate(10); // Aquí defines cuántos elementos por página
         
+        return view('contract.index', compact('contracts'));
     }
     
     public function show($id)
@@ -425,7 +414,7 @@ public function __construct()
         ->where("vehicle_id", $vehicle)
         ->where(function($query) use ($pickup, $dropoff) {
             $query->where(function($q) use ($pickup, $dropoff) {
-                // Contratos que comienzan قبل و terminan durante el período
+                // Contratos que comienzan قبل و terminان خلال el período
                 $q->where('start_date', '<=', $pickup)
                   ->where('end_date', '>=', $pickup);
             })->orWhere(function($q) use ($pickup, $dropoff) {
