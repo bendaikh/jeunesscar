@@ -16,14 +16,14 @@ $dk=array_keys($dates);
     </div>
   </div>
   @endcan
-  @can('Drivers list')
+  @can('Vehicles list')
   <div class="col-12 col-sm-6 col-md-3">
     <div class="info-box">
       <span class="info-box-icon bg-info"><i class="fa fa-id-card"></i></span>
 
       <div class="info-box-content">
-        <span class="info-box-text">@lang('fleet.drivers')</span>
-        <span class="info-box-number">{{$drivers}}</span>
+        <span class="info-box-text">@lang('fleet.vehicles_returning_today')</span>
+        <span class="info-box-number">{{$vehicles_returning}}</span>
       </div>
     </div>
   </div>

@@ -10,7 +10,8 @@ Design and developed by Hyvikk Solutions <https://hyvikk.com/>
  */
 
 namespace App\Http\Controllers\Admin;
-
+use App\Contract;
+use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Model\Bookings;
 use App\Model\Expense;
@@ -179,6 +180,9 @@ class HomeController extends Controller {
 				}
 
 			}
+			$data['vehicles_returning'] = Contract::whereDate('end_date', Carbon::today())
+    ->count();
+
 			return view('customers.home', $data);
 		} else {
 			if (isset($_GET['year'])) {
@@ -288,6 +292,9 @@ class HomeController extends Controller {
 			}
 			
 			$index['cash_flow'] = implode(",", $cash_flow);
+
+			$index['vehicles_returning'] = Contract::whereDate('end_date', Carbon::today())
+    ->count();
 
 			return view('home', $index);
 		}

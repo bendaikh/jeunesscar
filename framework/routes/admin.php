@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\ContractController;
+use App\Http\Controllers\Admin\ContractExpiryController;
+
 use App\Http\Controllers\Admin\ReceptionController;
 use App\Http\Controllers\Admin\SettingsController;
 use Illuminate\Support\Facades\Storage;
@@ -396,6 +398,19 @@ Route::namespace('Admin')->group(function () {
                 Route::post('reception/bulk-delete-direct', 'ReceptionController@bulk_delete_direct')->name('reception.bulk_delete_direct');
 
         
+
+
+
+
+
+
+
+        // ... المسارات الموجودة
+        
+        // مسارات متابعة انتهاء العقود
+        Route::get('vehicle-expiry', 'ContractExpiryController@index')->name('vehicle_expiry.index');
+        Route::get('vehicle-expiry/ajax', 'ContractExpiryController@ajax')->name('vehicle_expiry.ajax');
+ 
         });
 
         // Routes for vehicle receptions

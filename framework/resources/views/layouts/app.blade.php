@@ -881,6 +881,13 @@ input:checked + .slider:before {
                   </li>
                   @endif
                   @endif
+                  <!-- إضافة زر في القائمة الرئيسية (داخل قسم المركبات أو القسم المناسب) -->
+                  <li class="nav-item">
+                    <a href="{{ route('vehicle_expiry.index') }}" class="nav-link @if(Request::is('admin/vehicle-expiry*')) active @endif">
+                      <i class="fa fa-calendar-times nav-icon"></i>
+                      <p>@lang('fleet.vehicle_contract_expiry')</p>
+                    </a>
+                  </li>
                 </ul>
               </li>
             @endcanany
@@ -891,7 +898,7 @@ input:checked + .slider:before {
 
               @else
               @php($class="")
-              @php($active="")
+              @php($active="active")
               @endif
               @can('Transactions list')
               <li class="nav-item has-treeview {{$class}}">
