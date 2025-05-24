@@ -383,6 +383,33 @@ public function __construct()
 
 
     protected function check_booking($pickup, $dropoff, $vehicle) {
+    // أولاً: التحقق من وجود السيارة في vehicle_receptions بتاريخ استقبال أحدث من آخر عقد
+    $vehicleModel = VehicleModel::find($vehicle);
+    
+    if ($vehicleModel) {
+        // الحصول على آخر استقبال للسيارة
+        $lastReception = DB::table("vehicle_receptions")
+            ->where("vehicle_id", $vehicle)
+            ->orderBy("reception_date", "desc")
+            ->first();
+        
+        if ($lastReception) {
+            // الحصول على آخر عقد للسيارة
+            $lastContract = DB::table("contracts")
+                ->where("vehicle_id", $vehicle)
+                ->orderBy("start_date", "desc")
+                ->first();
+            
+            // إذا لم يكن هناك عقد سابق أو كان تاريخ الاستقبال بعد تاريخ بداية آخر عقد،
+            // نعتبر السيارة متوفرة مباشرة
+            if (!$lastContract || $lastReception->reception_date > $lastContract->start_date) {
+                return true; // السيارة متوفرة بناءً على شرط الاستقبال
+            }
+        }
+    }
+    
+    // ثانياً: إذا لم يتحقق الشرط الأول، نقوم بالتحقق من الشروط الأصلية
+    
     // Verificar si hay reservas que se superpongan con el período solicitado
     $chk = DB::table("bookings")
         ->where("status", 0)
