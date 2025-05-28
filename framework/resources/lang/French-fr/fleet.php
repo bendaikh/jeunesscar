@@ -1,6 +1,47 @@
 <?php
 return [
-
+     // Messages
+    'reception_info_message' => 'Si vous voulez enregistrer la réception du véhicule lors de la mise à jour du contrat, veuillez remplir les champs suivants. Cette option est facultative et est généralement utilisée lorsque la période de location se termine ou que le véhicule est retourné.',
+    'km_at_reception' => '(Kilométrage actuel à la réception)',
+    'example_km' => 'Exemple',
+    'vehicle_condition_notes' => 'Notes sur l\'état du véhicule à la réception...',
+    'distance_during_rental' => 'Distance parcourue pendant la période de location',
+    'km_cannot_be_less' => 'Le kilométrage actuel ne peut pas être inférieur au dernier kilométrage enregistré',
+    'confirm_reception_creation' => 'Un nouvel enregistrement de réception de véhicule sera créé avec le kilométrage',
+    'do_you_want_to_continue' => 'Voulez-vous continuer?',
+    'current_km' => 'Kilométrage Actuel',
+    'reception_date' => 'Date de Réception',
+    'reception_notes' => 'Notes de Réception',
+    'last_recorded_km' => 'Dernier KM Enregistré',
+    'km_traveled' => 'Distance Parcourue',
+    'km_unit' => 'KM',
+    'vehicle_reception' => 'Réception du Véhicule',
+    //
+    
+    // Branch Management - إدارة الفروع
+    'branches' => 'Succursales',
+    'branch' => 'Succursale',
+    'addBranch' => 'Ajouter une Succursale',
+    'editBranch' => 'Modifier la Succursale',
+    'branchName' => 'Nom de la Succursale',
+    'branchAddress' => 'Adresse de la Succursale',
+    'branchCity' => 'Ville',
+    'branchPhone' => 'Numéro de Téléphone',
+    'branchEmail' => 'Adresse Email',
+    'branchContact' => 'Personne de Contact',
+    'branch_added' => 'Succursale ajoutée avec succès',
+    'branch_updated' => 'Succursale mise à jour avec succès',
+    'branch_deleted' => 'Succursale supprimée avec succès',
+    'branch_delete_error' => 'Impossible de supprimer la succursale car elle a des véhicules ou des utilisateurs associés',
+    
+    // Additional Branch Fields - حقول إضافية للفروع
+    'state' => 'État/Province',
+    'country' => 'Pays',
+    'postal_code' => 'Code Postal',
+    'latitude' => 'Latitude',
+    'longitude' => 'Longitude',
+    'details' => 'Détails Supplémentaires',
+    
     // Ajoutez ces clés à votre fichier de langue fleet.php
     'vehicle_contract_expiry' => 'Expiration des contrats de véhicules',
     'filter_expiry_date' => 'Filtrer par date d\'expiration',

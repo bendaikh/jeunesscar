@@ -410,6 +410,34 @@ Route::namespace('Admin')->group(function () {
         // مسارات متابعة انتهاء العقود
         Route::get('vehicle-expiry', 'ContractExpiryController@index')->name('vehicle_expiry.index');
         Route::get('vehicle-expiry/ajax', 'ContractExpiryController@ajax')->name('vehicle_expiry.ajax');
+
+
+
+
+
+
+    Route::resource('branches', 'BranchController');
+    Route::post('branches/bulk-delete', 'BranchController@bulk_delete')->name('branches.bulk_delete');
+    Route::get('branches/{id}/vehicles', 'BranchController@vehicles')->name('branches.vehicles');
+    Route::get('branches/{id}/users', 'BranchController@users')->name('branches.users');
+    Route::get('branches/{id}/contracts', 'BranchController@contracts')->name('branches.contracts');
+    
+    // Transferencia de vehículos entre sucursales
+    Route::get('vehicle-transfers', 'VehicleTransferController@index')->name('vehicle-transfers.index');
+    Route::get('vehicle-transfers/create', 'VehicleTransferController@create')->name('vehicle-transfers.create');
+    Route::post('vehicle-transfers/store', 'VehicleTransferController@store')->name('vehicle-transfers.store');
+    Route::get('vehicle-transfers/{id}/edit', 'VehicleTransferController@edit')->name('vehicle-transfers.edit');
+    Route::put('vehicle-transfers/{id}', 'VehicleTransferController@update')->name('vehicle-transfers.update');
+    Route::delete('vehicle-transfers/{id}', 'VehicleTransferController@destroy')->name('vehicle-transfers.destroy');
+    Route::post('vehicle-transfers/{id}/complete', 'VehicleTransferController@complete')->name('vehicle-transfers.complete');
+    
+    // Configuración de sucursales
+    Route::get('settings/branches', 'SettingsController@branches')->name('settings.branches');
+    Route::post('settings/branches', 'SettingsController@branches_store')->name('settings.branches_store');
+    
+    // Backend APIs para sucursales
+    Route::get('ajax-branches', 'AjaxController@branches')->name('ajax.branches');
+    Route::get('ajax-branch-vehicles/{id}', 'AjaxController@branch_vehicles')->name('ajax.branch_vehicles');
  
         });
 

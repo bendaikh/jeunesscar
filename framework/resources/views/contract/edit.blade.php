@@ -102,9 +102,76 @@
                 <textarea name="notes" class="form-control" rows="3">{{ $contract->notes }}</textarea>
             </div>
 
+            <!-- قسم استقبال المركبة (Vehicle Reception) -->
+            <div class="card mt-4 border-info">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fa fa-car"></i> @lang('fleet.vehicle_reception')
+                        <small class="ml-2">(@lang('fleet.optional'))</small>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i>
+                        @lang('fleet.reception_info_message')
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="reception_km">
+                                    @lang('fleet.current_km') 
+                                    <span class="text-muted">@lang('fleet.km_at_reception')</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" 
+                                           name="reception_km" 
+                                           id="reception_km"
+                                           class="form-control" 
+                                           min="{{ $contract->vehicle->int_mileage ?? 0 }}"
+                                           placeholder="@lang('fleet.example_km'): {{ ($contract->vehicle->int_mileage ?? 0) + 100 }}">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">@lang('fleet.km_unit')</span>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    @lang('fleet.last_recorded_km'): {{ $contract->vehicle->int_mileage ?? __('fleet.not_specified') }} @lang('fleet.km_unit')
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="reception_date">@lang('fleet.reception_date')</label>
+                                <input type="date" 
+                                       name="reception_date" 
+                                       id="reception_date"
+                                       class="form-control" 
+                                       value="{{ date('Y-m-d') }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reception_notes">@lang('fleet.reception_notes')</label>
+                        <textarea name="reception_notes" 
+                                  id="reception_notes"
+                                  class="form-control" 
+                                  rows="3" 
+                                  placeholder="@lang('fleet.vehicle_condition_notes')"></textarea>
+                    </div>
+                    
+                    <!-- عرض الفرق في الكيلومترات -->
+                    <div id="km_difference_display" class="alert alert-secondary" style="display: none;">
+                        <strong>@lang('fleet.distance_during_rental'): </strong>
+                        <span id="km_difference_value">0</span> @lang('fleet.km_unit')
+                    </div>
+                </div>
+            </div>
+
             <!-- بداية قسم السائق الإضافي -->
             <div class="card mt-4">
-                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                     <h4>@lang('fleet.additional_driver')</h4>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="hasAdditionalDriver" 
@@ -187,11 +254,11 @@
 
         </div>
         <div class="card-footer">
-            <button type="submit" class="btn btn-primary">
-                @lang('fleet.update')
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fa fa-save"></i> @lang('fleet.update')
             </button>
-            <a href="{{ route('contract') }}" class="btn btn-secondary">
-                @lang('fleet.cancel')
+            <a href="{{ route('contract') }}" class="btn btn-secondary btn-lg">
+                <i class="fa fa-times"></i> @lang('fleet.cancel')
             </a>
         </div>
     </form>
@@ -215,6 +282,11 @@
             calculateValues();
         });
         
+        // حساب فرق الكيلومترات عند تغيير قيمة reception_km
+        $('#reception_km').on('input', function() {
+            calculateKmDifference();
+        });
+        
         function calculateValues() {
             var startDate = new Date($('input[name="start_date"]').val());
             var endDate = new Date($('input[name="end_date"]').val());
@@ -222,24 +294,71 @@
             var advancePayment = parseFloat($('input[name="advance_payment"]').val()) || 0;
             
             if(!isNaN(startDate) && !isNaN(endDate)) {
-                // حساب الفرق بالأيام
                 var timeDiff = endDate.getTime() - startDate.getTime();
-                var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // بما في ذلك يوم البدء
+                var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
                 
                 if(dayDiff > 0) {
-                    // عرض المدة (لا يوجد حقل لها في النموذج الحالي، يمكنك إضافته)
                     console.log('Duration: ' + dayDiff);
-                    
-                    // حساب المبالغ (لا توجد حقول لها في النموذج الحالي، يمكنك إضافتها)
                     var totalAmount = dailyRate * dayDiff;
                     var remainingAmount = totalAmount - advancePayment;
-                    
                     console.log('Total: ' + totalAmount);
                     console.log('Remaining: ' + remainingAmount);
                 }
             }
         }
+        
+        function calculateKmDifference() {
+            var currentKm = parseFloat($('#reception_km').val()) || 0;
+            var previousKm = {{ $contract->vehicle->int_mileage ?? 0 }};
+            
+            if (currentKm > 0 && currentKm > previousKm) {
+                var difference = currentKm - previousKm;
+                $('#km_difference_value').text(difference.toLocaleString());
+                $('#km_difference_display').show();
+            } else {
+                $('#km_difference_display').hide();
+            }
+        }
+        
+        // التحقق من صحة البيانات قبل الإرسال
+        $('form').on('submit', function(e) {
+            var receptionKm = parseFloat($('#reception_km').val()) || 0;
+            var previousKm = {{ $contract->vehicle->int_mileage ?? 0 }};
+            
+            if (receptionKm > 0 && receptionKm < previousKm) {
+                e.preventDefault();
+                alert('@lang("fleet.km_cannot_be_less") (' + previousKm + ' @lang("fleet.km_unit"))');
+                $('#reception_km').focus();
+                return false;
+            }
+            
+            // تأكيد إنشاء Reception إذا تم ملء الكيلومترات
+            if (receptionKm > 0) {
+                if (!confirm('@lang("fleet.confirm_reception_creation") ' + receptionKm + '. @lang("fleet.do_you_want_to_continue")')) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+        });
     });
 </script>
+@endsection
+
+@section('extra_css')
+<style>
+    .border-info {
+        border-color: #17a2b8 !important;
+    }
+    
+    .alert-secondary {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        color: #6c757d;
+    }
+    
+    .form-text {
+        font-size: 0.875em;
+    }
+</style>
 @endsection
 

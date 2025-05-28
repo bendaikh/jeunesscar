@@ -65,4 +65,10 @@ class VehicleModel extends Model {
 		return $this->hasOne("App\Model\VehicleTypeModel", "id", "type_id")->withTrashed();
 	}
 
+	// إضافة العلاقة مع الفرع
+	public function branch()
+	{
+		return $this->belongsTo('App\Model\Branch');
+	}
+
 }

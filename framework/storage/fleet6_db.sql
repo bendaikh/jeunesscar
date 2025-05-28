@@ -1,3 +1,170 @@
+
+-- إنشاء جدول الفروع
+CREATE TABLE `branches` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `city` varchar(255) DEFAULT NULL,
+  `state` varchar(255) DEFAULT NULL,
+  `country` varchar(255) DEFAULT NULL,
+  `zipcode` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `contact_person` varchar(255) DEFAULT NULL,
+  `details` text DEFAULT NULL,
+  `latitude` varchar(255) DEFAULT NULL,
+  `longitude` varchar(255) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- إضافة حقل الفرع إلى جدول المستخدمين
+ALTER TABLE `users` 
+ADD COLUMN `branch_id` int(10) UNSIGNED DEFAULT NULL AFTER `group_id`,
+ADD CONSTRAINT `users_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL;
+
+-- إضافة حقل الفرع إلى جدول المركبات
+ALTER TABLE `vehicles` 
+ADD COLUMN `branch_id` int(10) UNSIGNED DEFAULT NULL AFTER `group_id`,
+ADD CONSTRAINT `vehicles_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL;
+
+-- إضافة حقول الفروع إلى جدول العقود
+ALTER TABLE `contracts` 
+ADD COLUMN `branch_id` int(10) UNSIGNED DEFAULT NULL AFTER `user_id`,
+ADD COLUMN `pickup_branch_id` int(10) UNSIGNED DEFAULT NULL,
+ADD COLUMN `dropoff_branch_id` int(10) UNSIGNED DEFAULT NULL,
+ADD CONSTRAINT `contracts_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL,
+ADD CONSTRAINT `contracts_pickup_branch_id_foreign` FOREIGN KEY (`pickup_branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL,
+ADD CONSTRAINT `contracts_dropoff_branch_id_foreign` FOREIGN KEY (`dropoff_branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL;
+
+-- إضافة حقول الفروع إلى جدول الحجوزات
+ALTER TABLE `bookings` 
+ADD COLUMN `branch_id` int(10) UNSIGNED DEFAULT NULL AFTER `user_id`,
+ADD COLUMN `pickup_branch_id` int(10) UNSIGNED DEFAULT NULL,
+ADD COLUMN `dropoff_branch_id` int(10) UNSIGNED DEFAULT NULL,
+ADD CONSTRAINT `bookings_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL,
+ADD CONSTRAINT `bookings_pickup_branch_id_foreign` FOREIGN KEY (`pickup_branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL,
+ADD CONSTRAINT `bookings_dropoff_branch_id_foreign` FOREIGN KEY (`dropoff_branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL;
+
+-- إنشاء جدول نقل المركبات بين الفروع
+CREATE TABLE `vehicle_transfers` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `vehicle_id` int(10) UNSIGNED NOT NULL,
+  `from_branch_id` int(10) UNSIGNED NOT NULL,
+  `to_branch_id` int(10) UNSIGNED NOT NULL,
+  `transfer_date` date NOT NULL,
+  `notes` text DEFAULT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `completed_at` timestamp NULL DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `vehicle_transfers_vehicle_id_foreign` (`vehicle_id`),
+  KEY `vehicle_transfers_from_branch_id_foreign` (`from_branch_id`),
+  KEY `vehicle_transfers_to_branch_id_foreign` (`to_branch_id`),
+  KEY `vehicle_transfers_user_id_foreign` (`user_id`),
+  CONSTRAINT `vehicle_transfers_vehicle_id_foreign` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `vehicle_transfers_from_branch_id_foreign` FOREIGN KEY (`from_branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `vehicle_transfers_to_branch_id_foreign` FOREIGN KEY (`to_branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `vehicle_transfers_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- إضافة حقل الفرع إلى جدول استقبال المركبات
+ALTER TABLE `vehicle_receptions` 
+ADD COLUMN `branch_id` int(10) UNSIGNED DEFAULT NULL AFTER `user_id`,
+ADD CONSTRAINT `vehicle_receptions_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL;
+
+-- إنشاء جدول إعدادات الفروع
+CREATE TABLE `branch_settings` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `branch_id` int(10) UNSIGNED NOT NULL,
+  `key` varchar(255) NOT NULL,
+  `value` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `branch_settings_branch_id_key_unique` (`branch_id`, `key`),
+  CONSTRAINT `branch_settings_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- إضافة حقل الفرع إلى جدول الفواتير
+ALTER TABLE `invoices` 
+ADD COLUMN `branch_id` int(10) UNSIGNED DEFAULT NULL AFTER `user_id`,
+ADD CONSTRAINT `invoices_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL;
+
+-- إنشاء جدول مسافات التنقل بين الفروع
+CREATE TABLE `branch_distances` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `from_branch_id` int(10) UNSIGNED NOT NULL,
+  `to_branch_id` int(10) UNSIGNED NOT NULL,
+  `distance` decimal(10,2) NOT NULL,
+  `fee` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `branch_distances_from_branch_id_foreign` (`from_branch_id`),
+  KEY `branch_distances_to_branch_id_foreign` (`to_branch_id`),
+  CONSTRAINT `branch_distances_from_branch_id_foreign` FOREIGN KEY (`from_branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `branch_distances_to_branch_id_foreign` FOREIGN KEY (`to_branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- إضافة حقل الفرع إلى جدول الإيرادات
+ALTER TABLE `income` 
+ADD COLUMN `branch_id` int(10) UNSIGNED DEFAULT NULL,
+ADD CONSTRAINT `income_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL;
+
+-- إضافة حقل الفرع إلى جدول المصروفات
+ALTER TABLE `expense` 
+ADD COLUMN `branch_id` int(10) UNSIGNED DEFAULT NULL,
+ADD CONSTRAINT `expense_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL;
+
+-- إضافة حقل الفرع إلى جدول صيانة المركبات
+ALTER TABLE `work_orders` 
+ADD COLUMN `branch_id` int(10) UNSIGNED DEFAULT NULL,
+ADD CONSTRAINT `work_orders_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL;
+
+-- إضافة الصلاحيات الخاصة بإدارة الفروع
+INSERT INTO `permissions` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES
+('Branches list', 'web', NOW(), NOW()),
+('Branches add', 'web', NOW(), NOW()),
+('Branches edit', 'web', NOW(), NOW()),
+('Branches delete', 'web', NOW(), NOW());
+
+-- إضافة الصلاحيات إلى دور المسؤول
+INSERT INTO `role_has_permissions` (`permission_id`, `role_id`)
+SELECT p.id, r.id
+FROM `permissions` p, `roles` r
+WHERE p.name IN ('Branches list', 'Branches add', 'Branches edit', 'Branches delete')
+AND r.name = 'Super Administrator';
+
+-- إدخال فرع افتراضي
+INSERT INTO `branches` (`name`, `address`, `city`, `phone`, `email`, `contact_person`, `is_active`, `created_at`, `updated_at`) VALUES
+('الفرع الرئيسي', 'شارع الملك فهد', 'الرياض', '0123456789', 'main@example.com', 'محمد', 1, NOW(), NOW()),
+('فرع جدة', 'شارع الأمير محمد', 'جدة', '0123456788', 'jeddah@example.com', 'أحمد', 1, NOW(), NOW());
+
+-- تحديث فرع المستخدمين الحاليين إلى الفرع الرئيسي
+UPDATE `users` SET `branch_id` = 1 WHERE `branch_id` IS NULL;
+
+-- تحديث فرع المركبات الحالية إلى الفرع الرئيسي
+UPDATE `vehicles` SET `branch_id` = 1 WHERE `branch_id` IS NULL;
+
+
+
+
+
+
+INSERT INTO permissions (name, guard_name, created_at, updated_at) VALUES
+('Branches list', 'web', NOW(), NOW()),
+('Branches add', 'web', NOW(), NOW()),
+('Branches edit', 'web', NOW(), NOW()),
+('Branches delete', 'web', NOW(), NOW());
+
+
+
 -- MySQL dump 10.19  Distrib 10.3.32-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: f6

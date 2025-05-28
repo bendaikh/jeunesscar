@@ -476,141 +476,144 @@
 
 @section('script')
 <script type="text/javascript">
-
-   // عند الضغط على زر إضافة عميل جديد
-$('#add-new-client').click(function() {
-    $('#new-client-form').show();
-    $('#client-select-group').hide();
-    $('#existing_client').prop('required', false);
-    $('#new-client-form input[required]').prop('required', true);
-});
-
-// عند الضغط على زر إضافة سيارة جديدة
-$('#add-new-vehicle').click(function() {
-    $('#new-vehicle-form').show();
-    $('#vehicle-select-group').hide();
-    $('#existing_vehicle').prop('required', false);
-    $('#new-vehicle-form input[required], #new-vehicle-form select[required]').prop('required', true);
-});
-
-
-$('#cancel-new-vehicle').click(function() {
-            $('#new-vehicle-form').hide();
-            $('#vehicle-select-group').show();
-            $('#existing_vehicle').val('').trigger('change');
-            $('#existing_vehicle').prop('required', true);
-            $('#new-vehicle-form input[required]').prop('required', false);
-        });
-
-
-
-
-
-
-    $(document).ready(function() {
-        // Toggle additional driver section
-        $('#hasAdditionalDriver').change(function() {
-            if($(this).is(':checked')) {
-                $('#additionalDriverSection').show();
-            } else {
-                $('#additionalDriverSection').hide();
-            }
-        });
-        
-         // Handle client selection
-         $('#existing_client').change(function() {
-            if($(this).val() === 'new') {
-                $('#new-client-form').show();
-                $('#client-select-group').hide();
-                // Make select not required when adding new client
-                $('#existing_client').prop('required', false);
-                // Make new client fields required
-                $('#new-client-form input[required]').prop('required', true);
-            } else {
-                $('#new-client-form').hide();
-                $('#client-select-group').show();
-                // Make select required when selecting existing client
-                $('#existing_client').prop('required', true);
-                // Make new client fields not required
-                $('#new-client-form input[required]').prop('required', false);
-            }
-        });
-
-        // Cancel adding new client
-        $('#cancel-new-client').click(function() {
-            $('#new-client-form').hide();
-            $('#client-select-group').show();
-            $('#existing_client').val('').trigger('change');
-            $('#existing_client').prop('required', true);
-            $('#new-client-form input[required]').prop('required', false);
-        });
-
-        // Calculate duration when dates change
-        $('#startDate, #endDate').change(function() {
-            calculateDuration();
-            calculateTotal();
-        });
-        
-        // Calculate total amount and remaining amount when values change
-        $('.calculation').change(function() {
-            calculateTotal();
-        });
-
-
-
-          // في قسم JavaScript
-$('#existing_vehicle').change(function() {
-    if($(this).val() === 'new') {
-        $('#new-vehicle-form').show();
-        $('#existing_vehicle').prop('required', false);
-        // جعل حقول السيارة الجديدة مطلوبة
-        $('#new-vehicle-form input[required], #new-vehicle-form select[required]').prop('required', true);
-    } else {
-        $('#new-vehicle-form').hide();
-        $('#existing_vehicle').prop('required', true);
-        // إزالة الإلزام من حقول السيارة الجديدة
-        $('#new-vehicle-form input[required], #new-vehicle-form select[required]').prop('required', false);
-        
-        // تعبئة البيانات تلقائياً
-        var selected = $(this).find('option:selected');
-        if (selected.data('brand')) {
-            $('input[name="vehicle[brand]"]').val(selected.data('brand'));
-            $('input[name="vehicle[plate_number]"]').val(selected.data('plate'));
-            $('select[name="vehicle[fuel_type]"]').val(selected.data('fuel')).trigger('change');
-            $('input[name="vehicle[start_km]"]').val(selected.data('km'));
-        }
-    }
-});
-       
-        
-        function calculateDuration() {
-            var startDate = new Date($('#startDate').val());
-            var endDate = new Date($('#endDate').val());
-            
-            if(startDate && endDate) {
-                var timeDiff = endDate.getTime() - startDate.getTime();
-                var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) ;
-                
-                if(dayDiff > 0) {
-                    $('#duration').val(dayDiff);
-                } else {
-                    $('#duration').val('');
-                }
-            }
-        }
-        
-        function calculateTotal() {
-            var dailyRate = parseFloat($('#dailyRate').val()) || 0;
-            var duration = parseInt($('#duration').val()) || 0;
-            var advancePayment = parseFloat($('#advancePayment').val()) || 0;
-            
-            var totalAmount = dailyRate * duration;
-            var remainingAmount = totalAmount - advancePayment;
-            
-            $('#totalAmount').val(totalAmount.toFixed(2));
-            $('#remainingAmount').val(remainingAmount.toFixed(2));
+$(document).ready(function() {
+    // Toggle additional driver section
+    $('#hasAdditionalDriver').change(function() {
+        if($(this).is(':checked')) {
+            $('#additionalDriverSection').show();
+        } else {
+            $('#additionalDriverSection').hide();
         }
     });
+
+    // Handle client selection
+    $('#add-new-client').click(function() {
+        $('#new-client-form').show();
+        $('#client-select-group').hide();
+        $('#existing_client').prop('required', false);
+        $('#new-client-form input[required]').prop('required', true);
+    });
+
+    $('#cancel-new-client').click(function() {
+        $('#new-client-form').hide();
+        $('#client-select-group').show();
+        $('#existing_client').val('').trigger('change');
+        $('#existing_client').prop('required', true);
+        $('#new-client-form input[required]').prop('required', false);
+    });
+
+    // Handle vehicle selection
+    $('#add-new-vehicle').click(function() {
+        $('#new-vehicle-form').show();
+        $('#vehicle-select-group').hide();
+        $('#existing_vehicle').prop('required', false);
+        $('#new-vehicle-form input[required], #new-vehicle-form select[required]').prop('required', true);
+    });
+
+    $('#cancel-new-vehicle').click(function() {
+        $('#new-vehicle-form').hide();
+        $('#vehicle-select-group').show();
+        $('#existing_vehicle').val('').trigger('change');
+        $('#existing_vehicle').prop('required', true);
+        $('#new-vehicle-form input[required]').prop('required', false);
+    });
+
+    $('#existing_vehicle').change(function() {
+        if($(this).val() !== '') {
+            var selected = $(this).find('option:selected');
+            if (selected.data('brand')) {
+                $('input[name="vehicle[brand]"]').val(selected.data('brand'));
+                $('input[name="vehicle[plate_number]"]').val(selected.data('plate'));
+                $('select[name="vehicle[fuel_type]"]').val(selected.data('fuel')).trigger('change');
+                $('input[name="vehicle[start_km]"]').val(selected.data('km'));
+            }
+        }
+    });
+
+    // تحديث حساب المدة المحسن
+    $('#startDate, #endDate').change(function() {
+        calculateDuration();
+        calculateTotal();
+    });
+    
+    $('.calculation').change(function() {
+        calculateTotal();
+    });
+    
+    function calculateDuration() {
+        var startDateStr = $('#startDate').val();
+        var endDateStr = $('#endDate').val();
+        
+        if(startDateStr && endDateStr) {
+            // إنشاء كائنات التاريخ وتصفير الوقت
+            var startDate = new Date(startDateStr);
+            var endDate = new Date(endDateStr);
+            
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(0, 0, 0, 0);
+            
+            // حساب الفرق بالميلي ثانية ثم تحويله إلى أيام
+            var timeDiffMs = endDate.getTime() - startDate.getTime();
+            var dayDiff = Math.floor(timeDiffMs / (1000 * 60 * 60 * 24)) ; // +1 لتضمين يوم البداية
+            
+            if(dayDiff > 0) {
+                $('#duration').val(dayDiff);
+            } else {
+                $('#duration').val(0);
+                if (startDateStr && endDateStr) {
+                    alert('تاريخ النهاية يجب أن يكون بعد تاريخ البداية');
+                }
+            }
+        } else {
+            $('#duration').val('');
+        }
+    }
+    
+    function calculateTotal() {
+        var dailyRate = parseFloat($('#dailyRate').val()) || 0;
+        var duration = parseInt($('#duration').val()) || 0;
+        var advancePayment = parseFloat($('#advancePayment').val()) || 0;
+        
+        var totalAmount = dailyRate * duration;
+        var remainingAmount = Math.max(0, totalAmount - advancePayment);
+        
+        $('#totalAmount').val(totalAmount.toFixed(2));
+        $('#remainingAmount').val(remainingAmount.toFixed(2));
+    }
+
+    // التحقق من صحة النموذج قبل الإرسال
+    $('#contractForm').on('submit', function(e) {
+        var startDate = new Date($('#startDate').val());
+        var endDate = new Date($('#endDate').val());
+        var duration = parseInt($('#duration').val()) || 0;
+        
+        // تصفير الوقت للمقارنة
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        
+        if (startDate >= endDate) {
+            e.preventDefault();
+            alert('تاريخ النهاية يجب أن يكون بعد تاريخ البداية');
+            $('#endDate').focus();
+            return false;
+        }
+        
+        if (duration <= 0) {
+            e.preventDefault();
+            alert('مدة الإيجار يجب أن تكون أكثر من صفر أيام');
+            $('#duration').focus();
+            return false;
+        }
+
+        var dailyRate = parseFloat($('#dailyRate').val()) || 0;
+        if (dailyRate <= 0) {
+            e.preventDefault();
+            alert('يجب إدخال سعر يومي صحيح');
+            $('#dailyRate').focus();
+            return false;
+        }
+    });
+});
 </script>
 @endsection
 

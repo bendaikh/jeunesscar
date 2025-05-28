@@ -67,92 +67,6 @@
         background-color: #28a745;
         border-color: #28a745;
     }
-    /* الأنماط الموجودة سابقاً */
-    
-    /* تحسين أنماط عناصر الترقيم مثل reception/index */
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 0;
-    }
-    
-    .pagination .page-item:first-child .page-link,
-    .pagination .page-item:last-child .page-link {
-        border-radius: 30px;
-        padding: 8px 15px;
-        margin: 0 5px;
-        font-size: 14px;
-        background: linear-gradient(135deg, #28a745, #20c997);
-        border: none;
-        color: white;
-        box-shadow: 0 3px 10px rgba(32, 201, 151, 0.3);
-    }
-    
-    .pagination .page-item .page-link {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        margin: 0 4px;
-        font-weight: 500;
-        border: none;
-        color: #555;
-        transition: all 0.2s ease;
-    }
-    
-    .pagination .page-item .page-link:hover {
-        background-color: #e9fff4;
-        color: #28a745;
-        transform: translateY(-2px);
-    }
-    
-    .pagination .page-item.active .page-link {
-        background: linear-gradient(135deg, #28a745, #20c997);
-        color: white;
-        box-shadow: 0 5px 15px rgba(32, 201, 151, 0.4);
-    }
-    
-    .pagination .page-item.disabled .page-link {
-        background-color: #f4f4f4;
-        color: #aaa;
-        cursor: not-allowed;
-    }
-    
-    /* أنماط معلومات الترقيم */
-    .pagination-info {
-        padding: 8px 15px;
-        background-color: #f9f9f9;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        color: #666;
-        box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
-    }
-    
-    /* تحسين العرض على الأجهزة المحمولة */
-    @media (max-width: 576px) {
-        .pagination .page-item .page-link {
-            width: 35px;
-            height: 35px;
-            margin: 0 2px;
-            font-size: 0.85rem;
-        }
-        
-        .pagination .page-item:first-child .page-link,
-        .pagination .page-item:last-child .page-link {
-            padding: 6px 12px;
-        }
-        
-        .pagination {
-            margin-top: 10px;
-        }
-        
-        .pagination-info {
-            font-size: 0.75rem;
-            padding: 6px 10px;
-        }
-    }
 </style>
 @endsection
 
@@ -201,7 +115,7 @@
                                     <div class="avatar-sm bg-light rounded-circle mr-2 d-flex align-items-center justify-content-center">
                                         <i class="fas fa-user text-primary"></i>
                                     </div>
-                                    {{ $contract->client->getMeta('first_name') ?$contract->client->getMeta('first_name') ." s".$contract->client->getMeta('last_name') : $contract->client->name }}
+                                    {{ $contract->client->getMeta('first_name') ?$contract->client->getMeta('first_name') ." ".$contract->client->getMeta('last_name') : $contract->client->name }}
                                 </div>
                             </td>
                             <td>
@@ -259,22 +173,16 @@
                 </table>
             </div>
         </div>
-        <div class="card-footer bg-white py-3">
-    <div class="d-flex justify-content-between align-items-center flex-wrap">
-        <div>
-            <span class="pagination-info">
-                <i class="fas fa-list-ol mr-1"></i> @lang('fleet.showing') 
-                <span class="font-weight-bold">{{ $contracts->firstItem() ?? 0 }} - {{ $contracts->lastItem() ?? 0 }}</span> 
-                @lang('fleet.of') 
-                <span class="font-weight-bold">{{ $contracts->total() }}</span> 
-                @lang('fleet.entries')
-            </span>
+        <div class="card-footer bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="text-muted mb-0">@lang('fleet.showing') {{ $contracts->firstItem() }} - {{ $contracts->lastItem() }} @lang('fleet.of') {{ $contracts->total() }} @lang('fleet.entries')</p>
+                </div>
+                <div>
+                    {{ $contracts->links() }}
+                </div>
+            </div>
         </div>
-        <div class="mt-2 mt-sm-0">
-            {{ $contracts->onEachSide(1)->appends(request()->except('page'))->links() }}
-        </div>
-    </div>
-</div>
     </div>
 </div>
 @endsection
@@ -282,19 +190,15 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-        // فقط استخدم DataTables للبحث والترتيب، بدون ترقيم وعناصر التحكم الافتراضية
-        $('#contractsTable').DataTable({
-            "paging": false,        // تعطيل ترقيم DataTables
-            "ordering": true,       // تمكين الترتيب
-            "info": false,          // تعطيل عرض معلومات "عرض x من y صفحة"
-            "searching": true,      // تمكين البحث
-            "language": {
-                "url": '{{ asset("assets/datatables/")."/".__("fleet.datatable_lang") }}',
-            },
-            "dom": 'rt<"clear">',   // فقط عرض الجدول (r) والمعالجة (t)
+        // Search functionality
+        $("#contractSearch").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#contractsTable tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
         });
         
-        // فلاتر إضافية
+        // Filter buttons
         $(".filter-btn").click(function() {
             var filterValue = $(this).data('filter');
             

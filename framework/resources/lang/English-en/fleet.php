@@ -1,8 +1,48 @@
 <?php
 return [
 
-    
-    //  Cotract section
+  // Messages
+    'reception_info_message' => 'If you want to register vehicle reception when updating the contract, please fill in the following fields. This option is optional and is usually used when the rental period ends or the vehicle is returned.',
+    'km_at_reception' => '(Current kilometers at reception)',
+    'example_km' => 'Example',
+    'vehicle_condition_notes' => 'Notes about vehicle condition at reception...',
+    'distance_during_rental' => 'Distance traveled during rental period',
+    'km_cannot_be_less' => 'Current kilometers cannot be less than last recorded kilometer',
+    'confirm_reception_creation' => 'A new vehicle reception record will be created with kilometers',
+    'do_you_want_to_continue' => 'Do you want to continue?',
+    'current_km' => 'Current Kilometers',
+    'reception_date' => 'Reception Date',
+    'reception_notes' => 'Reception Notes',
+    'last_recorded_km' => 'Last Recorded KM',
+    'km_traveled' => 'Distance Traveled',
+    'km_unit' => 'KM',
+    'vehicle_reception' => 'Vehicle Reception',
+     
+    //
+
+   
+
+ 'branches' => 'Branches',
+    'branch' => 'Branch',
+    'addBranch' => 'Add Branch',
+    'editBranch' => 'Edit Branch',
+    'branchName' => 'Branch Name',
+    'branchAddress' => 'Branch Address',
+    'branchCity' => 'City',
+    'branchPhone' => 'Phone Number',
+    'branchEmail' => 'Email Address',
+    'branchContact' => 'Contact Person',
+    'branch_added' => 'Branch added successfully',
+    'branch_updated' => 'Branch updated successfully',
+    'branch_deleted' => 'Branch deleted successfully',
+    'branch_delete_error' => 'Cannot delete branch because it has associated vehicles or users',
+     // Additional Branch Fields - حقول إضافية للفروع
+    'state' => 'State/Province',
+    'country' => 'Country',
+    'postal_code' => 'Postal Code',
+    'latitude' => 'Latitude',
+    'longitude' => 'Longitude',
+    'details' => 'Additional Details',
 
 
 // Add these keys to your fleet.php language file
