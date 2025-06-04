@@ -40,6 +40,10 @@ Design and developed by Hyvikk Solutions <https://hyvikk.com/>  -->
 
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset('assets/css/dist-adminlte.min.css')}}">
+  <!-- Custom Menu Style -->
+  <link rel="stylesheet" href="{{asset('assets/css/custom-menu.css')}}">
+  <!-- Custom Logo Style -->
+  <link rel="stylesheet" href="{{asset('assets/css/custom-logo.css')}}">
   <!-- iCheck -->
   {{-- <link rel="stylesheet" href="{{asset('assets/css/plugins-icheck-flat-blue.css')}}"> --}}
   <!-- iCheck for checkboxes and radio inputs -->
@@ -328,10 +332,9 @@ input:checked + .slider:before {
     </nav>
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
-      <a href="{{ url('admin/')}}" class="brand-link">
-        <img src="{{ asset('assets/images/'. Hyvikk::get('icon_img') ) }}" alt="Fleet Logo" class="brand-image"
-          style="opacity: .8">
-        <span class="brand-text font-weight-light">{{ Hyvikk::get('app_name') }}</span>
+      <a href="{{ url('admin/')}}" class="brand-link" style="background: #000;">
+        <img src="{{ asset('assets/images/'. Hyvikk::get('icon_img') ) }}?v={{ time() }}" alt="Fleet Logo" class="brand-image img-circle elevation-3" style="opacity: 1; max-height: 45px;">
+        <span class="brand-text font-weight-light" style="color: #fff;">{{ Hyvikk::get('app_name') }}</span>
       </a>
 
       <div class="sidebar">
