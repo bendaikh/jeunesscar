@@ -10,7 +10,8 @@ Design and developed by Hyvikk Solutions <https://hyvikk.com/>
  */
 
 namespace App\Http\Controllers\Admin;
-
+use App\Contract;
+use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Model\Bookings;
 use App\Model\Expense;
@@ -179,6 +180,9 @@ class HomeController extends Controller {
 				}
 
 			}
+			$data['vehicles_returning'] = Contract::whereDate('end_date', Carbon::today())
+    ->count();
+
 			return view('customers.home', $data);
 		} else {
 			if (isset($_GET['year'])) {
@@ -225,7 +229,7 @@ class HomeController extends Controller {
 
 			$index['yearly_income'] = $this->yearly_income($pass_year);
 			$index['yearly_expense'] = $this->yearly_expense($pass_year);
-
+			$index['yearly_cash_flow'] = $this->yearly_cash_flow($pass_year);
 			$vv = array();
 			if (Auth::user()->group_id == null || Auth::user()->user_type == "S") {
 				$all_vehicles = VehicleModel::get();
@@ -272,6 +276,25 @@ class HomeController extends Controller {
 			$expenses = array_merge($temp, $expense2);
 			ksort($expenses);
 			$index['expenses1'] = implode(",", array_slice($expenses, -12, 12));
+			
+			// Calculate cash flow (income - expense) for each date point
+			$cash_flow = [];
+			$inc_data_array = array_slice($inc_data, -12, 12);
+			$expenses_array = array_slice($expenses, -12, 12);
+			
+			// Get the keys to ensure we use the same dates
+			$date_keys = array_keys($inc_data_array);
+			
+			foreach ($date_keys as $date) {
+				$income_val = isset($inc_data_array[$date]) ? $inc_data_array[$date] : 0;
+				$expense_val = isset($expenses_array[$date]) ? $expenses_array[$date] : 0;
+				$cash_flow[$date] = $income_val - $expense_val;
+			}
+			
+			$index['cash_flow'] = implode(",", $cash_flow);
+
+			$index['vehicles_returning'] = Contract::whereDate('end_date', Carbon::today())
+    ->count();
 
 			return view('home', $index);
 		}
@@ -321,7 +344,49 @@ class HomeController extends Controller {
 		}
 		$yr = array_merge($months, $income2);
 		return implode(",", $yr);
-
+	}
+	
+	private function yearly_cash_flow($year) {
+		if (Auth::user()->group_id == null || Auth::user()->user_type == "S") {
+			$all_vehicles = VehicleModel::get();
+		} else {
+			$all_vehicles = VehicleModel::where('group_id', Auth::user()->group_id)->get();
+		}
+		$vehicle_ids = array(0);
+		foreach ($all_vehicles as $key) {
+			$vehicle_ids[] = $key->id;
+		}
+		
+		// Get monthly income data
+		$incomes = DB::select('select monthname(date) as mnth,sum(amount) as tot from income where year(date)=? and deleted_at is null and vehicle_id in (' . join(",", $vehicle_ids) . ') group by month(date)', [$year]);
+		$months = ["January" => 0, "February" => 0, "March" => 0, "April" => 0, "May" => 0, "June" => 0, "July" => 0, "August" => 0, "September" => 0, "October" => 0, "November" => 0, "December" => 0];
+		$income_data = array();
+		
+		foreach ($incomes as $income) {
+			$income_data[$income->mnth] = $income->tot;
+		}
+		
+		// Get monthly expense data
+		$expenses = DB::select('select monthname(date) as mnth,sum(amount) as tot from expense where year(date)=? and deleted_at is null and vehicle_id in (' . join(",", $vehicle_ids) . ') group by month(date)', [$year]);
+		$expense_data = array();
+		
+		foreach ($expenses as $expense) {
+			$expense_data[$expense->mnth] = $expense->tot;
+		}
+		
+		// Merge with default months
+		$income_monthly = array_merge($months, $income_data);
+		$expense_monthly = array_merge($months, $expense_data);
+		
+		// Calculate cash flow (income - expense) for each month
+		$cash_flow = array();
+		foreach ($months as $month => $default) {
+			$income_val = isset($income_monthly[$month]) ? $income_monthly[$month] : 0;
+			$expense_val = isset($expense_monthly[$month]) ? $expense_monthly[$month] : 0;
+			$cash_flow[$month] = $income_val - $expense_val;
+		}
+		
+		return implode(",", $cash_flow);
 	}
 
 	public function test() {

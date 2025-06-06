@@ -1,6 +1,8 @@
 <?php
 
 return [
+	"contracts"=>"Contracts",
+	'receptionVehicles' => 'Vehicle Reception',
 	'email_content' => 'Set Email Content',
 	'email_notification' => 'Email Notification',
 	'api_settings' => 'Api Settings',

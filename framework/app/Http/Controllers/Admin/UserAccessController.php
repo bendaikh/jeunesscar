@@ -55,6 +55,9 @@ class UserAccessController extends Controller {
 			'Team',
 			'Settings',
 			'Inquiries',
+			'Contracts',
+			'Tracker',
+			'Reception',
 		);
 		return view('roles.create', compact('modules'));
 	}
@@ -87,6 +90,9 @@ class UserAccessController extends Controller {
 			'Team',
 			'Settings',
 			'Inquiries',
+			'Contracts',
+			'Tracker',
+			'Reception',
 		);
 		$role = Role::create(['name' => $request->name]);
 		foreach ($modules as $row) {
@@ -185,6 +191,9 @@ class UserAccessController extends Controller {
 			'Team',
 			'Settings',
 			'Inquiries',
+			'Contracts',
+			'Tracker',
+			'Reception',
 		);
 		$data['data'] = Role::find($id);
 		return view('roles.edit', $data);
@@ -222,6 +231,9 @@ class UserAccessController extends Controller {
 			'Team',
 			'Settings',
 			'Inquiries',
+			'Contracts',
+			'Tracker',
+			'Reception',
 		);
 		$all_permissions = array();
 		foreach ($modules as $row) {
@@ -262,6 +274,8 @@ class UserAccessController extends Controller {
 				$import_perm->assignRole($role);
 			}
 		}
+
+		
 		$role->syncPermissions($all_permissions);
 
 		//return back();

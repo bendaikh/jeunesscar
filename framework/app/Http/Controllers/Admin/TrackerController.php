@@ -21,6 +21,16 @@ use App\Model\Hyvikk;
 use App\Model\Settings;
 class TrackerController extends Controller
 {
+
+    public function __construct()
+{
+    $this->middleware('permission:Tracker list', ['only' => ['vehicles_track', 'track']]);
+    $this->middleware('permission:Tracker edit', ['only' => ['traccar_settings', 'traccar_settings_store']]);
+    $this->middleware('permission:Tracker add', ['only' => ['traccar_settings', 'traccar_settings_store']]);
+    $this->middleware('permission:Tracker delete', ['only' => ['traccar_settings', 'traccar_settings_store']]);
+}
+
+
     public function traccar_location($id = null)
     {
         //getting traccar details
