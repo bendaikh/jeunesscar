@@ -1,0 +1,8 @@
+﻿framework/.env
+.env
+framework/storage/logs/*.log
+vendor/
+node_modules/
+*.idea/
+*.vscode/
+*.DS_Store
