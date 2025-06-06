@@ -554,7 +554,7 @@ $(document).ready(function() {
             
             // حساب الفرق بالميلي ثانية ثم تحويله إلى أيام
             var timeDiffMs = endDate.getTime() - startDate.getTime();
-            var dayDiff = Math.floor(timeDiffMs / (1000 * 60 * 60 * 24)) ; // +1 لتضمين يوم البداية
+            var dayDiff = Math.floor(timeDiffMs / (1000 * 60 * 60 * 24))+1 ; // +1 لتضمين يوم البداية
             
             if(dayDiff > 0) {
                 $('#duration').val(dayDiff);

@@ -8,10 +8,11 @@ use App\Model\VehicleModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Contract extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'contracts';
     
@@ -37,7 +38,19 @@ class Contract extends Model
         'client_signature',
         'witness_signature',
         'signed_at',
-        'created_by'
+        'created_by',
+        'branch_id',
+        'pickup_branch_id',
+        'dropoff_branch_id'
+    ];
+
+    protected $dates = [
+        'start_date',
+        'end_date',
+        'signed_at',
+        'created_at',
+        'updated_at',
+        'deleted_at'
     ];
 
     protected $casts = [
@@ -67,6 +80,26 @@ class Contract extends Model
                 $contract->duration = $contract->calculateDuration();
             }
         });
+    }
+
+    public function setClientSignatureAttribute($value)
+    {
+        if ($value) {
+            if (strpos($value, 'data:image/png;base64,') === false) {
+                $value = 'data:image/png;base64,' . $value;
+            }
+            $this->attributes['client_signature'] = $value;
+        }
+    }
+
+    public function setWitnessSignatureAttribute($value)
+    {
+        if ($value) {
+            if (strpos($value, 'data:image/png;base64,') === false) {
+                $value = 'data:image/png;base64,' . $value;
+            }
+            $this->attributes['witness_signature'] = $value;
+        }
     }
 
     public function client()

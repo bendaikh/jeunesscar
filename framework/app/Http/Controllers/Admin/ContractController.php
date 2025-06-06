@@ -16,6 +16,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Log;
 use setasign\Fpdi\Fpdi;
+use Dompdf\Options;
 
     
 class ContractController extends Controller
@@ -140,7 +141,7 @@ public function __construct()
         // حساب المدة والمبالغ تلقائياً
         $start = \Carbon\Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
         $end = \Carbon\Carbon::createFromFormat('Y-m-d', $request->end_date)->startOfDay();
-        $duration = $start->diffInDays($end) ; // +1 لتضمين يوم البداية
+        $duration = $start->diffInDays($end)+1 ; // +1 لتضمين يوم البداية
         
         $totalAmount = $request->daily_rate * $duration;
         $remainingAmount = $totalAmount - ($request->advance_payment ?? 0);
@@ -404,7 +405,7 @@ public function __construct()
         if (empty($data['rental']['duration']) && !empty($data['rental']['start_date']) && !empty($data['rental']['end_date'])) {
             $start = \Carbon\Carbon::createFromFormat('Y-m-d', $data['rental']['start_date'])->startOfDay();
             $end = \Carbon\Carbon::createFromFormat('Y-m-d', $data['rental']['end_date'])->startOfDay();
-            $data['rental']['duration'] = $start->diffInDays($end) ; // +1 لتضمين يوم البداية
+            $data['rental']['duration'] = $start->diffInDays($end)+1 ; // +1 لتضمين يوم البداية
         }
         
         // حساب المبلغ الإجمالي إذا لم يتم تقديمه
@@ -588,11 +589,15 @@ public function __construct()
     
        public function generatePDF(Request $request)
     {
+        // Increase memory limit and execution time
+        ini_set('memory_limit', '512M');
+        set_time_limit(300);
+
         $id = $request->query('id');
         $data = [];
 
         if ($id) {
-            // عرض عقد محفوظ - تحميل البيانات مع العلاقات
+            // Load contract with relationships
             $contract = Contract::with(['client.userclient', 'vehicle', 'additionalDrivers'])->findOrFail($id);
             
             // إنشاء سجل الدخل
@@ -685,167 +690,123 @@ public function __construct()
             $data = session("contracts", []);
         }
 
-        $signature = $data['signature'] ?? null;
-        $signature2 = $data['signature2'] ?? null;
-
-        // Prepare data with default values
-        $client = (object)array_merge([
-            'last_name' => '',
-            'first_name' => '',
-            'address' => '',
-            'id_number' => '',
-            'id_expiry_date' => '',
-            'license_number' => '',
-            'license_issue_date' => '',
-            'passport_number' => '',
-            'passport_issue_date' => '',
-            'phone' => '',
-            'mobile' => ''
-        ], $data['client'] ?? []);
-
-        $vehicle = (object)array_merge([
-            'brand' => '',
-            'start_km' => '',
-            'plate_number' => '',
-            'fuel_type' => ''
-        ], $data['vehicle'] ?? []);
-
-        $rental = (object)array_merge([
-            'start_date' => '',
-            'end_date' => '',
-            'start_time' => '',
-            'end_time' => '',
-            'start_location' => '',
-            'end_location' => '',
-            'duration' => '',
-            'daily_rate' => '',
-            'total_amount' => '',
-            'remaining_amount' => '',
-            'advance_payment' => '',
-            'remarks' => '',
-            'franchise' => ''
-        ], $data['rental'] ?? []);
-
-        $additional_driver = (object)array_merge([
-            'last_name' => '',
-            'first_name' => '',
-            'address' => '',
-            'id_number' => '',
-            'id_expiry_date' => '',
-            'license_number' => '',
-            'license_issue_date' => '',
-            'mobile' => ''
-        ], $data['additional_driver'] ?? []);
-
-        $vehicle_change = (object)array_merge([
-            'brand' => '',
-            'type' => '',
-            'plate_number' => '',
-            'fuel_type' => '',
-            'start_date' => '',
-            'end_date' => '',
-            'start_time' => '',
-            'end_time' => '',
-            'start_location' => '',
-            'end_location' => ''
-        ], $data['vehicle_change'] ?? []);
-
-        $payment_method = $data['payment_method'] ?? 'cash';
-
-        // استخدام رقم العقد المحفوظ أو إنشاء رقم جديد
-        $contractNumber = isset($data['contract_number']) && $data['contract_number'] 
-                        ? $data['contract_number'] 
-                        : 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
-
-        $contract = (object)[
-            'number' => $contractNumber,
-            'dossier_number' => 'D' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT)
+        // Prepare view data
+        $viewData = [
+            'client' => (object)array_merge([
+                'last_name' => '',
+                'first_name' => '',
+                'address' => '',
+                'id_number' => '',
+                'id_expiry_date' => '',
+                'license_number' => '',
+                'license_issue_date' => '',
+                'passport_number' => '',
+                'passport_issue_date' => '',
+                'phone' => '',
+                'mobile' => ''
+            ], $data['client'] ?? []),
+            'vehicle' => (object)array_merge([
+                'brand' => '',
+                'start_km' => '',
+                'plate_number' => '',
+                'fuel_type' => ''
+            ], $data['vehicle'] ?? []),
+            'rental' => (object)array_merge([
+                'start_date' => '',
+                'end_date' => '',
+                'start_time' => '',
+                'end_time' => '',
+                'start_location' => '',
+                'end_location' => '',
+                'duration' => '',
+                'daily_rate' => '',
+                'total_amount' => '',
+                'remaining_amount' => '',
+                'advance_payment' => '',
+                'remarks' => '',
+                'franchise' => ''
+            ], $data['rental'] ?? []),
+            'additional_driver' => (object)array_merge([
+                'last_name' => '',
+                'first_name' => '',
+                'address' => '',
+                'id_number' => '',
+                'id_expiry_date' => '',
+                'license_number' => '',
+                'license_issue_date' => '',
+                'mobile' => ''
+            ], $data['additional_driver'] ?? []),
+            'vehicle_change' => (object)($data['vehicle_change'] ?? []),
+            'payment_method' => $data['payment_method'] ?? 'cash',
+            'contract' => (object)[
+                'number' => $data['contract_number'] ?? 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT),
+                'dossier_number' => 'D' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT)
+            ],
+            'logoPath' => public_path('/assets/images/logo.png'),
+            'hideButton' => true,
+            'signature' => $data['signature'] ?? null,
+            'signature2' => $data['signature2'] ?? null
         ];
 
-        // Configure PDF
-        $pdf = app('dompdf.wrapper');
-        
-        // Critical PDF settings
-        $pdf->setPaper('A4', 'portrait');
-        $pdf->setOptions([
-            'defaultFont' => 'dejavu sans',
-            'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => true,
-            'dpi' => 110,
-            'isFontSubsettingEnabled' => true,
-            'margin-top'    => 10,
-            'margin-bottom' => 10,
-            'margin-left'   => 10,
-            'margin-right'  => 10,
-        ]);
+        try {
+            // Configure PDF options
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isFontSubsettingEnabled', false);
+            $options->set('defaultFont', 'DejaVu Sans');
+            $options->set('defaultMediaType', 'print');
+            $options->set('dpi', 96);
+            $options->set('defaultPaperSize', 'A4');
+            $options->set('chroot', public_path());
 
-        // Handle logo path
-        $logoPath = public_path('/assets/images/logo.png');
-        if (!file_exists($logoPath)) {
-            $logoPath = null;
-        }
+            // Create PDF instance with options
+            $pdf = new Dompdf($options);
+            
+            // Generate view HTML
+            $html = view('contract.test', $viewData)->render();
+            
+            // Load HTML into PDF
+            $pdf->loadHtml($html);
+            
+            // Render PDF
+            $pdf->render();
 
-        $html = view('contract.test', [
-            'client' => $client,
-            'vehicle' => $vehicle,
-            'rental' => $rental,
-            'additional_driver' => $additional_driver,
-            'vehicle_change' => $vehicle_change,
-            'payment_method' => $payment_method,
-            'contract' => $contract,
-            'logoPath' => $logoPath,
-            'hideButton' => true,
-            'signature' => $signature,
-            'signature2' => $signature2,
-        ])->render();
-        
-        // Load HTML with precise settings
-        $pdf->loadHTML($html);
-        
-        $tempPath = storage_path('app/temp_contract.pdf');
-        file_put_contents($tempPath, $pdf->output());
+            // Get output
+            $output = $pdf->output();
 
-        // قص أول صفحتين فقط باستخدام FPDI
-        $fpdi = new \setasign\Fpdi\Fpdi();
-        $pageCount = $fpdi->setSourceFile($tempPath);
-
-        $pagesToKeep = min(2, $pageCount);
-        for ($pageNo = 1; $pageNo <= $pagesToKeep; $pageNo++) {
-            $templateId = $fpdi->importPage($pageNo);
-            $size = $fpdi->getTemplateSize($templateId);
-
-            $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
-            $fpdi->useTemplate($templateId);
-        }
-
-        // مسح الملف المؤقت
-        unlink($tempPath);
-
-        // حفظ العقد إذا كان جديداً
-        if (!$id) {
-            try {
-                $savedContract = $this->saveContractToDatabase($data, $contract->number);
-
-                IncomeModel::create([
-                    "vehicle_id" => $savedContract->vehicle_id,
-                    "amount" => $savedContract->total_amount,
-                    "user_id" => Auth::id(),
-                    "date" => now(),
-                    "mileage" => isset($data['vehicle']['start_km']) ? $data['vehicle']['start_km'] : 0,
-                    "income_cat" => 'Contract Revenue',
-                    "tax_percent" => 0,
-                    "tax_charge_rs" => 0,
-                ]);
-                
-            } catch (\Exception $e) {
-                Log::error('Failed to save contract: ' . $e->getMessage());
+            // Save contract if new
+            if (!$id && isset($data['client_id'], $data['vehicle_id'])) {
+                try {
+                    $savedContract = $this->saveContractToDatabase($data, $viewData['contract']->number);
+                    
+                    // Create income record
+                    IncomeModel::create([
+                        "vehicle_id" => $savedContract->vehicle_id,
+                        "amount" => $savedContract->total_amount,
+                        "user_id" => Auth::id(),
+                        "date" => now(),
+                        "mileage" => $data['vehicle']['start_km'] ?? 0,
+                        "income_cat" => 'Contract Revenue',
+                        "tax_percent" => 0,
+                        "tax_charge_rs" => 0,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Failed to save contract: ' . $e->getMessage());
+                }
             }
-        }
 
-        return response($fpdi->Output('S'), 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="contract-' . $contract->number . '.pdf"',
-        ]);
+            // Return PDF response
+            return response($output, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="contract-' . $viewData['contract']->number . '.pdf"',
+                'Content-Length' => strlen($output)
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('PDF Generation Error: ' . $e->getMessage());
+            return back()->with('error', 'Error generating PDF: ' . $e->getMessage());
+        }
     }
    
     
@@ -928,7 +889,7 @@ public function __construct()
     if ($duration == 0 && isset($data['rental']['start_date']) && isset($data['rental']['end_date'])) {
         $start = \Carbon\Carbon::createFromFormat('Y-m-d', $data['rental']['start_date'])->startOfDay();
         $end = \Carbon\Carbon::createFromFormat('Y-m-d', $data['rental']['end_date'])->startOfDay();
-        $duration = $start->diffInDays($end); // +1 لتضمين يوم البداية
+        $duration = $start->diffInDays($end)+1; // +1 لتضمين يوم البداية
     }
 
     // حساب المبالغ المالية إذا لم تكن موجودة
