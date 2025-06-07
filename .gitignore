@@ -1,0 +1,16 @@
+﻿framework/.env
+.env
+framework/storage/logs/*.log
+vendor/
+node_modules/
+*.idea/
+*.vscode/
+*.DS_Store
+
+# Ignore all contents in assets/images
+assets/images/*
+!assets/images/.gitkeep
+
+# Ignore all contents in framework/public/assets/images
+framework/public/assets/images/*
+!framework/public/assets/images/.gitkeep
