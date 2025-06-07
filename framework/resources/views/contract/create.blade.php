@@ -1,317 +1,674 @@
 @extends('layouts.app')
 
-@section("breadcrumb")
-<li class="breadcrumb-item active">@lang('fleet.users')@lang('fleet.managers')</li>
+@section('breadcrumb')
+<li class="breadcrumb-item active">@lang('fleet.contracts')</li>
 @endsection
-@section('extra_css')
-<style type="text/css">
-  .checkbox,
-  #chk_all {
-    width: 20px;
-    height: 20px;
-  }
-  .show-password-button{
-    outline: none;
-    border: 1px solid #ced4da;
-  }
-  td>img {
-    border-radius: 50%;
-  }
-</style>
-@endsection
+
 @section('content')
 <div class="row">
-  <div class="col-md-12">
-    <div class="card card-info">
-      <div class="card-header">
-        <h3 class="card-title">@lang('fleet.manageUsers')@lang('fleet.managers') &nbsp;
-          @can('Users add')<a href="{{route('users.create')}}" class="btn btn-success" title="@lang('fleet.addUser')"><i
-              class="fa fa-plus"></i></a></h3>@endcan
-      </div>
-
-      <div class="card-body table-responsive">
-        <table class="table" id="ajax_data_table">
-          <thead class="thead-inverse">
-            <tr>
-              <th>
-
-                <input type="checkbox" id="chk_all">
-
-              </th>
-              <th>@lang('fleet.id')</th>
-              <th>@lang('fleet.profile_photo')</th>
-              <th>@lang('fleet.name')</th>
-              <th>@lang('fleet.email')</th>
-              <th>@lang('fleet.created')</th>
-              <th>@lang('fleet.action')</th>
-            </tr>
-          </thead>
-          <tbody>
-
-          </tbody>
-          <tfoot>
-            <tr>
-              <th>
-
-                @can('Users delete')<button class="btn btn-danger" id="bulk_delete" data-toggle="modal"
-                  title="@lang('fleet.delete')" data-target="#bulkModal" disabled>
-                  <i class="fa fa-trash"></i></button>@endcan
-
-              </th>
-              <th>#</th>
-              <th>@lang('fleet.profile_photo')</th>
-              <th>@lang('fleet.name')</th>
-              <th>@lang('fleet.email')</th>
-              <th>@lang('fleet.created')</th>
-              <th>@lang('fleet.action')</th>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal -->
-<div id="bulkModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">@lang('fleet.delete')</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        {!! Form::open(['url'=>'admin/delete-users','method'=>'POST','id'=>'form_delete']) !!}
-        <div id="bulk_hidden"></div>
-        <p>@lang('fleet.confirm_bulk_delete')</p>
-      </div>
-      <div class="modal-footer">
-        <button id="bulk_action" class="btn btn-danger" type="submit" data-submit="">@lang('fleet.delete')</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('fleet.close')</button>
-      </div>
-      {!! Form::close() !!}
-    </div>
-  </div>
-</div>
-<!-- Modal -->
-
-<!-- Modal -->
-<div id="myModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">@lang('fleet.delete')</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p>@lang('fleet.confirm_delete')</p>
-      </div>
-      <div class="modal-footer">
-        <button id="del_btn" class="btn btn-danger" type="button" data-submit="">@lang('fleet.delete')</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('fleet.close')</button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Modal -->
-
-<!-- Modal -->
-<div id="changepass" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">@lang('fleet.change_password')</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        {!! Form::open(['url'=>url('admin/change_password'),'id'=>'changepass_form']) !!}
-        <form id="change" action="{{url('admin/change_password')}}" method="POST">
-
-          {!! Form::hidden('driver_id',"",['id'=>'driver_id'])!!}
-          <div class="form-group">
-            {!! Form::label('passwd',__('fleet.password'),['class'=>"form-label"]) !!}
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fa fa-lock"></i></span>
-              </div>
-              {!! Form::password('passwd',['class'=>"form-control",'id'=>'passwd','required']) !!}
-              <div class="input-group-prepend">
-                <button type="button" id="show-password-button" class="show-password-button" >
-                  <i class="fa fa-eye" aria-hidden="true"></i>
-                </button>
-              </div>
+    <div class="col-md-12">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">@lang('fleet.create_contract')</h3>
             </div>
-          </div>
-          <div class="modal-footer">
-            <button id="password" class="btn btn-info" type="submit">@lang('fleet.change_password')</button>
-        </form>
-        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('fleet.close')
-        </button>
-      </div>
+
+            <div class="card-body">
+                <form method="POST" action="{{ route('contract.store') }}" id="contractForm">
+                    @csrf
+                    
+                   <!-- Client Information -->
+                   <div class="form-group" id="client-select-group">
+                    <label for="existing_client">@lang('fleet.select_client')</label>
+                    <div class="input-group">
+                        <select class="form-control" name="client_id" id="existing_client">
+                            <option value="">-- @lang('fleet.select_client') --</option>
+                            @foreach($clientSelect as $client)
+                               
+                                    <option value="{{ $client->id }}">
+                                        {{ $client->first_name ? $client->first_name . ' ' . $client->last_name : $client->name }}
+                                    </option>
+                               
+                            @endforeach
+                        </select>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-success" id="add-new-client">@lang('fleet.add_new_client')</button>
+                        </div>
+                    </div>
+                </div>
+                
+
+<div id="new-client-form" style="display: none;">
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h4>@lang('fleet.client_information')</h4>
+            <button type="button" class="btn btn-sm btn-warning" id="cancel-new-client">
+                @lang('fleet.cancel')
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.last_name') <span class="text-danger">*</span></label>
+                        <input type="text" name="client[last_name]" class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.first_name') <span class="text-danger">*</span></label>
+                        <input type="text" name="client[first_name]" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+                                
+                                <div class="form-group">
+                                    <label>@lang('fleet.address') <span class="text-danger">*</span></label>
+                                    <input type="text" name="client[address]" class="form-control" required>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.id_number') <span class="text-danger">*</span></label>
+                                            <input type="text" name="client[id_number]" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.id_expiry_date')</label>
+                                            <input type="date" name="client[id_expiry_date]" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.phone')</label>
+                                            <input type="text" name="client[phone]" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.license_number')</label>
+                                            <input type="text" name="client[license_number]" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.license_issue_date')</label>
+                                            <input type="date" name="client[license_issue_date]" class="form-control">
+                                        </div>
+                                    </div>
+                                    {{-- <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.mobile')</label>
+                                            <input type="text" name="client[mobile]" class="form-control">
+                                        </div>
+                                    </div> --}}
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.passport_number')</label>
+                                            <input type="text" name="client[passport_number]" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>@lang('fleet.passport_issue_date')</label>
+                                            <input type="date" name="client[passport_issue_date]" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+
+
+
+
+
+
+                    
+                   <!-- Vehicle Information -->
+<div class="card mb-3">
+    <div class="card-header bg-info text-white">
+        <h4>@lang('fleet.vehicle_information')</h4>
     </div>
-  </div>
+    <div class="card-body">
+        <div class="form-group" id="vehicle-select-group">
+            <label>@lang('fleet.select_vehicle')</label>
+            <div class="input-group">
+                <select class="form-control" name="vehicle_id" id="existing_vehicle">
+                    <option value="">-- @lang('fleet.select_vehicle') --</option>
+                    @foreach($vehicles as $vehicle)
+                        <option value="{{ $vehicle->id }}" 
+                            data-brand="{{ $vehicle->make_name }}"
+                            data-plate="{{ $vehicle->license_plate }}"
+                            data-fuel="{{ $vehicle->fuel_type }}"
+                            data-km="{{ $vehicle->start_km ?? $vehicle->int_mileage }}">
+                            {{ $vehicle->make_name }} - {{ $vehicle->license_plate }}
+                        </option>
+                    @endforeach
+                </select>
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-success" id="add-new-vehicle">@lang('fleet.add_new_vehicle')</button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        
+
+        <div id="new-vehicle-form" style="display: none;">
+
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4>@lang('fleet.vehicle_information')</h4>
+                    <button type="button" class="btn btn-sm btn-warning" id="cancel-new-vehicle">
+                        @lang('fleet.cancel')
+                    </button>
+                </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.brand') <span class="text-danger">*</span></label>
+                        <input type="text" name="vehicle[brand]" class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.plate_number') <span class="text-danger">*</span></label>
+                        <input type="text" name="vehicle[plate_number]" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+
+            {{-- <div class="form-group">
+                {!! Form::label('model_name', __('fleet.SelectVehicleModel'), ['class' => 'col-xs-5 control-label']) !!}
+                <a data-toggle="modal" data-target="#myModal2"><i class="fa fa-info-circle fa-lg" aria-hidden="true"  style="color: #8639dd"></i></a>
+                <div class="col-xs-6">
+                  <select name="model_name" class="form-control" required id="model_name">
+                    <option></option>
+                    @foreach ($models as $model)   
+                    <option value="{{$model}}" @if(old('model_name')==$model) selected @endif>{{$model}}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div> --}}
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.start_km') <span class="text-danger">*</span></label>
+                        <input type="number" name="vehicle[start_km]" class="form-control" required>
+                    </div>
+                </div>
+
+
+
+
+
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.fuel_type') <span class="text-danger">*</span></label>
+                        <select name="vehicle[fuel_type]" class="form-control" required>
+                            <option value="">-- Select --</option>
+                            <option value="Essence">Essence</option>
+                            <option value="Diesel">Diesel</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.color')</label>
+                        <input type="text" name="vehicle[color]" class="form-control">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.year')</label>
+                        <input type="text" name="vehicle[year]" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.engine_type')</label>
+                        <input type="text" name="vehicle[engine_type]" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+        </div>
+        </div>
+    </div>
 </div>
-<!-- Modal -->
+
+
+
+                    <!-- Rental Information -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-info text-white">
+                            <h4>@lang('fleet.rental_information')</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.start_date') <span class="text-danger">*</span></label>
+                                        <input type="date" name="rental[start_date]" id="startDate" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.start_time') <span class="text-danger">*</span></label>
+                                        <input type="time" name="rental[start_time]" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.end_date') <span class="text-danger">*</span></label>
+                                        <input type="date" name="rental[end_date]" id="endDate" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.end_time') <span class="text-danger">*</span></label>
+                                        <input type="time" name="rental[end_time]" class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.start_location')</label>
+                                        <input type="text" name="rental[start_location]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.end_location')</label>
+                                        <input type="text" name="rental[end_location]" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.daily_rate') <span class="text-danger">*</span></label>
+                                        <input type="number" name="rental[daily_rate]" id="dailyRate" class="form-control calculation" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.duration') (Jours)</label>
+                                        <input type="number" name="rental[duration]" id="duration" class="form-control calculation" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.total_amount') (DH)</label>
+                                        <input type="number" name="rental[total_amount]" id="totalAmount" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.advance_payment') (DH)</label>
+                                        <input type="number" name="rental[advance_payment]" id="advancePayment" class="form-control calculation">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.remaining_amount') (DH)</label>
+                                        <input type="number" name="rental[remaining_amount]" id="remainingAmount" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.franchise') (DH) <span class="text-danger">*</span></label>
+                                        <input type="number" name="rental[franchise]" class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>@lang('fleet.remarks')</label>
+                                <textarea name="rental[remarks]" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Driver Information -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                            <h4>@lang('fleet.additional_driver')</h4>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="hasAdditionalDriver">
+                                <label class="form-check-label text-white">@lang('fleet.has_additional_driver')</label>
+                            </div>
+                        </div>
+                        <div class="card-body" id="additionalDriverSection" style="display:none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.last_name')</label>
+                                        <input type="text" name="additional_driver[last_name]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.first_name')</label>
+                                        <input type="text" name="additional_driver[first_name]" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>@lang('fleet.address')</label>
+                                <input type="text" name="additional_driver[address]" class="form-control">
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.id_number')</label>
+                                        <input type="text" name="additional_driver[id_number]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.id_expiry_date')</label>
+                                        <input type="date" name="additional_driver[id_expiry_date]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.mobile')</label>
+                                        <input type="text" name="additional_driver[mobile]" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.license_number')</label>
+                                        <input type="text" name="additional_driver[license_number]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>@lang('fleet.license_issue_date')</label>
+                                        <input type="date" name="additional_driver[license_issue_date]" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Method -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-info text-white">
+                            <h4>@lang('fleet.payment_method')</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="cash" value="cash" checked>
+                                    <label class="form-check-label" for="cash">@lang('fleet.cash')</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="check" value="check">
+                                    <label class="form-check-label" for="check">@lang('fleet.check')</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="other" value="other">
+                                    <label class="form-check-label" for="other">@lang('fleet.other')</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fa fa-file-pdf"></i> @lang('fleet.generate_contract')
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
+
+
 
 @section('script')
 <script type="text/javascript">
-  $("#del_btn").on("click",function(){
-    var id=$(this).data("submit");
-    $("#form_"+id).submit();
-  });
-
-  $('#myModal').on('show.bs.modal', function(e) {
-    var id = e.relatedTarget.dataset.id;
-    $("#del_btn").attr("data-submit",id);
-  });
-
-  $('#changepass').on('show.bs.modal', function(e) {
-    var id = e.relatedTarget.dataset.id;
-    $("#driver_id").val(id);
-  });
-
-  $("#changepass_form").on("submit",function(e){
-    $.ajax({
-      type: "POST",
-      url: $(this).attr("action"),
-      data: $(this).serialize(),
-      success: function(data){
-
-       new PNotify({
-            title: 'Success!',
-            text: "@lang('fleet.passwordChanged')",
-            type: 'info'
-        });
-      },
-
-      dataType: "html"
-    });
-    $('#changepass').modal("hide");
-    e.preventDefault();
-  });
-  $(function(){
-    
-    var table = $('#ajax_data_table').DataTable({
-          "language": {
-              "url": '{{ asset("assets/datatables/")."/".__("fleet.datatable_lang") }}',
-          },
-         processing: true,
-         serverSide: true,
-         ajax: {
-          url: "{{ url('admin/users-fetch') }}",
-          type: 'POST',
-          data:{}
-         },
-         columns: [
-            {data: 'check',name:'check', searchable:false, orderable:false},
-            {data: 'id', name: 'id'},
-            {data: 'profile_image',name:'profile_image', searchable:false, orderable:false},
-            {data: 'name', name: 'name'},
-            {data: 'email', name: 'email'},            
-            {data: 'created_at', name: 'created_at'},
-            {data: 'action',name:'action',  searchable:false, orderable:false}
-        ],
-        order: [[1, 'desc']],
-        "initComplete": function() {
-              table.columns().every(function () {
-                var that = this;
-                $('input', this.footer()).on('keyup change', function () {
-                  // console.log($(this).parent().index());
-                    that.search(this.value).draw();
-                });
-              });
-            }
-    });
-  });
-  $(document).on('click','input[type="checkbox"]',function(){
-    if(this.checked){
-      $('#bulk_delete').prop('disabled',false);
-
-    }else { 
-      if($("input[name='ids[]']:checked").length == 0){
-        $('#bulk_delete').prop('disabled',true);
-      } 
-    } 
-    
-  });
-
-  $('#bulk_delete').on('click',function(){
-    // console.log($( "input[name='ids[]']:checked" ).length);
-    if($( "input[name='ids[]']:checked" ).length == 0){
-      $('#bulk_delete').prop('type','button');
-        new PNotify({
-            title: 'Failed!',
-            text: "@lang('fleet.delete_error')",
-            type: 'error'
-          });
-        $('#bulk_delete').attr('disabled',true);
-    }
-    if($("input[name='ids[]']:checked").length > 0){
-      // var favorite = [];
-      $.each($("input[name='ids[]']:checked"), function(){
-          // favorite.push($(this).val());
-          $("#bulk_hidden").append('<input type=hidden name=ids[] value='+$(this).val()+'>');
-      });
-      // console.log(favorite);
-    }
-  });
-
-
-  $('#chk_all').on('click',function(){
-    if(this.checked){
-      $('.checkbox').each(function(){
-        $('.checkbox').prop("checked",true);
-      });
-    }else{
-      $('.checkbox').each(function(){
-        $('.checkbox').prop("checked",false);
-      });
-      $('#bulk_delete').prop('disabled',true);
-    }
-  });
-
-    // Checkbox checked
-  function checkcheckbox(){
-    // Total checkboxes
-    var length = $('.checkbox').length;
-    // Total checked checkboxes
-    var totalchecked = 0;
-    $('.checkbox').each(function(){
-        if($(this).is(':checked')){
-            totalchecked+=1;
+$(document).ready(function() {
+    // Toggle additional driver section
+    $('#hasAdditionalDriver').change(function() {
+        if($(this).is(':checked')) {
+            $('#additionalDriverSection').show();
+        } else {
+            $('#additionalDriverSection').hide();
         }
     });
-    // console.log(length+" "+totalchecked);
-    // Checked unchecked checkbox
-    if(totalchecked == length){
-        $("#chk_all").prop('checked', true);
-    }else{
-        $('#chk_all').prop('checked', false);
-    }
-  }
-</script>
-{{-- show password script --}}
-<script>
-  $(document).ready(function() {
-  $('#show-password-button').click(function() {
-    $('#show-password-button').show();
-    var passwordField = $('#passwd');
-    var fieldType = passwordField.attr('type');
-    if (fieldType === 'password') {
-      passwordField.attr('type', 'text');
-      $(this).attr('title', 'Hide password');
-      $(this).find('i').removeClass('fa-eye').addClass('fa-eye-slash');
-    } else {
-      passwordField.attr('type', 'password');
-      $(this).attr('title', 'Show password');
-      $(this).find('i').removeClass('fa-eye-slash').addClass('fa-eye');
-    }
-  });
-});
 
+    // Handle client selection
+    $('#add-new-client').click(function() {
+        $('#new-client-form').show();
+        $('#client-select-group').hide();
+        $('#existing_client').prop('required', false);
+        $('#new-client-form input[required]').prop('required', true);
+    });
+
+    $('#cancel-new-client').click(function() {
+        $('#new-client-form').hide();
+        $('#client-select-group').show();
+        $('#existing_client').val('').trigger('change');
+        $('#existing_client').prop('required', true);
+        $('#new-client-form input[required]').prop('required', false);
+    });
+
+    // Handle vehicle selection
+    $('#add-new-vehicle').click(function() {
+        $('#new-vehicle-form').show();
+        $('#vehicle-select-group').hide();
+        $('#existing_vehicle').prop('required', false);
+        $('#new-vehicle-form input[required], #new-vehicle-form select[required]').prop('required', true);
+    });
+
+    $('#cancel-new-vehicle').click(function() {
+        $('#new-vehicle-form').hide();
+        $('#vehicle-select-group').show();
+        $('#existing_vehicle').val('').trigger('change');
+        $('#existing_vehicle').prop('required', true);
+        $('#new-vehicle-form input[required]').prop('required', false);
+    });
+
+    $('#existing_vehicle').change(function() {
+        if($(this).val() !== '') {
+            var selected = $(this).find('option:selected');
+            if (selected.data('brand')) {
+                $('input[name="vehicle[brand]"]').val(selected.data('brand'));
+                $('input[name="vehicle[plate_number]"]').val(selected.data('plate'));
+                $('select[name="vehicle[fuel_type]"]').val(selected.data('fuel')).trigger('change');
+                $('input[name="vehicle[start_km]"]').val(selected.data('km'));
+            }
+        }
+    });
+
+    // تحديث حساب المدة المحسن
+    $('#startDate, #endDate').change(function() {
+        calculateDuration();
+        calculateTotal();
+    });
+    
+    $('.calculation').change(function() {
+        calculateTotal();
+    });
+    
+    function calculateDuration() {
+        var startDateStr = $('#startDate').val();
+        var endDateStr = $('#endDate').val();
+        
+        if(startDateStr && endDateStr) {
+            // إنشاء كائنات التاريخ وتصفير الوقت
+            var startDate = new Date(startDateStr);
+            var endDate = new Date(endDateStr);
+            
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(0, 0, 0, 0);
+            
+            // حساب الفرق بالميلي ثانية ثم تحويله إلى أيام
+            var timeDiffMs = endDate.getTime() - startDate.getTime();
+            var dayDiff = Math.floor(timeDiffMs / (1000 * 60 * 60 * 24))+1 ; // +1 لتضمين يوم البداية
+            
+            if(dayDiff > 0) {
+                $('#duration').val(dayDiff);
+            } else {
+                $('#duration').val(0);
+                if (startDateStr && endDateStr) {
+                    alert('تاريخ النهاية يجب أن يكون بعد تاريخ البداية');
+                }
+            }
+        } else {
+            $('#duration').val('');
+        }
+    }
+    
+    function calculateTotal() {
+        var dailyRate = parseFloat($('#dailyRate').val()) || 0;
+        var duration = parseInt($('#duration').val()) || 0;
+        var advancePayment = parseFloat($('#advancePayment').val()) || 0;
+        
+        var totalAmount = dailyRate * duration;
+        var remainingAmount = Math.max(0, totalAmount - advancePayment);
+        
+        $('#totalAmount').val(totalAmount.toFixed(2));
+        $('#remainingAmount').val(remainingAmount.toFixed(2));
+    }
+
+    // التحقق من صحة النموذج قبل الإرسال
+    $('#contractForm').on('submit', function(e) {
+        var startDate = new Date($('#startDate').val());
+        var endDate = new Date($('#endDate').val());
+        var duration = parseInt($('#duration').val()) || 0;
+        
+        // تصفير الوقت للمقارنة
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        
+        if (startDate >= endDate) {
+            e.preventDefault();
+            alert('تاريخ النهاية يجب أن يكون بعد تاريخ البداية');
+            $('#endDate').focus();
+            return false;
+        }
+        
+        if (duration <= 0) {
+            e.preventDefault();
+            alert('مدة الإيجار يجب أن تكون أكثر من صفر أيام');
+            $('#duration').focus();
+            return false;
+        }
+
+        var dailyRate = parseFloat($('#dailyRate').val()) || 0;
+        if (dailyRate <= 0) {
+            e.preventDefault();
+            alert('يجب إدخال سعر يومي صحيح');
+            $('#dailyRate').focus();
+            return false;
+        }
+    });
+});
 </script>
 @endsection
+
+{{-- 
+@section('script')
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Toggle additional driver section
+        $('#hasAdditionalDriver').change(function() {
+            if($(this).is(':checked')) {
+                $('#additionalDriverSection').show();
+            } else {
+                $('#additionalDriverSection').hide();
+            }
+        });
+        
+        // Calculate duration when dates change
+        $('#startDate, #endDate').change(function() {
+            calculateDuration();
+            calculateTotal();
+        });
+        
+        // Calculate total amount and remaining amount when values change
+        $('.calculation').change(function() {
+            calculateTotal();
+        });
+        
+        function calculateDuration() {
+            var startDate = new Date($('#startDate').val());
+            var endDate = new Date($('#endDate').val());
+            
+            if(startDate && endDate) {
+                // Calculate difference in days
+                var timeDiff = endDate.getTime() - startDate.getTime();
+                var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // Including start day
+                
+                if(dayDiff > 0) {
+                    $('#duration').val(dayDiff);
+                } else {
+                    $('#duration').val('');
+                }
+            }
+        }
+        
+        function calculateTotal() {
+            var dailyRate = parseFloat($('#dailyRate').val()) || 0;
+            var duration = parseInt($('#duration').val()) || 0;
+            var advancePayment = parseFloat($('#advancePayment').val()) || 0;
+            
+            var totalAmount = dailyRate * duration;
+            var remainingAmount = totalAmount - advancePayment;
+            
+            $('#totalAmount').val(totalAmount.toFixed(2));
+            $('#remainingAmount').val(remainingAmount.toFixed(2));
+        }
+    });
+</script>
+@endsection --}}

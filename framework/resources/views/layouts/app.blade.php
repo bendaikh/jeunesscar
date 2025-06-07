@@ -40,6 +40,10 @@ Design and developed by Hyvikk Solutions <https://hyvikk.com/>  -->
 
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset('assets/css/dist-adminlte.min.css')}}">
+  <!-- Custom Menu Style -->
+  <link rel="stylesheet" href="{{asset('assets/css/custom-menu.css')}}">
+  <!-- Custom Logo Style -->
+  <link rel="stylesheet" href="{{asset('assets/css/custom-logo.css')}}">
   <!-- iCheck -->
   {{-- <link rel="stylesheet" href="{{asset('assets/css/plugins-icheck-flat-blue.css')}}"> --}}
   <!-- iCheck for checkboxes and radio inputs -->
@@ -328,10 +332,9 @@ input:checked + .slider:before {
     </nav>
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
-      <a href="{{ url('admin/')}}" class="brand-link">
-        <img src="{{ asset('assets/images/'. Hyvikk::get('icon_img') ) }}" alt="Fleet Logo" class="brand-image"
-          style="opacity: .8">
-        <span class="brand-text font-weight-light">{{ Hyvikk::get('app_name') }}</span>
+      <a href="{{ url('admin/')}}" class="brand-link" style="background: #000;">
+        <img src="{{ asset('assets/images/'. Hyvikk::get('icon_img') ) }}?v={{ time() }}" alt="Fleet Logo" class="brand-image img-circle elevation-3" style="opacity: 1; max-height: 45px;">
+        <span class="brand-text font-weight-light" style="color: #fff;">{{ Hyvikk::get('app_name') }}</span>
       </a>
 
       <div class="sidebar">
@@ -802,6 +805,17 @@ input:checked + .slider:before {
                     <i class="right fa fa-angle-left"></i>
                   </p>
                 </a>
+
+                <ul class="nav nav-treeview">
+                <li class="nav-item">
+                      <a href="{{ route('reception.index') }}"
+                        class="nav-link @if(Request::is('admin/reception*')) active @endif">
+                        <i class="nav-icon fa fa-car"></i>
+                        <p>@lang('fleet.vehicleReceptions')</p>
+                      </a>
+                    </li>
+
+                </ul>
                 <ul class="nav nav-treeview">
                   @can('Vehicles list')
                 
@@ -812,6 +826,8 @@ input:checked + .slider:before {
                       <p>@lang('menu.manageVehicles')</p>  
                     </a>
                     </li>
+
+                   
 
                   
                   {{-- <span style="display:inline !important;">
@@ -868,6 +884,13 @@ input:checked + .slider:before {
                   </li>
                   @endif
                   @endif
+                  <!-- إضافة زر في القائمة الرئيسية (داخل قسم المركبات أو القسم المناسب) -->
+                  <li class="nav-item">
+                    <a href="{{ route('vehicle_expiry.index') }}" class="nav-link @if(Request::is('admin/vehicle-expiry*')) active @endif">
+                      <i class="fa fa-calendar-times nav-icon"></i>
+                      <p>@lang('fleet.vehicle_contract_expiry')</p>
+                    </a>
+                  </li>
                 </ul>
               </li>
             @endcanany
@@ -878,7 +901,7 @@ input:checked + .slider:before {
 
               @else
               @php($class="")
-              @php($active="")
+              @php($active="active")
               @endif
               @can('Transactions list')
               <li class="nav-item has-treeview {{$class}}">

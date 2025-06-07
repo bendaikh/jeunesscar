@@ -237,7 +237,7 @@ class UpdateVersion extends Controller {
 		$role = Role::create(['name' => 'Super Admin']);
 		$role->givePermissionTo($all);
 		$role = Role::create(['name' => 'Admin']);
-		$role->givePermissionTo(['Bookings list', 'Bookings add', 'Bookings edit', 'Bookings delete', 'Drivers list', 'Drivers add', 'Drivers edit', 'Drivers delete', 'Customer list', 'Customer add', 'Customer edit', 'Customer delete']);
+		$role->givePermissionTo(['Bookings list', 'Bookings add', 'Bookings edit', 'Bookings delete', 'Drivers list','Reception add','Reception edit','Reception delete','Reception list', 'Drivers add', 'Drivers edit', 'Drivers delete', 'Customer list', 'Customer add', 'Customer edit', 'Customer delete']);
 		$users = User::where('user_type', 'S')->get();
 		foreach ($users as $user) {
 			$u = User::find($user->id);

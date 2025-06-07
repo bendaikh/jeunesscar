@@ -15,6 +15,7 @@ use Laravel\Passport\Console\ClientCommand;
 use Laravel\Passport\Console\InstallCommand;
 use Laravel\Passport\Console\KeysCommand;
 use Laravel\Passport\Passport;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider {
 	/**
@@ -23,7 +24,8 @@ class AppServiceProvider extends ServiceProvider {
 	 * @return void
 	 */
 	public function boot() {
-		//
+		
+     Paginator::useBootstrapFive();
 	}
 
 	/**

@@ -15,6 +15,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EditUserRequest;
 use App\Http\Requests\UserRequest;
+use App\Model\Branch;
 use App\Model\Hyvikk;
 use App\Model\User;
 use App\Model\VehicleGroupModel;
@@ -76,6 +77,7 @@ class UsersController extends Controller {
 	public function create() {
 		$index['groups'] = VehicleGroupModel::all();
 		$index['roles'] = Role::get();
+		$index['branches'] = Branch::where('is_active', 1)->orderBy('name')->get();
 		return view("users.create", $index);
 	}
 
@@ -130,6 +132,7 @@ class UsersController extends Controller {
 		$user->language = Auth::user()->language;
 		$user->first_name = $request->get("first_name");
 		$user->last_name = $request->get("last_name");
+		$user->branch_id = $request->branch_id;
 		$user->save();
 		$role = Role::find($request->role_id);
 		$user->assignRole($role);
@@ -143,7 +146,8 @@ class UsersController extends Controller {
 		$user = User::find($id);
 		$groups = VehicleGroupModel::all();
 		$roles = Role::get();
-		return view("users.edit", compact("user", 'groups', "roles"));
+		$branches = Branch::where('is_active', 1)->orderBy('name')->get();
+		return view("users.edit", compact("user", 'groups', "roles", "branches"));
 	}
 
 	public function update(EditUserRequest $request) {
@@ -155,6 +159,7 @@ class UsersController extends Controller {
 		$user->module = serialize($request->get('module'));
 		$user->first_name = $request->get("first_name");
 		$user->last_name = $request->get("last_name");
+		$user->branch_id = $request->branch_id;
 		$old = Role::find($user->roles->first()->id);
 		if ($old != null) {
 			$user->removeRole($old);

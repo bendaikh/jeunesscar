@@ -27,7 +27,32 @@ class Hyvikk {
 
 	public static function get($key) {
 		$settings = array_pluck(Settings::all()->toArray(), 'value', 'name');
-		return (is_array($key))?array_only($settings, $key): $settings[$key];
+		
+		// Default values for certain settings
+		$defaults = [
+			'language' => 'English-en',
+			'date_format' => 'Y-m-d',
+			'currency' => 'USD',
+			'time_interval' => '30',
+			'fuel_unit' => 'gallon',
+			'dis_format' => 'km'
+		];
+		
+		// If language setting doesn't exist, create it
+		if ($key === 'language' && !isset($settings['language'])) {
+			$setting = new Settings();
+			$setting->name = 'language';
+			$setting->value = $defaults['language'];
+			$setting->save();
+			$settings['language'] = $defaults['language'];
+		}
+		
+		// If key exists in settings, return it, otherwise return default value if exists
+		if (is_array($key)) {
+			return array_only($settings, $key);
+		} else {
+			return isset($settings[$key]) ? $settings[$key] : (isset($defaults[$key]) ? $defaults[$key] : null);
+		}
 	}
 
 	public static function set($key, $val) {

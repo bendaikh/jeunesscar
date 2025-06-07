@@ -200,7 +200,7 @@
                   </div>
                 </div>
 
-                <div class="form-group">
+                {{-- <div class="form-group">
 
                   @if(Hyvikk::get('dis_format') == "km")
                   @if(Hyvikk::get('fuel_unit') == "gallon") {!! Form::label('average',
@@ -216,7 +216,7 @@
                   <div class="col-xs-6">
                     {!! Form::number('average', null,['class' => 'form-control','required','step'=>'any']) !!}
                   </div>
-                </div>
+                </div> --}}
 
                 <div class="form-group">
                   @if(Hyvikk::get('dis_format') == "km")

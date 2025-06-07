@@ -163,6 +163,16 @@
               </select>
             </div>
 
+            <div class="form-group">
+              <label for="branch_id">@lang('fleet.branch')</label>
+              <select id="branch_id" name="branch_id" class="form-control">
+                <option value="">@lang('fleet.selectBranch')</option>
+                @foreach($branches as $branch)
+                <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                @endforeach
+              </select>
+            </div>
+
             {{-- <div class="form-group">
               {!! Form::label('module',__('fleet.select_modules'), ['class' => 'form-label']) !!} <br>
               <div class="row">

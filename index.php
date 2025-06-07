@@ -3,7 +3,7 @@ require __DIR__ . '/framework/bootstrap/autoload.php';
 
 $app = require_once __DIR__ . '/framework/bootstrap/app.php';
 
-// ✅ هذا هو التعديل الحاسم:
+
 $app->bind('path.public', function () {
     return __DIR__;
 });
