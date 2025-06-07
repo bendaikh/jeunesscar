@@ -764,78 +764,52 @@ class BookingsController extends Controller {
 
 	}
 
-	public function store(BookingRequest $request)
-{
-    $vehicle = VehicleModel::find($request->get('vehicle_id'));
-
-    if (!$vehicle) {
-        return redirect()->route("bookings.create")
-            ->withErrors(["error" => "Selected Vehicle not found."])
-            ->withInput();
-    }
-
-    $max_seats = $vehicle->types->seats ?? 0;
-
-    $isAvailable = $this->check_booking($request->get("pickup"), $request->get("dropoff"), $request->get("vehicle_id"));
-
-    if (!$isAvailable) {
-        return redirect()->route("bookings.create")
-            ->withErrors(["error" => "Selected Vehicle is not Available in Given Timeframe"])
-            ->withInput();
-    }
-
-    if ($request->get("travellers") > $max_seats) {
-        return redirect()->route("bookings.create")
-            ->withErrors(["error" => "Number of Travellers exceed seating capacity of the vehicle | Seats Available : " . $max_seats])
-            ->withInput();
-    }
-
-    $bookingData = $request->all();
-    $bookingData['avance'] = $request->get('avance') ?? 0; // تأكد من أن avance محفوظ دائماً
-    $booking = Bookings::create($bookingData);
-
-    Address::updateOrCreate(
-        ['customer_id' => $request->get('customer_id'), 'address' => $request->get('pickup_addr')]
-    );
-    Address::updateOrCreate(
-        ['customer_id' => $request->get('customer_id'), 'address' => $request->get('dest_addr')]
-    );
-
-    $booking->user_id = $request->get("user_id");
-    $booking->driver_id = $request->get('driver_id'); // تبقى اختيارية
-
-    $dropoff = Carbon::parse($booking->dropoff);
-    $pickup = Carbon::parse($booking->pickup);
-    $diff = $pickup->diffInMinutes($dropoff);
-
-    $booking->note = $request->get('note');
-    $booking->duration = $diff;
-    $booking->udf = serialize($request->get('udf'));
-    $booking->accept_status = 1; // 0 = yet to accept, 1 = accept
-    $booking->ride_status = "Upcoming";
-    $booking->booking_type = 1;
-    $booking->journey_date = date('d-m-Y', strtotime($booking->pickup));
-    $booking->journey_time = date('H:i:s', strtotime($booking->pickup));
-    $booking->save();
-
-   
-
-    if (Hyvikk::email_msg('email') == 1) {
-        if (!empty($booking->customer) && !empty($booking->customer->email)) {
-            Mail::to($booking->customer->email)->send(new VehicleBooked($booking));
-        }
-
-        if (!empty($booking->driver) && !empty($booking->driver->email)) {
-
-			$this->booking_notification($booking->id);
-			$this->sms_notification($booking->id);
-			$this->push_notification($booking->id);
-            Mail::to($booking->driver->email)->send(new DriverBooked($booking));
-        }
-    }
-
-    return redirect()->route("bookings.index");
-}
+	public function store(BookingRequest $request) {
+		$max_seats = VehicleModel::find($request->get('vehicle_id'))->types->seats;
+		$xx = $this->check_booking($request->get("pickup"), $request->get("dropoff"), $request->get("vehicle_id"));
+		if ($xx) {
+			if($request->get("travellers") > $max_seats){
+				return redirect()->route("bookings.create")->withErrors(["error" => "Number of Travellers exceed seating capity of the vehicle | Seats Available : ".$max_seats.""])->withInput();
+			}else{
+				$id = Bookings::create($request->all())->id;
+	
+				Address::updateOrCreate(['customer_id' => $request->get('customer_id'), 'address' => $request->get('pickup_addr')]);
+	
+				Address::updateOrCreate(['customer_id' => $request->get('customer_id'), 'address' => $request->get('dest_addr')]);
+	
+				$booking = Bookings::find($id);
+				$booking->user_id = $request->get("user_id");
+				$booking->driver_id = $request->get('driver_id');
+				$dropoff = Carbon::parse($booking->dropoff);
+				$pickup = Carbon::parse($booking->pickup);
+				$diff = $pickup->diffInMinutes($dropoff);
+				$booking->note = $request->get('note');
+				$booking->duration = $diff;
+				$booking->udf = serialize($request->get('udf'));
+				$booking->accept_status = 1; //0=yet to accept, 1= accept
+				$booking->ride_status = "Upcoming";
+				$booking->booking_type = 1;
+				$booking->journey_date = date('d-m-Y', strtotime($booking->pickup));
+				$booking->journey_time = date('H:i:s', strtotime($booking->pickup));
+				$booking->save();
+				$mail = Bookings::find($id);
+				$this->booking_notification($booking->id);
+	
+				// send sms to customer while adding new booking
+				$this->sms_notification($booking->id);
+	
+				// browser notification
+				$this->push_notification($booking->id);
+				if (Hyvikk::email_msg('email') == 1) {
+					Mail::to($mail->customer->email)->send(new VehicleBooked($booking));
+					Mail::to($mail->driver->email)->send(new DriverBooked($booking));
+				}
+				return redirect()->route("bookings.index");
+			}
+		} else {
+			return redirect()->route("bookings.create")->withErrors(["error" => "Selected Vehicle is not Available in Given Timeframe"])->withInput();
+		}
+	}
 
 	public function sms_notification($booking_id) {
 		$booking = Bookings::find($booking_id);

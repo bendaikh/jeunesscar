@@ -2,56 +2,30 @@
 @section('extra_css')
     <style type="text/css">
     .modal {
-        overflow: auto;
-        overflow-y: hidden;
-    }
-    /* .modal-open {
-        margin-left: -250px
-    } */
+    overflow: auto;
+    overflow-y: hidden;
+}
+        /* .modal-open {
+            margin-left: -250px
+        } */
 
-    .custom_padding {
-        padding: .3rem !important;
-    }
+        .custom_padding {
+            padding: .3rem !important;
+        }
 
-    .checkbox,
-    #chk_all {
-        width: 20px;
-        height: 20px;
-    }
+        .checkbox,
+        #chk_all {
+            width: 20px;
+            height: 20px;
+        }
 
-    #loader {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 20px;
-        color: #555;
-    }
-    
-    /* Estilos para botones de acción */
-    .action-item {
-        margin-right: 3px;
-        margin-bottom: 3px;
-    }
-    
-    /* Corregir problemas de visualización de acciones */
-    .dataTables_wrapper .action-btns {
-        display: flex;
-        flex-wrap: wrap;
-        white-space: nowrap;
-    }
-
-    /* Estilos para el menú desplegable de acciones */
-    .dropdown-menu {
-        min-width: 150px;
-    }
-    
-    .dropdown-item {
-        padding: 8px 20px;
-    }
-    
-    .dropdown-item:hover {
-        background-color: #f8f9fa;
-    }
+        #loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            color: #555;
+        }
     </style>
 @endsection
 @section('breadcrumb')

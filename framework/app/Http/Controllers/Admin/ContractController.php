@@ -2,259 +2,49 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\AdditionalDriver;
-use App\Contract;
 use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\IncomeModel;
+use App\Model\Contract;
 use App\Model\User;
 use App\Model\UserClinet;
 use App\Model\VehicleModel;
-use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Dompdf;
-use Illuminate\Support\Facades\Log;
 use setasign\Fpdi\Fpdi;
 
     
 class ContractController extends Controller
 {
-   
-public function __construct()
-{
-    $this->middleware('permission:Contracts add', ['only' => ['create', 'store']]);
-    $this->middleware('permission:Contracts edit', ['only' => ['edit', 'update']]);
-    $this->middleware('permission:Contracts delete', ['only' => ['destroy', 'bulk_delete']]);
-    $this->middleware('permission:Contracts list', ['only' => ['index', 'show']]);
-}
-    // public function index()
-    // {
-    //   // جلب جميع العقود مع علاقاتها
-    // $contracts = Contract::with(['client', 'vehicle', 'creator'])
-    // ->orderBy('created_at', 'desc')
-    // ->paginate(10); // 10 عقود لكل صفحة
-
-    //    return view('contract.index', compact('contracts'));
-    // }
-
-
-    public function create(Request $request)
+    public function __construct()
     {
-        $clientSelect = User::with('userclient')
-            ->where("user_type", "C")
-            ->get();
-    
-        // Obtener fechas del request o usar predeterminadas
-        $pickup = $request->input('start_date', date('Y-m-d')); // Fecha actual por defecto
-        $dropoff = $request->input('end_date', date('Y-m-d', strtotime('+7 days'))); // Una semana después por defecto
-    
-        // Obtener todos los vehículos en servicio
-        $allVehicles = VehicleModel::where([['in_service', '1']])
-            ->select('id', 'make_name', 'license_plate', 'fuel_type', 'start_km', 'int_mileage')
-            ->get();
-    
-        // Filtrar vehículos disponibles
-        $vehicles = collect();
-        foreach ($allVehicles as $vehicle) {
-            if ($this->check_booking($pickup, $dropoff, $vehicle->id)) {
-                $vehicles->push($vehicle);
-            }
-        }
-    
-        $models = VehicleModel::groupBy('model_name')
-            ->pluck('model_name')
-            ->toArray();
-    
-        // Pasar las fechas a la vista para mostrarlas en los filtros
-        return view("contract.create", compact('clientSelect', 'vehicles', 'models', 'pickup', 'dropoff'));
+        // $this->middleware(['role:Admin']);
+		$this->middleware('permission:Customer add', ['only' => ['create']]);
+		$this->middleware('permission:Customer edit', ['only' => ['edit']]);
+		$this->middleware('permission:Customer delete', ['only' => ['bulk_delete', 'destroy']]);
+		$this->middleware('permission:Customer list');
+		$this->middleware('permission:Customer import', ['only' => ['importCutomers']]);
     }
-
-
-
-    public function destroy($id)
-    {
-        $contract = Contract::findOrFail($id);
-    
-        try {
-            $contract->delete();
-            return redirect()->route('contract')->with('success', __('fleet.contract_deleted'));
-        } catch (\Exception $e) {
-            return redirect()->route('contract')->with('error', __('fleet.contract_delete_failed'));
-        }
-    }
-
 
     public function index()
-    {   
-    if(Auth::user()->user_type=="S"){
-        $contracts = Contract::with(['client', 'vehicle', 'creator'])
-        ->has('client')->has('vehicle')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-        return view('contract.index', compact('contracts'));
-    }else{
-        $contracts = Contract::with(['client', 'vehicle', 'creator'])
-        ->has('client')->has('vehicle')
-            ->orderBy('created_at', 'desc')
-            ->where('created_by', Auth::user()->id)
-            ->paginate(10);
-        return view('contract.index', compact('contracts'));
-}
-
-        
-    }
-    
-    public function show($id)
     {
-        $contract = Contract::with(['client', 'vehicle', 'additionalDrivers', 'creator'])->findOrFail($id);
-        return view('contract.show', compact('contract'));
+        $clientSelect = User::with('userclient')->
+       where("user_type", "C")
+       // ->has('userclient')
+       -> get();
+
+       
+       //return $clientSelect;
+       // return $clientSelect;
+       $vehicles = VehicleModel::where('in_service', 1)
+       ->select('id', 'make_name', 'license_plate', 'fuel_type', 'start_km', 'int_mileage')
+       ->get();
+   
+   return view("contract.index", compact('clientSelect', 'vehicles'));
+   
+
+    //return view("contract.index", compact('clientSelect'));
     }
-    
-    public function edit($id)
-    {
-        $contract = Contract::with(['client', 'vehicle', 'additionalDrivers'])->findOrFail($id);
-        $clients = User::where('user_type', 'C')->get();
-        $vehicles = VehicleModel::where('in_service', 1)->get();
-        
-        return view('contract.edit', compact('contract', 'clients', 'vehicles'));
-    }
-    
-    
-    public function update(Request $request, $id)
-    {
-        $contract = Contract::findOrFail($id);
-        
-        $validated = $request->validate([
-            'client_id' => 'required|exists:users,id',
-            'vehicle_id' => 'required|exists:vehicles,id',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'daily_rate' => 'required|numeric|min:0',
-            'status' => 'required|in:pending,active,completed,cancelled',
-            'reception_km' => 'nullable|numeric|min:0',
-            'reception_date' => 'nullable|date',
-            'reception_notes' => 'nullable|string|max:1000'
-        ]);
-
-        // حساب المدة والمبالغ تلقائياً
-        $start = \Carbon\Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
-        $end = \Carbon\Carbon::createFromFormat('Y-m-d', $request->end_date)->startOfDay();
-        $duration = $start->diffInDays($end)+1 ; // +1 لتضمين يوم البداية
-        
-        $totalAmount = $request->daily_rate * $duration;
-        $remainingAmount = $totalAmount - ($request->advance_payment ?? 0);
-
-        // تحديث بيانات العقد
-        $contract->update([
-            'client_id' => $request->client_id,
-            'vehicle_id' => $request->vehicle_id,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'duration' => $duration,
-            'daily_rate' => $request->daily_rate,
-            'total_amount' => $totalAmount,
-            'advance_payment' => $request->advance_payment ?? 0,
-            'remaining_amount' => $remainingAmount,
-            'status' => $request->status,
-            'payment_method' => $request->payment_method,
-            'notes' => $request->notes
-        ]);
-
-        // إنشاء Reception إذا تم ملء الكيلومترات الجديدة
-        if ($request->filled('reception_km') && $request->reception_km > 0) {
-            $vehicle = VehicleModel::find($contract->vehicle_id);
-            $previousKm = $vehicle->int_mileage;
-            
-            // التحقق من أن الكيلومترات الجديدة أكبر من الحالية
-            if ($request->reception_km >= $previousKm) {
-                // إنشاء سجل Reception
-                \App\Model\ReceptionModel::create([
-                    'vehicle_id' => $contract->vehicle_id,
-                    'reception_date' => $request->reception_date ?? now()->format('Y-m-d'),
-                    'km_in' => $request->reception_km,
-                    'previous_km' => $previousKm,
-                    'notes' => $request->reception_notes ?? 'تم إنشاؤه تلقائياً من تحديث العقد #' . $contract->contract_number,
-                    'status' => 'active',
-                    'user_id' => $contract->client_id,
-                    'created_by' => auth()->id(),
-                ]);
-                
-                // تحديث كيلومترات المركبة
-                $vehicle->update(['int_mileage' => $request->reception_km]);
-                
-                // إضافة رسالة نجاح
-                session()->flash('reception_created', true);
-                session()->flash('reception_km_difference', $request->reception_km - $previousKm);
-            }
-        }
-
-        // التعامل مع السائق الإضافي
-        $driverData = $request->input('additional_driver', []);
-        
-        // التحقق من وجود بيانات السائق الإضافي
-        if (!empty($driverData['first_name']) || !empty($driverData['last_name'])) {
-            // إذا كان هناك سائق إضافي موجود بالفعل، قم بتحديثه
-            if ($request->has('additional_driver_id') && $request->additional_driver_id) {
-                $driver = AdditionalDriver::find($request->additional_driver_id);
-                if ($driver) {
-                    $driver->update([
-                        'first_name' => $driverData['first_name'] ?? '',
-                        'last_name' => $driverData['last_name'] ?? '',
-                        'address' => $driverData['address'] ?? '',
-                        'id_number' => $driverData['id_number'] ?? '',
-                        'id_expiry_date' => $driverData['id_expiry_date'] ?? null,
-                        'license_number' => $driverData['license_number'] ?? '',
-                        'license_issue_date' => $driverData['license_issue_date'] ?? null,
-                        'mobile' => $driverData['mobile'] ?? ''
-                    ]);
-                }
-            } else {
-                // إنشاء سائق إضافي جديد
-                AdditionalDriver::create([
-                    'contract_id' => $contract->id,
-                    'first_name' => $driverData['first_name'] ?? '',
-                    'last_name' => $driverData['last_name'] ?? '',
-                    'address' => $driverData['address'] ?? '',
-                    'id_number' => $driverData['id_number'] ?? '',
-                    'id_expiry_date' => $driverData['id_expiry_date'] ?? null,
-                    'license_number' => $driverData['license_number'] ?? '',
-                    'license_issue_date' => $driverData['license_issue_date'] ?? null,
-                    'mobile' => $driverData['mobile'] ?? ''
-                ]);
-            }
-        }
-
-        // تحديد رسالة النجاح
-        $successMessage = __('fleet.contract_updated');
-        if (session('reception_created')) {
-            $kmDifference = session('reception_km_difference');
-            $successMessage .= ' وتم إنشاء سجل استقبال المركبة بنجاح. المسافة المقطوعة: ' . $kmDifference . ' كم.';
-        }
-
-        return redirect()->route('contract')
-            ->with('success', $successMessage);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public function store(Request $request)
     {
         if ($request->client_id == '') {
@@ -296,7 +86,7 @@ public function __construct()
                 'license_issue_date' => $request->client['license_issue_date'],
                 'passport_number' => $request->client['passport_number'],
                 'passport_issue_date' => $request->client['passport_issue_date'],
-                'mobile' => $request->client['phone'],
+                'mobile' => $request->client['mobile'],
             ]);
             
             $clientId = $user->id;
@@ -312,7 +102,7 @@ public function __construct()
                 'address' => $request->client['address'],
                 'mobno' => $request->client['phone'],
                 'userclient' => (object)[
-                    'mobile' => $request->client['phone'],
+                    'mobile' => $request->client['mobile'],
                     'id_number' => $request->client['id_number'],
                     'id_expiry_date' => $request->client['id_expiry_date'],
                     'license_number' => $request->client['license_number'],
@@ -363,7 +153,6 @@ public function __construct()
         
         $vehicleId = $vehicle->id;
     } else {
-
         $vehicleId = $request->vehicle_id;
         $vehicle = VehicleModel::findOrFail($vehicleId);
         
@@ -380,10 +169,10 @@ public function __construct()
         $data = $request->all();
         $data['client'] = [
             'first_name' => $client->first_name?$client->first_name:$client->name,
-            'last_name' => $client->last_name?$client->last_name:"",
+            'last_name' => $client->last_name?$client->first_name:"",
             'address' => $client->address,
             'phone' => $client->mobno,
-            'mobile' => $client->mobno,
+            'mobile' => $client->userclient->mobile,
             'id_number' => $client->userclient->id_number,
             'id_expiry_date' => $client->userclient->id_expiry_date,
             'license_number' => $client->userclient->license_number,
@@ -402,9 +191,10 @@ public function __construct()
         
         // حساب مدة الإيجار إذا لم يتم تقديمها
         if (empty($data['rental']['duration']) && !empty($data['rental']['start_date']) && !empty($data['rental']['end_date'])) {
-            $start = \Carbon\Carbon::createFromFormat('Y-m-d', $data['rental']['start_date'])->startOfDay();
-            $end = \Carbon\Carbon::createFromFormat('Y-m-d', $data['rental']['end_date'])->startOfDay();
-            $data['rental']['duration'] = $start->diffInDays($end)+1 ; // +1 لتضمين يوم البداية
+            $start = new \DateTime($data['rental']['start_date']);
+            $end = new \DateTime($data['rental']['end_date']);
+            $diff = $start->diff($end);
+            $data['rental']['duration'] = $diff->days + 1; // Including the start day
         }
         
         // حساب المبلغ الإجمالي إذا لم يتم تقديمه
@@ -423,118 +213,6 @@ public function __construct()
         session()->put("contracts", $data);
         return redirect()->route('contract.view');
     }
-
-
-
-     protected function check_booking($pickup, $dropoff, $vehicle) {
-    // أولاً: التحقق من وجود السيارة في vehicle_receptions بتاريخ استقبال أحدث من آخر عقد
-    $vehicleModel = VehicleModel::find($vehicle);
-    
-    if ($vehicleModel) {
-        // الحصول على آخر استقبال للسيارة
-        $lastReception = DB::table("vehicle_receptions")
-            ->where("vehicle_id", $vehicle)
-            ->orderBy("reception_date", "desc")
-            ->first();
-        
-        if ($lastReception) {
-            // الحصول على آخر عقد للسيارة
-            $lastContract = DB::table("contracts")
-                ->where("vehicle_id", $vehicle)
-                ->orderBy("start_date", "desc")
-                ->first();
-            
-            // إذا لم يكن هناك عقد سابق أو كان تاريخ الاستقبال بعد تاريخ بداية آخر عقد،
-            // نعتبر السيارة متوفرة مباشرة
-            if (!$lastContract || $lastReception->reception_date > $lastContract->start_date) {
-                return true; // السيارة متوفرة بناءً على شرط الاستقبال
-            }
-        }
-    }
-    
-    // ثانياً: إذا لم يتحقق الشرط الأول، نقوم بالتحقق من الشروط الأصلية
-    
-    // Verificar si hay reservas que se superpongan con el período solicitado
-    $chk = DB::table("bookings")
-        ->where("status", 0)
-        ->where("vehicle_id", $vehicle)
-        ->whereNull("deleted_at")
-        ->where(function($query) use ($pickup, $dropoff) {
-            $query->where(function($q) use ($pickup, $dropoff) {
-                // Reservas que comienzan antes y terminan durante el período
-                $q->where('pickup', '<=', $pickup)
-                  ->where('dropoff', '>=', $pickup);
-            })->orWhere(function($q) use ($pickup, $dropoff) {
-                // Reservas que comienzan durante y terminan después del período
-                $q->where('pickup', '<=', $dropoff)
-                  ->where('dropoff', '>=', $dropoff);
-            })->orWhere(function($q) use ($pickup, $dropoff) {
-                // Reservas que comienzan و terminan dentro del período
-                $q->where('pickup', '>=', $pickup)
-                  ->where('dropoff', '<=', $dropoff);
-            })->orWhere(function($q) use ($pickup, $dropoff) {
-                // Reservas que abarcan completamente el período
-                $q->where('pickup', '<=', $pickup)
-                  ->where('dropoff', '>=', $dropoff);
-            });
-        })
-        ->exists();
-
-    // Verificar si hay contratos que se superpongan con el período solicitado
-    $ck2 = DB::table("contracts")
-        ->where("vehicle_id", $vehicle)
-        ->where(function($query) use ($pickup, $dropoff) {
-            $query->where(function($q) use ($pickup, $dropoff) {
-                // Contratos que comienzan قبل و terminان خلال el período
-                $q->where('start_date', '<=', $pickup)
-                  ->where('end_date', '>=', $pickup);
-            })->orWhere(function($q) use ($pickup, $dropoff) {
-                // Contratos que comienzan durante و terminان بعد del período
-                $q->where('start_date', '<=', $dropoff)
-                  ->where('end_date', '>=', $dropoff);
-            })->orWhere(function($q) use ($pickup, $dropoff) {
-                // Contratos que comienzan و terminان داخل período
-                $q->where('start_date', '>=', $pickup)
-                  ->where('end_date', '<=', $dropoff);
-            })->orWhere(function($q) use ($pickup, $dropoff) {
-                // Contratos que abarcan completamente el período
-                $q->where('start_date', '<=', $pickup)
-                  ->where('end_date', '>=', $dropoff);
-            });
-        })
-        ->exists();
-
-    // Si no hay reservas ni contratos que se superpongan, el vehículo está disponible
-    return !$chk && !$ck2;
-}
-
-    protected function get_available_vehicles($pickup, $dropoff, $vehicleIds = [])
-    {
-        // Vehículos con reservas en ese período
-        $bookedVehicleIds = DB::table("bookings")
-            ->where("status", 0)
-            ->whereNull("deleted_at")
-            ->whereIn("vehicle_id", $vehicleIds)
-            ->where("pickup", ">=", $pickup)
-            ->where("dropoff", "<=", $dropoff)
-            ->pluck('vehicle_id')
-            ->toArray();
-    
-        // Vehículos con contratos en ese período
-        $contractedVehicleIds = DB::table("contracts")
-            ->whereIn("vehicle_id", $vehicleIds)
-            ->where("start_date", ">=", $pickup)
-            ->where("end_date", "<=", $dropoff)
-            ->pluck('vehicle_id')
-            ->toArray();
-    
-        // Combinar los IDs no disponibles
-        $unavailableIds = array_unique(array_merge($bookedVehicleIds, $contractedVehicleIds));
-    
-        // Filtrar los IDs disponibles
-        return array_diff($vehicleIds, $unavailableIds);
-    }
-
     public function view(Request $request)
     {
 
@@ -583,111 +261,14 @@ public function __construct()
             'hideButton' 
         ));
     }
-    
-    
-    
-       public function generatePDF(Request $request)
+
+    public function generatePDF()
     {
-        $id = $request->query('id');
-        $data = [];
-
-        if ($id) {
-            // عرض عقد محفوظ - تحميل البيانات مع العلاقات
-            $contract = Contract::with(['client.userclient', 'vehicle', 'additionalDrivers'])->findOrFail($id);
-            
-            // إنشاء سجل الدخل
-            IncomeModel::create([
-                "vehicle_id" => $contract->vehicle_id,
-                "amount" => $contract->total_amount,
-                "user_id" => Auth::id(),
-                "date" => now(),
-                "mileage" => $contract->vehicle->start_km ?? $contract->vehicle->int_mileage,
-                "income_cat" => 'Contract Revenue',
-                "tax_percent" => 0,
-                "tax_charge_rs" => 0,
-            ]);
-
-            // تحضير بيانات العميل - الطريقة المُصححة
-            $userClient = $contract->client->userclient; // الحصول على بيانات العميل الإضافية
-            
-            $clientData = [
-                'first_name' => $contract->client->first_name ?? $contract->client->name,
-                'last_name' => $contract->client->last_name ?? '',
-                'address' => $contract->client->address ?? '',
-                'phone' => $contract->client->mobno ?? '',
-                'mobile' => $contract->client->mobno ?? '',
-                // استخدام العلاقة المباشرة بدلاً من getMeta()
-                'id_number' => $userClient->id_number ?? '',
-                'id_expiry_date' => $userClient->id_expiry_date ?? '',
-                'license_number' => $userClient->license_number ?? '',
-                'license_issue_date' => $userClient->license_issue_date ?? '',
-                'passport_number' => $userClient->passport_number ?? '',
-                'passport_issue_date' => $userClient->passport_issue_date ?? '',
-            ];
-
-            // تحضير بيانات المركبة
-            $vehicleData = [
-                'brand' => $contract->vehicle->make_name,
-                'plate_number' => $contract->vehicle->license_plate,
-                'start_km' => $contract->vehicle->start_km ?? $contract->vehicle->int_mileage,
-                'fuel_type' => $contract->vehicle->fuel_type,
-            ];
-
-            // تحضير بيانات الإيجار
-            $rentalData = [
-                'start_date' => $contract->start_date ? $contract->start_date->format('Y-m-d') : '',
-                'end_date' => $contract->end_date ? $contract->end_date->format('Y-m-d') : '',
-                'start_time' => $contract->start_time,
-                'end_time' => $contract->end_time,
-                'start_location' => $contract->start_location,
-                'end_location' => $contract->end_location,
-                'duration' => $contract->duration,
-                'daily_rate' => $contract->daily_rate,
-                'total_amount' => $contract->total_amount,
-                'remaining_amount' => $contract->remaining_amount,
-                'advance_payment' => $contract->advance_payment,
-                'remarks' => $contract->notes,
-                'franchise' => $contract->franchise,
-            ];
-
-            // تحضير بيانات السائق الإضافي إذا وجد
-            $additionalDriverData = [];
-            if ($contract->additionalDrivers->isNotEmpty()) {
-                $driver = $contract->additionalDrivers->first();
-                $additionalDriverData = [
-                    'first_name' => $driver->first_name,
-                    'last_name' => $driver->last_name,
-                    'address' => $driver->address,
-                    'id_number' => $driver->id_number,
-                    'id_expiry_date' => $driver->id_expiry_date,
-                    'license_number' => $driver->license_number,
-                    'license_issue_date' => $driver->license_issue_date,
-                    'mobile' => $driver->mobile,
-                ];
-            }
-
-            $data = [
-                'client' => $clientData,
-                'vehicle' => $vehicleData,
-                'rental' => $rentalData,
-                'additional_driver' => $additionalDriverData,
-                'vehicle_change' => [],
-                'payment_method' => $contract->payment_method,
-                'signature' => $contract->client_signature,
-                'signature2' => $contract->witness_signature,
-                'client_id' => $contract->client_id,
-                'vehicle_id' => $contract->vehicle_id,
-                'contract_number' => $contract->contract_number,
-            ];
-            
-            session()->put("contracts", $data);
-        } else {
-            $data = session("contracts", []);
-        }
-
+        $data = session("contracts");
         $signature = $data['signature'] ?? null;
         $signature2 = $data['signature2'] ?? null;
 
+    
         // Prepare data with default values
         $client = (object)array_merge([
             'last_name' => '',
@@ -702,14 +283,14 @@ public function __construct()
             'phone' => '',
             'mobile' => ''
         ], $data['client'] ?? []);
-
+    
         $vehicle = (object)array_merge([
             'brand' => '',
             'start_km' => '',
             'plate_number' => '',
             'fuel_type' => ''
         ], $data['vehicle'] ?? []);
-
+    
         $rental = (object)array_merge([
             'start_date' => '',
             'end_date' => '',
@@ -725,7 +306,7 @@ public function __construct()
             'remarks' => '',
             'franchise' => ''
         ], $data['rental'] ?? []);
-
+    
         $additional_driver = (object)array_merge([
             'last_name' => '',
             'first_name' => '',
@@ -736,7 +317,7 @@ public function __construct()
             'license_issue_date' => '',
             'mobile' => ''
         ], $data['additional_driver'] ?? []);
-
+    
         $vehicle_change = (object)array_merge([
             'brand' => '',
             'type' => '',
@@ -749,19 +330,15 @@ public function __construct()
             'start_location' => '',
             'end_location' => ''
         ], $data['vehicle_change'] ?? []);
-
+    
         $payment_method = $data['payment_method'] ?? 'cash';
-
-        // استخدام رقم العقد المحفوظ أو إنشاء رقم جديد
-        $contractNumber = isset($data['contract_number']) && $data['contract_number'] 
-                        ? $data['contract_number'] 
-                        : 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
-
+    
+        // Generate contract numbers
         $contract = (object)[
-            'number' => $contractNumber,
+            'number' => 'N' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT),
             'dossier_number' => 'D' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT)
         ];
-
+    
         // Configure PDF
         $pdf = app('dompdf.wrapper');
         
@@ -769,9 +346,11 @@ public function __construct()
         $pdf->setPaper('A4', 'portrait');
         $pdf->setOptions([
             'defaultFont' => 'dejavu sans',
+          
+
             'isHtml5ParserEnabled' => true,
             'isRemoteEnabled' => true,
-            'dpi' => 110,
+            'dpi' => 110, // زيادة دقة الطباعة
             'isFontSubsettingEnabled' => true,
             'margin-top'    => 10,
             'margin-bottom' => 10,
@@ -779,12 +358,15 @@ public function __construct()
             'margin-right'  => 10,
         ]);
 
+ 
+        
+    
         // Handle logo path
         $logoPath = public_path('/assets/images/logo.png');
         if (!file_exists($logoPath)) {
             $logoPath = null;
         }
-
+    
         $html = view('contract.test', [
             'client' => $client,
             'vehicle' => $vehicle,
@@ -797,66 +379,50 @@ public function __construct()
             'hideButton' => true,
             'signature' => $signature,
             'signature2' => $signature2,
+
         ])->render();
-        
+    
         // Load HTML with precise settings
+        
         $pdf->loadHTML($html);
         
         $tempPath = storage_path('app/temp_contract.pdf');
         file_put_contents($tempPath, $pdf->output());
-
+    
         // قص أول صفحتين فقط باستخدام FPDI
         $fpdi = new \setasign\Fpdi\Fpdi();
         $pageCount = $fpdi->setSourceFile($tempPath);
-
-        $pagesToKeep = min(2, $pageCount);
+    
+        $pagesToKeep = min(2, $pageCount); // نحتفظ بصفحتين فقط أو أقل لو أقل
         for ($pageNo = 1; $pageNo <= $pagesToKeep; $pageNo++) {
             $templateId = $fpdi->importPage($pageNo);
             $size = $fpdi->getTemplateSize($templateId);
-
+    
             $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
             $fpdi->useTemplate($templateId);
         }
-
+    
         // مسح الملف المؤقت
         unlink($tempPath);
 
-        // حفظ العقد إذا كان جديداً
-        if (!$id) {
-            try {
-                $savedContract = $this->saveContractToDatabase($data, $contract->number);
 
-                IncomeModel::create([
-                    "vehicle_id" => $savedContract->vehicle_id,
-                    "amount" => $savedContract->total_amount,
-                    "user_id" => Auth::id(),
-                    "date" => now(),
-                    "mileage" => isset($data['vehicle']['start_km']) ? $data['vehicle']['start_km'] : 0,
-                    "income_cat" => 'Contract Revenue',
-                    "tax_percent" => 0,
-                    "tax_charge_rs" => 0,
-                ]);
-                
-            } catch (\Exception $e) {
-                Log::error('Failed to save contract: ' . $e->getMessage());
-            }
-        }
+
+
+
+
 
         return response($fpdi->Output('S'), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="contract-' . $contract->number . '.pdf"',
+            'Content-Disposition' => 'inline; filename="contract-' . $contract->number . '.pdf"',
         ]);
+
+
+
+    
+       // return $pdf->stream('contract-' . $contract->number . '.pdf');
     }
-   
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
     public function saveSignature(Request $request)
     {
         $request->validate([
@@ -910,99 +476,8 @@ public function __construct()
     
         return redirect()->route('contract')->with('success', __('fleet.client_info_completed'));
     }
-
-
-
-
-
-
-    private function saveContractToDatabase($data, $contractNumber)
-{
-    // التحقق من وجود البيانات الأساسية
-    if (!isset($data['client_id']) || !isset($data['vehicle_id']) || !isset($data['rental'])) {
-        throw new \Exception('Missing required contract data');
-    }
-
-    // حساب مدة الإيجار إذا لم تكن موجودة
-    $duration = $data['rental']['duration'] ?? 0;
-    if ($duration == 0 && isset($data['rental']['start_date']) && isset($data['rental']['end_date'])) {
-        $start = \Carbon\Carbon::createFromFormat('Y-m-d', $data['rental']['start_date'])->startOfDay();
-        $end = \Carbon\Carbon::createFromFormat('Y-m-d', $data['rental']['end_date'])->startOfDay();
-        $duration = $start->diffInDays($end)+1; // +1 لتضمين يوم البداية
-    }
-
-    // حساب المبالغ المالية إذا لم تكن موجودة
-    $totalAmount = $data['rental']['total_amount'] ?? 0;
-    if ($totalAmount == 0 && isset($data['rental']['daily_rate']) && $duration > 0) {
-        $totalAmount = $data['rental']['daily_rate'] * $duration;
-    }
-
-    $advancePayment = $data['rental']['advance_payment'] ?? 0;
-    $remainingAmount = $data['rental']['remaining_amount'] ?? ($totalAmount - $advancePayment);
-
-    // إنشاء العقد في قاعدة البيانات
-    $contract = Contract::create([
-        'client_id' => $data['client_id'],
-        'vehicle_id' => $data['vehicle_id'],
-        'contract_number' => $contractNumber,
-        'start_date' => $data['rental']['start_date'],
-        'end_date' => $data['rental']['end_date'],
-        'duration' => $duration,
-        'daily_rate' => $data['rental']['daily_rate'],
-        'total_amount' => $totalAmount,
-        'advance_payment' => $advancePayment,
-        'remaining_amount' => $remainingAmount,
-        'status' => 'pending',
-        'notes' => $data['rental']['remarks'] ?? null,
-        'start_location' => $data['rental']['start_location'] ?? null,
-        'end_location' => $data['rental']['end_location'] ?? null,
-        'start_time' => $data['rental']['start_time'] ?? null,
-        'end_time' => $data['rental']['end_time'] ?? null,
-        'payment_method' => $data['payment_method'] ?? 'cash',
-        'franchise' => $data['rental']['franchise'] ?? null,
-        'created_by' => auth()->id(),
-    ]);
-
-
-
-
-   
-    // حفظ بيانات السائق الإضافي إذا وجد
-    if (
-        isset(
-            $contract->id,
-            $data['additional_driver']['first_name'],
-            $data['additional_driver']['last_name'],
-            
-            $data['additional_driver']['id_number'],
-           
-            $data['additional_driver']['mobile']
-        )
-    ) {
-        AdditionalDriver::create([
-            'contract_id' => $contract->id,
-            'first_name' => $data['additional_driver']['first_name'],
-            'last_name' => $data['additional_driver']['last_name'],
-            'address' => $data['additional_driver']['address'],
-            'id_number' => $data['additional_driver']['id_number'],
-            'id_expiry_date' => $data['additional_driver']['id_expiry_date'],
-            'license_number' => $data['additional_driver']['license_number'],
-            'license_issue_date' => $data['additional_driver']['license_issue_date'],
-            'mobile' => $data['additional_driver']['mobile'],
-        ]);
-    }
-
-    // حفظ توقيعات العقد إذا وجدت
-    if (isset($data['signature'])) {
-        $contract->update([
-            'client_signature' => $data['signature'],
-            'witness_signature' => $data['signature2'] ?? null,
-            'signed_at' => now(),
-        ]);
-    }
-
-    return $contract;
-}
    
 
 }
+
+

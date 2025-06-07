@@ -79,9 +79,7 @@ final class ProxyHelper
             $hooks .= "\n    "
                 .($p->isProtected() ? 'protected' : 'public')
                 .($p->isProtectedSet() ? ' protected(set)' : '')
-                ." {$type} \${$name}"
-                .($p->hasDefaultValue() ? ' = '.$p->getDefaultValue() : '')
-                ." {\n";
+                ." {$type} \${$name} {\n";
 
             foreach ($p->getHooks() as $hook => $method) {
                 if ('get' === $hook) {

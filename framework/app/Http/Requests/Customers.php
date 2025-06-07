@@ -38,7 +38,7 @@ class Customers extends FormRequest {
 		return [
 			'first_name' => 'required',
 			'last_name' => 'required',
-			
+			'email' => 'unique:users,email,' . \Request::get("id"),
 			'phone' => 'required|numeric|digits_between:7,15',
 			'gender' => 'required',
 			'address' => 'required',

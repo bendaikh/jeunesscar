@@ -30,7 +30,7 @@
             <select id="vehicle_id" name="vehicle_id" class="form-control" required>
               <option value="">-</option>
               @foreach($vehicles as $vehicle)
-              <option value="{{$vehicle->id}}">{{$vehicle->make_name}} - {{$vehicle->model_name}} -{{$vehicle->vin}} - 
+              <option value="{{$vehicle->id}}">{{$vehicle->make_name}} - {{$vehicle->model_name}} -
                 {{$vehicle->year}}</option>
               @endforeach
             </select>

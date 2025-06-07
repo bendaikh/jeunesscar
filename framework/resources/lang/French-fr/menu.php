@@ -3,8 +3,6 @@
 return [
 
 	//Menus
-	"contracts"=>"Contracts",
-	'receptionVehicles' => 'Véhicules Reception',
 	'email_content' => 'Définir le contenu du courrier',
 	'email_notification' => 'Notification par email',
 	'api_settings' => "Paramètres de l'API",

@@ -90,26 +90,21 @@
                               </select>
                             </div>
                           </div>
-                          <div class="col-md-4">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 {!! Form::label('driver_id', __('fleet.selectDriver'), ['class' => 'form-label']) !!}
-                        
-                                <select id="driver_id" name="driver_id" class="form-control">
+
+                                <select id="driver_id" name="driver_id" class="form-control" required>
                                     <option value="">-</option>
                                     @foreach ($drivers as $driver)
-                                        @if (!is_null($driver))
-                                            <option value="{{ $driver->id }}">
-                                                {{ $driver->name }}
-                                                @if (method_exists($driver, 'getMeta') && $driver->getMeta('is_active') != 1)
-                                                    (@lang('fleet.in_active'))
-                                                @endif
-                                            </option>
-                                        @endif
+                                        <option value="{{ $driver->id }}">{{ $driver->name }} @if ($driver->getMeta('is_active') != 1)
+                                                (@lang('fleet.in_active'))
+                                            @endif
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                        
                         <div class="col-md-4">
                             <div class="form-group">
                                 {!! Form::label('travellers', __('fleet.no_travellers'), ['class' => 'form-label']) !!}
@@ -170,22 +165,6 @@
                             </div>
                         </div>
                     </div>
-
-
-
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('avance', __('fleet.avance'), ['class' => 'form-label']) !!}
-                            {!! Form::number('avance', null, [
-                                'class' => 'form-control',
-                                'placeholder' => __('fleet.book_avance'),
-                                'step' => '0.01', // يدعم الكسور العشرية لو أردت (مثلا 50.75)
-                                'min' => '0'      // لا يسمح بأرقام سالبة
-                            ]) !!}
-                        </div>
-                    </div>
-                    
-
                     <hr>
                     <div class="row">
                         <div class="form-group col-md-6">

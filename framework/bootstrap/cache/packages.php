@@ -1,47 +1,36 @@
 <?php return array (
   'barryvdh/laravel-dompdf' => 
   array (
-    'aliases' => 
-    array (
-      'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
-      'Pdf' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
-    ),
     'providers' => 
     array (
       0 => 'Barryvdh\\DomPDF\\ServiceProvider',
     ),
+    'aliases' => 
+    array (
+      'Pdf' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+      'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+    ),
   ),
   'edujugon/push-notification' => 
   array (
-    'aliases' => 
-    array (
-      'PushNotification' => 'Edujugon\\PushNotification\\Facades\\PushNotification',
-    ),
     'providers' => 
     array (
       0 => 'Edujugon\\PushNotification\\Providers\\PushNotificationServiceProvider',
     ),
-  ),
-  'intervention/image' => 
-  array (
     'aliases' => 
     array (
-      'Image' => 'Intervention\\Image\\Facades\\Image',
-    ),
-    'providers' => 
-    array (
-      0 => 'Intervention\\Image\\ImageServiceProvider',
+      'PushNotification' => 'Edujugon\\PushNotification\\Facades\\PushNotification',
     ),
   ),
   'kreait/laravel-firebase' => 
   array (
-    'aliases' => 
-    array (
-      'Firebase' => 'Kreait\\Laravel\\Firebase\\Facades\\Firebase',
-    ),
     'providers' => 
     array (
       0 => 'Kreait\\Laravel\\Firebase\\ServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Firebase' => 'Kreait\\Laravel\\Firebase\\Facades\\Firebase',
     ),
   ),
   'laravel-notification-channels/webpush' => 
@@ -100,13 +89,13 @@
   ),
   'maatwebsite/excel' => 
   array (
-    'aliases' => 
-    array (
-      'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
-    ),
     'providers' => 
     array (
       0 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
     ),
   ),
   'nesbot/carbon' => 
@@ -139,13 +128,13 @@
   ),
   'spatie/laravel-ignition' => 
   array (
-    'aliases' => 
-    array (
-      'Flare' => 'Spatie\\LaravelIgnition\\Facades\\Flare',
-    ),
     'providers' => 
     array (
       0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Flare' => 'Spatie\\LaravelIgnition\\Facades\\Flare',
     ),
   ),
   'spatie/laravel-permission' => 
@@ -168,13 +157,13 @@
   ),
   'yajra/laravel-datatables-oracle' => 
   array (
-    'aliases' => 
-    array (
-      'DataTables' => 'Yajra\\DataTables\\Facades\\DataTables',
-    ),
     'providers' => 
     array (
       0 => 'Yajra\\DataTables\\DataTablesServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'DataTables' => 'Yajra\\DataTables\\Facades\\DataTables',
     ),
   ),
 );
