@@ -7,4 +7,4 @@ node_modules/
 *.vscode/
 *.DS_Store
 framework/public/assets/images/*.png
-assets/images/*.png
+assets/images/
