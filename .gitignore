@@ -6,4 +6,4 @@ node_modules/
 *.idea/
 *.vscode/
 *.DS_Store
-framework/public/assets/images/
+framework/public/assets/images/*.png
