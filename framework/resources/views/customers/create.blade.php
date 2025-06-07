@@ -41,27 +41,16 @@
 
           <div class="col-md-6">
             <div class="form-group">
-                {!! Form::label('phone', __('fleet.phone'), ['class' => 'form-label']) !!}
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fa fa-phone"></i></span>
-                    </div>
-                    <input type="text" name="phone" value="{{ old('phone') }}" class="form-control" required pattern="^[0-9+\-\s\(\)]+$" title="Only numbers, +, -, spaces and parentheses are allowed.">
+              {!! Form::label('phone',__('fleet.phone'), ['class' => 'form-label']) !!}
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fa fa-phone"></i></span>
                 </div>
+                {!! Form::number('phone', null,['class' => 'form-control','required']) !!}
+              </div>
             </div>
-        </div>
-                
+          </div>
 
-
-
-          {{-- <div class="col-md-6">
-            <div class="form-group">
-              {!! Form::label('mobile',  __('fleet.phone')) !!} <span class="text-danger">*</span>
-              {!! Form::text('mobile', null, ['class' => 'form-control', 'required']) !!}
-            </div>
-          </div> --}}
-
-          
           <div class="col-md-6">
             <div class="form-group">
               {!! Form::label('email', __('fleet.email'), ['class' => 'form-label']) !!}
@@ -69,7 +58,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="fa fa-envelope"></i></span>
                 </div>
-                {!! Form::email('email', null,['class' => 'form-control']) !!}
+                {!! Form::email('email', null,['class' => 'form-control','required']) !!}
               </div>
             </div>
           </div>
@@ -130,19 +119,24 @@
 
 <div class="col-md-6">
   <div class="form-group">
-    {!! Form::label('passport_number', 'Passport Number') !!} <span class="text-danger"></span>
-    {!! Form::text('passport_number', null, ['class' => 'form-control', ]) !!}
+    {!! Form::label('passport_number', 'Passport Number') !!} <span class="text-danger">*</span>
+    {!! Form::text('passport_number', null, ['class' => 'form-control', 'required']) !!}
   </div>
 </div>
 
 <div class="col-md-6">
   <div class="form-group">
-    {!! Form::label('passport_issue_date', 'Passport Issue Date') !!} <span class="text-danger"></span>
-    {!! Form::date('passport_issue_date', null, ['class' => 'form-control',]) !!}
+    {!! Form::label('passport_issue_date', 'Passport Issue Date') !!} <span class="text-danger">*</span>
+    {!! Form::date('passport_issue_date', null, ['class' => 'form-control', 'required']) !!}
   </div>
 </div>
 
-
+<div class="col-md-6">
+  <div class="form-group">
+    {!! Form::label('mobile', 'Mobile') !!} <span class="text-danger">*</span>
+    {!! Form::text('mobile', null, ['class' => 'form-control', 'required']) !!}
+  </div>
+</div>
 
 
 

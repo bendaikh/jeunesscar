@@ -39,7 +39,7 @@ class IncRequest extends FormRequest {
 			'income_type' => 'required',
 			'revenue' => 'required|numeric|gt:0',
 			'vehicle_id' => 'required',
-			//'mileage' => 'required|numeric|gt:0',
+			'mileage' => 'required|numeric|gt:0',
 			'date' => 'required|date|date_format:Y-m-d',
 		];
 	}

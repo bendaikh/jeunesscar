@@ -404,8 +404,6 @@ trait HasPermissions
      */
     public function syncPermissions(...$permissions)
     {
-
-      
         $this->permissions()->detach();
 
         return $this->givePermissionTo($permissions);

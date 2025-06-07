@@ -55,8 +55,8 @@ class PermissionSeed extends Seeder
         $role = Role::create(['name' => 'Super Admin']);
         $role->givePermissionTo($all);
         $role = Role::create(['name' => 'Admin']);
-        $role->givePermissionTo(['Reception add','Reception edit','Reception delete','Reception list','Bookings list','Bookings add','Bookings edit','Bookings delete','Drivers list','Drivers add','Drivers edit','Drivers delete','Customer list','Customer add','Customer edit','Customer delete']);
-        $users = User::where('user_type', 'S')->get();'Drivers add
+        $role->givePermissionTo(['Bookings list','Bookings add','Bookings edit','Bookings delete','Drivers list','Drivers add','Drivers edit','Drivers delete','Customer list','Customer add','Customer edit','Customer delete']);
+        $users = User::where('user_type', 'S')->get();
         foreach ($users as $user) {
             $u = User::find($user->id);
             $u->assignRole('Super Admin');

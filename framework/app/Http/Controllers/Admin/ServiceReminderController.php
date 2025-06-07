@@ -48,8 +48,6 @@ class ServiceReminderController extends Controller {
 		} else {
 			$data['vehicles'] = VehicleModel::where('group_id', Auth::user()->group_id)->whereIn_service("1")->get();
 		}
-
-		//return $data['vehicles'];
 		return view('service_reminder.create', $data);
 	}
 

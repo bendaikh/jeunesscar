@@ -131,33 +131,17 @@ class LaravelWebInstaller extends Controller
 
     public function db_migration(InstalledFileManager $fileManager)
     {
-        try {
-            // Get the SQL file content
-            $sql = File::get(storage_path('fleet6_db.sql'));
-            
-            // Remove comments and empty lines
-            $sql = preg_replace('/--.*$/m', '', $sql);
-            $sql = preg_replace('/\/\*.*?\*\//s', '', $sql);
-            
-            // Split into individual queries
-            $queries = array_filter(
-                array_map('trim', 
-                    explode(';', $sql)
-                )
-            );
-            
-            // Execute each query separately
-            foreach ($queries as $query) {
-                if (!empty($query)) {
-                    DB::unprepared($query . ';');
-                }
-            }
-            
+        //$database = $this->databaseManager->migrateAndSeed();
+        $database = DB::unprepared(File::get(storage_path('fleet6_db.sql')));
+
+        // dd($database['status']);
+        //if ($database['status'] == 'success') {
+        if ($database == 'true') {
+
             $fileManager->update();
             return view('laravel_web_installer.finished');
-        } catch (\Exception $e) {
-            \Log::error($e->getMessage());
-            abort(500, 'Database migration failed: ' . $e->getMessage());
+        } else {
+            abort(404);
         }
     }
 

@@ -67,12 +67,6 @@ class User extends Authenticatable {
 		return $this->hasOne(UserClinet::class,'user_clients_id', 'id');
 	}
 
-	// إضافة العلاقة مع الفرع
-	public function branch()
-	{
-		return $this->belongsTo('App\Model\Branch');
-	}
-
 	// public function getUserMeta($key = '', $defaut = '') {
 
 	//     $key = trim($key);

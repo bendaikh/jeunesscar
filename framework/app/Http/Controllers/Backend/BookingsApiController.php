@@ -40,6 +40,7 @@ class BookingsApiController extends Controller {
 		$validation = Validator::make($request->all(), [
 			'id' => 'required|integer',
 			'vehicle_id' => 'required|integer',
+			// 'driver_id' => 'required|integer',
 			'travellers' => 'required|integer',
 			'pickup_addr' => 'required',
 			'dest_addr' => 'required|different:pickup_addr',
@@ -54,25 +55,27 @@ class BookingsApiController extends Controller {
 			$data['message'] = implode(", ", $errors->all());
 			$data['data'] = "";
 		} else {
+
 			$xx = $this->check_edit_booking($request->pickup_datetime, $request->dropoff_datetime, $request->vehicle_id, $request->id);
 			if ($xx) {
-				$booking = Bookings::where('id', $request->id)->first();
-				if (!$booking) {
-					$data['success'] = "0";
-					$data['message'] = "Booking not found";
-					$data['data'] = "";
-					return $data;
-				}
+				Bookings::where('id', $request->id)->update([
+					'vehicle_id' => $request->vehicle_id,
+					'user_id' => Auth::id(),
+					'pickup' => date('Y-m-d H:i:s', strtotime($request->pickup_datetime)),
+					'dropoff' => date('Y-m-d H:i:s', strtotime($request->dropoff_datetime)),
+					'pickup_addr' => $request->pickup_addr,
+					'dest_addr' => $request->dest_addr,
+					'travellers' => $request->travellers,
+					'status' => 0,
+					// 'driver_id' => $request->driver_id,
+					'note' => $request->note,
+				]);
 
-				$booking->vehicle_id = $request->vehicle_id;
-				$booking->user_id = Auth::id();
-				$booking->pickup = date('Y-m-d H:i:s', strtotime($request->pickup_datetime));
-				$booking->dropoff = date('Y-m-d H:i:s', strtotime($request->dropoff_datetime));
-				$booking->pickup_addr = $request->pickup_addr;
-				$booking->dest_addr = $request->dest_addr;
-				$booking->travellers = $request->travellers;
-				$booking->status = 0;
-				$booking->note = $request->note;
+				$booking = Bookings::find($request->id);
+
+				// if ($booking->ride_status == null) {
+				//     $booking->ride_status = "Upcoming";
+				// }
 
 				$dropoff = Carbon::parse($request->dropoff_datetime);
 				$pickup = Carbon::parse($request->pickup_datetime);
@@ -80,25 +83,18 @@ class BookingsApiController extends Controller {
 				$booking->duration = $diff;
 				$booking->journey_date = date('d-m-Y', strtotime($request->pickup_datetime));
 				$booking->journey_time = date('H:i:s', strtotime($request->pickup_datetime));
-				
-				// Properly handle UDF serialization
-				if ($request->udf && is_array($request->udf)) {
-					$booking->udf = serialize(array_filter($request->udf, function($value) {
-						return !is_null($value) && $value !== '';
-					}));
-				} else {
-					$booking->udf = serialize(array());
-				}
-				
+				$booking->udf = serialize($request->udf);
 				$booking->save();
 
 				$data['success'] = "1";
 				$data['message'] = "Booking updated successfully!";
 				$data['data'] = "";
+
 			} else {
 				$data['success'] = "0";
 				$data['message'] = "Selected Vehicle is not Available in Given Timeframe";
 				$data['data'] = "";
+
 			}
 		}
 		return $data;
@@ -763,6 +759,7 @@ class BookingsApiController extends Controller {
 			'pickup_datetime' => 'required',
 			'dropoff_datetime' => 'required',
 			'udf' => 'nullable|array',
+
 		]);
 		$errors = $validation->errors();
 
@@ -771,6 +768,7 @@ class BookingsApiController extends Controller {
 			$data['message'] = implode(", ", $errors->all());
 			$data['data'] = "";
 		} else {
+
 			$xx = $this->check_booking($request->pickup_datetime, $request->dropoff_datetime, $request->vehicle_id);
 			if ($xx) {
 				$booking = Bookings::create([
@@ -791,16 +789,7 @@ class BookingsApiController extends Controller {
 				$pickup = Carbon::parse($booking->pickup);
 				$diff = $pickup->diffInMinutes($dropoff);
 				$booking->duration = $diff;
-				
-				// Properly handle UDF serialization
-				if ($request->udf && is_array($request->udf)) {
-					$booking->udf = serialize(array_filter($request->udf, function($value) {
-						return !is_null($value) && $value !== '';
-					}));
-				} else {
-					$booking->udf = serialize(array());
-				}
-				
+				$booking->udf = serialize($request->udf);
 				$booking->accept_status = 1; //0=yet to accept, 1= accept
 				$booking->ride_status = "Upcoming";
 				$booking->booking_type = 1;

@@ -6,5 +6,11 @@ node_modules/
 *.idea/
 *.vscode/
 *.DS_Store
-framework/public/assets/images/*.png
-assets/images/
+
+# Ignore all contents in assets/images
+assets/images/*
+!assets/images/.gitkeep
+
+# Ignore all contents in framework/public/assets/images
+framework/public/assets/images/*
+!framework/public/assets/images/.gitkeep

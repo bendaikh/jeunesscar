@@ -1,9 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\ContractController;
-use App\Http\Controllers\Admin\ContractExpiryController;
-
-use App\Http\Controllers\Admin\ReceptionController;
 use App\Http\Controllers\Admin\SettingsController;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -74,35 +71,10 @@ Route::namespace('Admin')->group(function () {
 
                 Route::post('/users-fetch', 'UsersController@fetch_data');
                 Route::get('/contract', 'ContractController@index')->name('contract');
-
-              
-               Route::delete('/contract/{id}', [ContractController::class, 'destroy'])->name('contract.destroy');
-                
                 Route::post('/save-signature', [ContractController::class, 'saveSignature'])->name('save.signature');
                 Route::post('/save-signature2', [ContractController::class, 'saveSignature2'])->name('save.signature2');
-                // Route::post('/contract/store', [ContractController::class, 'store'])->name('contract.store');
-                // Route::get('/contract/view', 'ContractController@view')->name('contract.view');
-                // Route::get('/contract/create', 'ContractController@create')->name('contract.create');
-
-
-               
-
-
-                Route::prefix('contract')->group(function () {
-                        Route::get('/', [ContractController::class, 'index'])->name('contract');
-                        Route::get('/g/{id}', [ContractController::class, 'show'])->name('contract.show');
-                        Route::get('/g/{id}/edit', [ContractController::class, 'edit'])->name('contract.edit');
-                        Route::put('/g/{id}', [ContractController::class, 'update'])->name('contract.update');
-                        
-                        // الروتس الحالية
-                        // Route::post('/save-signature', [ContractController::class, 'saveSignature'])->name('save.signature');
-                        // Route::post('/save-signature2', [ContractController::class, 'saveSignature2'])->name('save.signature2');
-                        Route::post('/store', [ContractController::class, 'store'])->name('contract.store');
-                        Route::get('/view', [ContractController::class, 'view'])->name('contract.view');
-                       // Route::get('/create', [ContractController::class, 'create'])->name('contract.create');
-                       Route::get('/create', 'ContractController@create')->name('contract.create');
-                        Route::get('/generate-pdf', [ContractController::class, 'generatePDF'])->name('contract.generatePDF');
-                    });
+                Route::post('/contract/store', [ContractController::class, 'store'])->name('contract.store');
+                Route::get('/contract/view', 'ContractController@view')->name('contract.view');
 
 
 
@@ -115,7 +87,7 @@ Route::namespace('Admin')->group(function () {
                     
 
 
-              //  Route::get('/contract/generate-pdf', [ContractController::class, 'generatePDF'])->name('contract.generatePDF');
+                Route::get('/contract/generate-pdf', [ContractController::class, 'generatePDF'])->name('contract.generatePDF');
                 Route::resource('/users', 'UsersController');
 
                 Route::get('client/complete/{id}', [ContractController::class, 'showCompleteForm'])->name('client.complete.form');
@@ -361,7 +333,7 @@ Route::namespace('Admin')->group(function () {
                 Route::get('vehicle-inspection-create', 'VehiclesController@vehicle_inspection_create');
                 Route::post('store-vehicle-review', 'VehiclesController@store_vehicle_review');
                 Route::get('view-vehicle-inspection/{id}', 'VehiclesController@view_vehicle_inspection');
-                 // fuel detail
+                // fuel detail
                 Route::resource('/fuel', 'FuelController');
                 //vehicle Expense
                 Route::resource('/expense', 'ExpenseController');
@@ -380,66 +352,5 @@ Route::namespace('Admin')->group(function () {
 
                 Route::resource('/cancel-reason', 'ReasonController');
                 Route::post('delete-fuel', 'FuelController@bulk_delete')->middleware('IsInstalled');
-
-
-
-
-
-
-
-
-               //reception
-
-                Route::resource('reception', 'ReceptionController');
-                Route::get('reception/fetch-data', 'ReceptionController@fetchData')->name('reception.fetch_data');
-                Route::post('reception/bulk-delete', 'ReceptionController@bulkDelete')->name('reception.bulk_delete');
-                Route::delete('reception/media/{id}', 'ReceptionController@deleteMedia')->name('reception.delete_media');
-                Route::get('reception/{id}/delete', 'ReceptionController@delete')->name('reception.delete');
-                Route::post('reception/bulk-delete-direct', 'ReceptionController@bulk_delete_direct')->name('reception.bulk_delete_direct');
-
-        
-
-
-
-
-
-
-
-        // ... المسارات الموجودة
-        
-        // مسارات متابعة انتهاء العقود
-        Route::get('vehicle-expiry', 'ContractExpiryController@index')->name('vehicle_expiry.index');
-        Route::get('vehicle-expiry/ajax', 'ContractExpiryController@ajax')->name('vehicle_expiry.ajax');
-
-
-
-
-
-
-    Route::resource('branches', 'BranchController');
-    Route::post('branches/bulk-delete', 'BranchController@bulk_delete')->name('branches.bulk_delete');
-    Route::get('branches/{id}/vehicles', 'BranchController@vehicles')->name('branches.vehicles');
-    Route::get('branches/{id}/users', 'BranchController@users')->name('branches.users');
-    Route::get('branches/{id}/contracts', 'BranchController@contracts')->name('branches.contracts');
-    
-    // Transferencia de vehículos entre sucursales
-    Route::get('vehicle-transfers', 'VehicleTransferController@index')->name('vehicle-transfers.index');
-    Route::get('vehicle-transfers/create', 'VehicleTransferController@create')->name('vehicle-transfers.create');
-    Route::post('vehicle-transfers/store', 'VehicleTransferController@store')->name('vehicle-transfers.store');
-    Route::get('vehicle-transfers/{id}/edit', 'VehicleTransferController@edit')->name('vehicle-transfers.edit');
-    Route::put('vehicle-transfers/{id}', 'VehicleTransferController@update')->name('vehicle-transfers.update');
-    Route::delete('vehicle-transfers/{id}', 'VehicleTransferController@destroy')->name('vehicle-transfers.destroy');
-    Route::post('vehicle-transfers/{id}/complete', 'VehicleTransferController@complete')->name('vehicle-transfers.complete');
-    
-    // Configuración de sucursales
-    Route::get('settings/branches', 'SettingsController@branches')->name('settings.branches');
-    Route::post('settings/branches', 'SettingsController@branches_store')->name('settings.branches_store');
-    
-    // Backend APIs para sucursales
-    Route::get('ajax-branches', 'AjaxController@branches')->name('ajax.branches');
-    Route::get('ajax-branch-vehicles/{id}', 'AjaxController@branch_vehicles')->name('ajax.branch_vehicles');
- 
         });
-
-        // Routes for vehicle receptions
-      });
+});

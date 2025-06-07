@@ -6,13 +6,11 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'App\\AdditionalDriver' => $baseDir . '/app/AdditionalDriver.php',
     'App\\Console\\Commands\\EmailNotification' => $baseDir . '/app/Console/Commands/EmailNotification.php',
     'App\\Console\\Commands\\NotificationsCommand' => $baseDir . '/app/Console/Commands/NotificationsCommand.php',
     'App\\Console\\Commands\\PushNotification' => $baseDir . '/app/Console/Commands/PushNotification.php',
     'App\\Console\\Commands\\VersionAutoUpdate' => $baseDir . '/app/Console/Commands/VersionAutoUpdate.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
-    'App\\Contract' => $baseDir . '/app/Contract.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
     'App\\Helpers\\DatabaseManager' => $baseDir . '/app/Helpers/DatabaseManager.php',
     'App\\Helpers\\EnvironmentManager' => $baseDir . '/app/Helpers/EnvironmentManager.php',
