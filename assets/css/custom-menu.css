@@ -2,10 +2,13 @@
 .main-sidebar {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     box-shadow: 2px 0 15px rgba(0,0,0,0.05);
+    min-width: 250px;
+    overflow-y: auto !important;
 }
 
 .nav-sidebar .nav-item {
     margin: 4px 0;
+    position: relative;
 }
 
 .nav-sidebar .nav-link {
@@ -185,4 +188,17 @@
 
 .dark-mode .nav-sidebar .nav-treeview {
     border-left: 2px solid #343a40;
+}
+
+/* Make settings menu visible */
+.nav-sidebar .settings-menu {
+    display: block !important;
+}
+
+.nav-sidebar .settings-menu .nav-treeview {
+    display: none;
+}
+
+.nav-sidebar .settings-menu.menu-open .nav-treeview {
+    display: block;
 } 
