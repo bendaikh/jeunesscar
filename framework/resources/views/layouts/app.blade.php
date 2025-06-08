@@ -495,8 +495,8 @@ input:checked + .slider:before {
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{{ route('my_bookings')}}"
-                  class="nav-link @if(Request::is('admin/my_bookings')) active @endif">
+                <a href="{{ url('admin/my_bookings')}}"
+                  class="nav-link @if(Request::is('admin/my_bookings*')) active @endif">
                   <i class="nav-icon fa fa-book"></i>
                   <p>
                     @lang('menu.my_bookings')
@@ -504,6 +504,7 @@ input:checked + .slider:before {
                   </p>
                 </a>
               </li>
+              {{-- Vehicle Inspection menu item hidden
               <li class="nav-item">
                 <a href="{{ url('admin/vehicle-inspection')}}"
                   class="nav-link @if((Request::is('admin/vehicle-inspection*')) || (Request::is('admin/view-vehicle-inspection*')) || (Request::is('admin/print-vehicle-inspection*'))) active @endif">
@@ -511,6 +512,7 @@ input:checked + .slider:before {
                   <p>@lang('fleet.vehicle_inspection')</p>
                 </a>
               </li>
+              --}}
               <li class="nav-item">
                 <a href="{{ url('admin/change-details/'.Auth::user()->id)}}"
                   class="nav-link @if(Request::is('admin/change-details*')) active @endif">
@@ -734,6 +736,7 @@ input:checked + .slider:before {
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
+                  {{-- Drivers menu item hidden
                   @can('Drivers list')
                   <li class="nav-item">
                     <a href="{{ route('drivers.index')}}"
@@ -743,15 +746,15 @@ input:checked + .slider:before {
                     </a>
                   </li>
                   @endcan
+                  --}}
                   @can('Users list')
                   <li class="nav-item">
                     <a href="{{ route('users.index')}}" class="nav-link @if(Request::is('admin/users*')) active @endif">
                       <i class="fa fa-user nav-icon"></i>
-                      <p>@lang('fleet.users')@lang('fleet.managers')</p>
+                      <p>@lang('menu.users')</p>
                     </a>
                   </li>
                   @endcan
-
                   @can('Users list')
                   <li class="nav-item">
                     <a href="{{ route('contract')}}" class="nav-link @if(Request::is('admin/users*')) active @endif">
