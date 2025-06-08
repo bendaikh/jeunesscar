@@ -1398,6 +1398,7 @@ input:checked + .slider:before {
                   @endcan
                 </ul>
               </li> @endcanany
+              {{-- Testimonials section hidden
               @if(Request::is('admin/testimonials*'))
               @php($class="menu-open")
               @php($active="active")
@@ -1407,7 +1408,7 @@ input:checked + .slider:before {
               @php($active="")
               @endif
               @canany(['Testimonials list','Testimonials add'])
-              <li class="nav-item has-treeview {{$class}}">
+              <li class="nav-item has-treeview {{$class}}" style="display: none;">
                 <a href="#" class="nav-link {{$active}}">
                   <i class="nav-icon fa fa-quote-left"></i>
                   <p>
@@ -1436,9 +1437,11 @@ input:checked + .slider:before {
                   @endcan
                 </ul>
               </li>@endcanany
+              --}}
 
 
 
+              {{-- Team section hidden
               @if(Request::is('admin/team*'))
               @php($class="menu-open")
               @php($active="active")
@@ -1448,7 +1451,7 @@ input:checked + .slider:before {
               @php($active="")
               @endif
               @canany(['Team list','Team add'])
-              <li class="nav-item has-treeview {{$class}}">
+              <li class="nav-item has-treeview {{$class}}" style="display: none;">
                 <a href="#" class="nav-link {{$active}}">
                   <i class="nav-icon fa fa-users"></i>
                   <p>
@@ -1478,6 +1481,7 @@ input:checked + .slider:before {
                 </ul>
               </li>
               @endcanany
+              --}}
 
               @if(Request::is('admin/settings*') || Request::is('admin/roles*') || Request::is('admin/fare-settings') ||
               Request::is('admin/api-settings') || (Request::is('admin/expensecategories*')) ||
@@ -1646,8 +1650,9 @@ input:checked + .slider:before {
               </li> @endif
 
               @can('Inquiries list')
+              {{-- Inquiries section hidden
               @if(in_array(Auth::user()->user_type, ['S','O']))
-              <li class="nav-item">
+              <li class="nav-item" style="display: none;">
                 <a href="{{ url('admin/messages')}}" class="nav-link @if(Request::is('admin/messages')) active @endif">
                   <i class="nav-icon fa fa-comments"></i>
                   <p>
@@ -1657,10 +1662,12 @@ input:checked + .slider:before {
                 </a>
               </li>
               @endif
+              --}}
               @endcan
               @endif
               @if(Auth::user()->user_type=="S")
-              <li class="nav-item">
+              {{-- Help us improve section hidden
+              <li class="nav-item" style="display: none;">
                 <a href="https://goo.gl/forms/PtzIirmT3ap8m5dY2" target="_blank" class="nav-link">
                   <i class="nav-icon fa fa-comment"></i>
                   <p>
@@ -1669,6 +1676,7 @@ input:checked + .slider:before {
                   </p>
                 </a>
               </li>
+              --}}
               @endif
             </ul>
           </nav>
