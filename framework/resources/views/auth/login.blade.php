@@ -52,7 +52,7 @@
   <!-- fleet manager version 4.0.2 -->
   <div class="login-box">
     <div class="login-logo">
-      <center> <img src="{{ asset('assets/images/logo.png') }}" height="140px" width="300px" />
+      <center> <img src="{{ asset('assets/images/logo.png') }}?v={{ time() }}" height="140px" width="300px" />
       </center>
     </div>
     <!-- /.login-logo -->
