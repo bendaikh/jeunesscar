@@ -32,7 +32,7 @@
                     <div class="card-body text-center">
 
                         @if ($cashezImage)
-                            <img src="{{ $cashezImage }}" alt="صورة Cashez" 
+                            <img src="{{ $cashezImage }}?v={{ time() }}" alt="صورة Cashez" 
                                 class="img-fluid rounded mb-3 border" 
                                 style="height: 200px; width: 200px;">
                         @else
@@ -63,7 +63,7 @@
                     <div class="card-body text-center">
 
                         @if ($logoImage)
-                            <img src="{{ $logoImage }}" alt="صورة Logo" 
+                            <img src="{{ $logoImage }}?v={{ time() }}" alt="صورة Logo" 
                                 class="img-fluid rounded mb-3 border" 
                                 style="max-height: 200px;">
                         @else
