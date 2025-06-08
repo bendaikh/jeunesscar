@@ -28,7 +28,7 @@
 
 .nav-sidebar .nav-link.active {
     background: #0d6efd !important;
-    color: #fff !important;
+    color: #ffffff !important;
     box-shadow: 0 2px 8px rgba(13, 110, 253, 0.25);
 }
 
@@ -201,4 +201,17 @@
 
 .nav-sidebar .settings-menu.menu-open .nav-treeview {
     display: block;
+}
+
+/* Active state for treeview items */
+.nav-sidebar .nav-treeview .nav-link.active {
+    background: #0d6efd !important;
+    color: #ffffff !important;
+}
+
+/* Make sure sub-items text is white when active */
+.nav-sidebar .nav-treeview .nav-link.active,
+.nav-sidebar .nav-treeview .nav-link.active p,
+.nav-sidebar .nav-treeview .nav-link.active i {
+    color: #ffffff !important;
 } 
