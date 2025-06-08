@@ -602,7 +602,7 @@ public function __construct()
                 "user_id" => Auth::id(),
                 "date" => now(),
                 "mileage" => $contract->vehicle->start_km ?? $contract->vehicle->int_mileage,
-                "income_cat" => 'Contract Revenue',
+                "income_cat" => 2, // Contract income category ID
                 "tax_percent" => 0,
                 "tax_charge_rs" => 0,
             ]);
@@ -832,7 +832,7 @@ public function __construct()
                     "user_id" => Auth::id(),
                     "date" => now(),
                     "mileage" => isset($data['vehicle']['start_km']) ? $data['vehicle']['start_km'] : 0,
-                    "income_cat" => 'Contract Revenue',
+                    "income_cat" => 2, // Contract income category ID
                     "tax_percent" => 0,
                     "tax_charge_rs" => 0,
                 ]);
