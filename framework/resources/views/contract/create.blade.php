@@ -50,86 +50,85 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>@lang('fleet.last_name') <span class="text-danger">*</span></label>
-                        <input type="text" name="client[last_name]" class="form-control" required>
+                        <input type="text" name="client[last_name]" class="form-control new-client-field">
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>@lang('fleet.first_name') <span class="text-danger">*</span></label>
-                        <input type="text" name="client[first_name]" class="form-control" required>
+                        <input type="text" name="client[first_name]" class="form-control new-client-field">
                     </div>
                 </div>
             </div>
                                 
-                                <div class="form-group">
-                                    <label>@lang('fleet.address') <span class="text-danger">*</span></label>
-                                    <input type="text" name="client[address]" class="form-control" required>
-                                </div>
+            <div class="form-group">
+                <label>@lang('fleet.address') <span class="text-danger">*</span></label>
+                <input type="text" name="client[address]" class="form-control new-client-field">
+            </div>
                                 
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>@lang('fleet.id_number') <span class="text-danger">*</span></label>
-                                            <input type="text" name="client[id_number]" class="form-control" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>@lang('fleet.id_expiry_date')</label>
-                                            <input type="date" name="client[id_expiry_date]" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>@lang('fleet.phone')</label>
-                                            <input type="text" name="client[phone]" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>@lang('fleet.license_number')</label>
-                                            <input type="text" name="client[license_number]" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>@lang('fleet.license_issue_date')</label>
-                                            <input type="date" name="client[license_issue_date]" class="form-control">
-                                        </div>
-                                    </div>
-                                    {{-- <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>@lang('fleet.mobile')</label>
-                                            <input type="text" name="client[mobile]" class="form-control">
-                                        </div>
-                                    </div> --}}
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>@lang('fleet.passport_number')</label>
-                                            <input type="text" name="client[passport_number]" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>@lang('fleet.passport_issue_date')</label>
-                                            <input type="date" name="client[passport_issue_date]" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-
-                            </div>
-                        </div>
-
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.id_number') <span class="text-danger">*</span></label>
+                        <input type="text" name="client[id_number]" class="form-control new-client-field">
                     </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.id_expiry_date')</label>
+                        <input type="date" name="client[id_expiry_date]" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.phone')</label>
+                        <input type="text" name="client[phone]" class="form-control">
+                    </div>
+                </div>
+            </div>
+                                
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.license_number')</label>
+                        <input type="text" name="client[license_number]" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.license_issue_date')</label>
+                        <input type="date" name="client[license_issue_date]" class="form-control">
+                    </div>
+                </div>
+                {{-- <div class="col-md-4">
+                    <div class="form-group">
+                        <label>@lang('fleet.mobile')</label>
+                        <input type="text" name="client[mobile]" class="form-control">
+                    </div>
+                </div> --}}
+            </div>
+                                
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.passport_number')</label>
+                        <input type="text" name="client[passport_number]" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>@lang('fleet.passport_issue_date')</label>
+                        <input type="date" name="client[passport_issue_date]" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>
 
 
 
@@ -672,3 +671,57 @@ $(document).ready(function() {
     });
 </script>
 @endsection --}}
+
+@push('scripts')
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    const existingClientSelect = document.getElementById('existing_client');
+    const newClientForm = document.getElementById('new-client-form');
+    const addNewClientBtn = document.getElementById('add-new-client');
+    const cancelNewClientBtn = document.getElementById('cancel-new-client');
+    const newClientFields = document.querySelectorAll('.new-client-field');
+    const contractForm = document.getElementById('contractForm');
+
+    function toggleNewClientForm(show) {
+        newClientForm.style.display = show ? 'block' : 'none';
+        existingClientSelect.disabled = show;
+        
+        // Toggle required attribute on new client fields
+        newClientFields.forEach(field => {
+            field.required = show;
+        });
+        
+        // Clear and disable/enable the existing client select
+        if (show) {
+            existingClientSelect.value = '';
+        }
+    }
+
+    addNewClientBtn.addEventListener('click', function() {
+        toggleNewClientForm(true);
+    });
+
+    cancelNewClientBtn.addEventListener('click', function() {
+        toggleNewClientForm(false);
+    });
+
+    existingClientSelect.addEventListener('change', function() {
+        if (this.value) {
+            toggleNewClientForm(false);
+        }
+    });
+
+    // Form submission validation
+    contractForm.addEventListener('submit', function(e) {
+        const isNewClient = newClientForm.style.display === 'block';
+        const hasExistingClient = existingClientSelect.value !== '';
+
+        if (!isNewClient && !hasExistingClient) {
+            e.preventDefault();
+            alert('@lang("fleet.select_client_or_add_new")');
+            return false;
+        }
+    });
+});
+</script>
+@endpush
