@@ -866,6 +866,7 @@ input:checked + .slider:before {
                   </li>
                   @endcan
 
+                  {{-- Vehicle Inspection menu item hidden
                   @can('VehicleInspection list')
                   <li class="nav-item">
                     <a href="{{ url('admin/vehicle-reviews')}}"
@@ -875,6 +876,7 @@ input:checked + .slider:before {
                     </a>
                   </li>
                   @endcan
+                  --}}
               
                   @if(Auth::user()->user_type=='S')
                   @if(Hyvikk::get('traccar_enable') == 1 ? true : false)
