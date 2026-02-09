@@ -338,39 +338,6 @@ input:checked + .slider:before {
       </a>
 
       <div class="sidebar">
-        <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-          <div class="image">
-            @if(Auth::user()->user_type == 'D' && Auth::user()->getMeta('driver_image') != null)
-            @if(starts_with(Auth::user()->getMeta('driver_image'),'http'))
-            @php($src = Auth::user()->getMeta('driver_image'))
-            @else
-            @php($src=asset('uploads/'.Auth::user()->getMeta('driver_image')))
-            @endif
-            <img src="{{$src}}" class="img-circle elevation-2" alt="User Image">
-            @elseif(Auth::user()->user_type == 'S' || Auth::user()->user_type == 'O')
-            @if(Auth::user()->getMeta('profile_image') == null)
-            <img src="{{ asset("assets/images/no-user.jpg")}}" class="img-circle elevation-2" alt="User Image">
-            @else
-            <img src="{{asset('uploads/'.Auth::user()->getMeta('profile_image'))}}" class="img-circle elevation-2"
-              alt="User Image">
-            @endif
-            @elseif(Auth::user()->user_type == 'C' && Auth::user()->getMeta('profile_pic') != null)
-            @if(starts_with(Auth::user()->getMeta('profile_pic'),'http'))
-            @php($src = Auth::user()->getMeta('profile_pic'))
-            @else
-            @php($src=asset('uploads/'.Auth::user()->getMeta('profile_pic')))
-            @endif
-            <img src="{{$src}}" class="img-circle elevation-2" alt="User Image">
-            @else
-            <img src="{{ asset("assets/images/no-user.jpg")}}" class="img-circle elevation-2" alt="User Image">
-            @endif
-
-          </div>
-          <div class="info">
-            <a href="{{ url('admin/change-details/'.Auth::user()->id)}}" class="d-block">{{Auth::user()->name}}</a>
-          </div>
-        </div>
         <div class="form-inline">
           <div class="input-group" data-widget="sidebar-search">
             
@@ -390,6 +357,7 @@ input:checked + .slider:before {
               </a>
             </div>
           </div>
+        </div>
 
           <!-- Sidebar Menu -->
           <nav class="mt-2">
@@ -1685,7 +1653,6 @@ input:checked + .slider:before {
               @endif
             </ul>
           </nav>
-        </div>
       </div>
 
     </aside>

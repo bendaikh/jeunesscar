@@ -1,0 +1,406 @@
+/* ========================================
+   Modern Sidebar Styling for AdminLTE
+   ======================================== */
+
+/* Main Sidebar Container */
+.main-sidebar {
+    background: linear-gradient(180deg, #1e3a5f 0%, #0d1b2a 100%);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: all 0.3s ease-in-out;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 1038;
+}
+
+/* Scrollbar Styling */
+.main-sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.main-sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.main-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.main-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Brand/Logo Area */
+.brand-link {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 15px 12px !important;
+    display: flex;
+    align-items: center;
+    height: 60px;
+}
+
+.brand-link .brand-image {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    max-height: 35px;
+    margin-left: 0.4rem;
+    margin-right: 0.5rem;
+}
+
+.brand-link .brand-text {
+    color: #fff !important;
+    font-weight: 600;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* User Panel */
+.user-panel {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 15px !important;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.user-panel .image img {
+    width: 38px;
+    height: 38px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.user-panel .info a {
+    color: #e0e0e0 !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* Sidebar Content */
+.sidebar {
+    padding-top: 0;
+}
+
+/* Search Box */
+.form-inline {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.form-control-sidebar {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    color: #fff !important;
+    font-size: 0.85rem;
+}
+
+.form-control-sidebar::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-sidebar {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Navigation Styling */
+.nav-sidebar {
+    padding: 10px 0;
+}
+
+.nav-sidebar > .nav-item {
+    margin: 2px 8px;
+}
+
+.nav-sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    padding: 10px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.nav-sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff !important;
+}
+
+.nav-sidebar .nav-link.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+/* Nav Icons */
+.nav-sidebar .nav-icon {
+    width: 22px;
+    height: 22px;
+    font-size: 1rem;
+    text-align: center;
+    margin-right: 10px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.nav-sidebar .nav-link:hover .nav-icon {
+    transform: scale(1.1);
+}
+
+/* Nav Link Text */
+.nav-sidebar .nav-link p {
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+/* Dropdown Arrow */
+.nav-sidebar .nav-link p > .right,
+.nav-sidebar .nav-link > .right,
+.nav-sidebar .nav-link p > i.right,
+.nav-sidebar .nav-link p > .fa-angle-left {
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.nav-sidebar .nav-item.menu-open > .nav-link p > .right,
+.nav-sidebar .nav-item.menu-open > .nav-link > .right,
+.nav-sidebar .nav-item.menu-open > .nav-link p > i.right,
+.nav-sidebar .nav-item.menu-open > .nav-link p > .fa-angle-left {
+    transform: translateY(-50%) rotate(-90deg);
+}
+
+/* Ensure arrows are always visible */
+.nav-sidebar .nav-link .fa-angle-left,
+.nav-sidebar .nav-link .fa-angle-right {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex-shrink: 0;
+}
+
+/* Treeview/Submenu */
+.nav-treeview {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 0 0 6px 6px;
+    margin: 0 0 5px 0;
+    padding: 5px 0;
+}
+
+.nav-treeview .nav-item {
+    margin: 0;
+}
+
+.nav-treeview .nav-link {
+    padding: 8px 12px 8px 42px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7) !important;
+    border-radius: 0;
+}
+
+.nav-treeview .nav-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff !important;
+    padding-left: 46px;
+}
+
+.nav-treeview .nav-link.active {
+    background: rgba(59, 130, 246, 0.3) !important;
+    color: #fff !important;
+    box-shadow: none;
+    border-left: 3px solid #3b82f6;
+    padding-left: 39px;
+}
+
+.nav-treeview .nav-icon {
+    font-size: 0.75rem;
+    width: 18px;
+    margin-right: 8px;
+}
+
+/* Menu Section Headers */
+.nav-header {
+    color: rgba(255, 255, 255, 0.4) !important;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 15px 20px 8px;
+    font-weight: 600;
+}
+
+/* ========================================
+   Collapsed Sidebar State
+   ======================================== */
+
+.sidebar-collapse .main-sidebar {
+    overflow: visible;
+    width: 4.6rem;
+}
+
+.sidebar-collapse .main-sidebar .brand-link {
+    width: 4.6rem;
+    padding: 15px 8px !important;
+    justify-content: center;
+}
+
+.sidebar-collapse .main-sidebar .brand-text {
+    display: none;
+}
+
+.sidebar-collapse .main-sidebar .brand-image {
+    margin: 0;
+}
+
+.sidebar-collapse .main-sidebar .user-panel {
+    display: none !important;
+}
+
+.sidebar-collapse .main-sidebar .form-inline {
+    display: none !important;
+}
+
+.sidebar-collapse .main-sidebar .sidebar {
+    padding-top: 0;
+}
+
+.sidebar-collapse .main-sidebar .nav-sidebar > .nav-item {
+    margin: 2px 6px;
+}
+
+.sidebar-collapse .main-sidebar .nav-sidebar .nav-link {
+    justify-content: center;
+    padding: 12px 8px;
+}
+
+.sidebar-collapse .main-sidebar .nav-sidebar .nav-icon {
+    margin-right: 0;
+    font-size: 1.1rem;
+}
+
+.sidebar-collapse .main-sidebar .nav-sidebar .nav-link p {
+    display: none;
+}
+
+.sidebar-collapse .main-sidebar .nav-sidebar .nav-link > .right {
+    display: none;
+}
+
+.sidebar-collapse .main-sidebar .nav-treeview {
+    display: none;
+}
+
+/* 
+   REMOVED: Hover expansion for collapsed sidebar
+   Sidebar stays collapsed until user clicks the toggle button
+*/
+
+/* ========================================
+   Dark Mode Adjustments
+   ======================================== */
+
+.dark-mode .main-sidebar {
+    background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+}
+
+.dark-mode .nav-sidebar .nav-link.active {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.dark-mode .nav-treeview .nav-link.active {
+    background: rgba(99, 102, 241, 0.3) !important;
+    border-left-color: #6366f1;
+}
+
+/* ========================================
+   Responsive Adjustments
+   ======================================== */
+
+@media (max-width: 991.98px) {
+    .main-sidebar {
+        transform: translateX(-250px);
+    }
+    
+    .sidebar-open .main-sidebar {
+        transform: translateX(0);
+    }
+}
+
+/* ========================================
+   Badge Styling
+   ======================================== */
+
+.nav-sidebar .badge {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.7rem;
+    padding: 3px 6px;
+}
+
+/* ========================================
+   Animation Enhancements
+   ======================================== */
+
+.nav-sidebar .nav-item {
+    animation: fadeInLeft 0.3s ease forwards;
+    opacity: 0;
+}
+
+.nav-sidebar .nav-item:nth-child(1) { animation-delay: 0.05s; }
+.nav-sidebar .nav-item:nth-child(2) { animation-delay: 0.1s; }
+.nav-sidebar .nav-item:nth-child(3) { animation-delay: 0.15s; }
+.nav-sidebar .nav-item:nth-child(4) { animation-delay: 0.2s; }
+.nav-sidebar .nav-item:nth-child(5) { animation-delay: 0.25s; }
+.nav-sidebar .nav-item:nth-child(6) { animation-delay: 0.3s; }
+.nav-sidebar .nav-item:nth-child(7) { animation-delay: 0.35s; }
+.nav-sidebar .nav-item:nth-child(8) { animation-delay: 0.4s; }
+.nav-sidebar .nav-item:nth-child(9) { animation-delay: 0.45s; }
+.nav-sidebar .nav-item:nth-child(10) { animation-delay: 0.5s; }
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Smooth treeview animation */
+.nav-treeview {
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
