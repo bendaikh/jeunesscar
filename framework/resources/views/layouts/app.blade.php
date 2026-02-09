@@ -41,7 +41,7 @@ Design and developed by Hyvikk Solutions <https://hyvikk.com/>  -->
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset('assets/css/dist-adminlte.min.css')}}">
   <!-- Custom Menu Style -->
-  <link rel="stylesheet" href="{{asset('assets/css/custom-menu.css')}}">
+  <link rel="stylesheet" href="{{asset('assets/css/custom-menu.css')}}?v={{ time() }}">
   <!-- Custom Logo Style -->
   <link rel="stylesheet" href="{{asset('assets/css/custom-logo.css')}}">
   <!-- iCheck -->
